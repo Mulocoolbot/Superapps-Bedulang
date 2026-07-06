@@ -40,59 +40,76 @@ const apps = [
 </script>
 
 <template>
-    <section class="py-16 bg-gray-50 dark:bg-gray-900">
+    <section
+        class="py-14 bg-gradient-to-b from-white via-blue-50/40 to-gray-100 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
 
         <div class="container mx-auto px-6">
 
             <!-- HEADER -->
-            <div class="text-center mb-10">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white">
-                    Layanan Informasi & Data
+            <div class="max-w-3xl mx-auto text-center mb-10">
+
+                <h2
+                    class="mt-4 text-3xl md:text-4xl font-bold tracking-tight text-gray-900 dark:text-white">
+
+                    Jelajahi Layanan &
+                    <span class="text-blue-600">
+                        Informasi Bangka Tengah
+                    </span>
+
                 </h2>
 
-                <p class="mt-3 text-gray-600 dark:text-gray-300">
-                    Akses informasi publik, data sektoral dan layanan informasi Kabupaten Bangka Tengah
+                <p
+                    class="mt-4 text-base text-gray-600 dark:text-gray-300 leading-7">
+
+                    Temukan berbagai layanan publik, data sektoral, serta informasi
+                    Kabupaten Bangka Tengah dalam satu portal digital yang terintegrasi.
+
                 </p>
+
             </div>
 
             <!-- GRID -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+            <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
 
                 <a
-                    v-for="app in apps"
-                    :key="app.name"
-                    :href="app.url"
-                    class="group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition duration-300"
-                >
+    v-for="app in apps"
+    :key="app.name"
+    :href="app.url"
+    class="group rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 transition-all duration-300 hover:-translate-y-2 hover:shadow-xl">
 
-                    <!-- IMAGE -->
-                    <div class="overflow-hidden">
-                        <img
-                            :src="app.logo"
-                            :alt="app.name"
-                            class="w-full h-56 object-cover group-hover:scale-105 transition duration-500"
-                        />
-                    </div>
+    <!-- Logo -->
+    <img
+        :src="app.logo"
+        :alt="app.name"
+        class="w-16 h-16 rounded-2xl object-cover shadow-sm"
+    >
 
-                    <!-- CONTENT -->
-                    <div class="p-5">
+    <!-- Content -->
+    <h3 class="mt-5 text-xl font-bold text-gray-900 dark:text-white">
+        {{ app.name }}
+    </h3>
 
-                        <h3 class="text-xl font-bold text-gray-800 dark:text-white">
-                            {{ app.name }}
-                        </h3>
+    <p class="mt-2 text-sm leading-6 text-gray-600 dark:text-gray-300 line-clamp-2">
+        {{ app.desc }}
+    </p>
 
-                        <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                            {{ app.desc }}
-                        </p>
+    <div class="mt-6 flex items-center justify-between">
 
-                        <div class="mt-4 flex items-center text-blue-600 dark:text-blue-400 font-medium">
-                            Lihat Informasi
-                            <span class="ml-2">→</span>
-                        </div>
+        <span class="text-sm font-semibold text-blue-600">
+            Buka Layanan
+        </span>
 
-                    </div>
+        <div
+            class="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-blue-600 transition-all duration-300 group-hover:bg-blue-600 group-hover:text-white">
 
-                </a>
+            →
+
+        </div>
+
+    </div>
+
+</a>
 
             </div>
 
