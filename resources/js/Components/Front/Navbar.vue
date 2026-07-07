@@ -78,26 +78,24 @@ const toggleDarkMode = () => {
             <div class="hidden md:flex items-center gap-5">
 
     <!-- Dark Mode Switch -->
-    <div class="flex items-center gap-3">
+    <div class="flex items-center">
 
-        <span class="text-sm">☀️</span>
+    <button
+        @click="toggleDarkMode"
+        class="relative inline-flex h-7 w-14 items-center rounded-full transition-all duration-300"
+        :class="darkMode ? 'bg-blue-600' : 'bg-gray-300'"
+    >
 
-        <button
-            @click="toggleDarkMode"
-            class="relative inline-flex h-7 w-14 items-center rounded-full transition-colors duration-300"
-            :class="darkMode ? 'bg-blue-600' : 'bg-gray-300'"
+        <span
+            class="absolute flex h-6 w-6 items-center justify-center rounded-full shadow-md transform transition-all duration-300 text-sm"
+            :class="darkMode ? 'translate-x-7' : 'translate-x-1'"
         >
+            {{ darkMode ? '🌙' : '☀️' }}
+        </span>
 
-            <span
-                class="inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-300"
-                :class="darkMode ? 'translate-x-8' : 'translate-x-1'"
-            />
+    </button>
 
-        </button>
-
-        <span class="text-sm">🌙</span>
-
-    </div>
+</div>
 
     <!-- Login -->
     <a

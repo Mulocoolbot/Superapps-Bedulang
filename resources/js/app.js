@@ -6,6 +6,16 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 
+import AOS from 'aos'
+import 'aos/dist/aos.css'
+
+AOS.init({
+  duration: 900,
+  easing: 'ease-out',
+  once: true,
+  offset: 30
+})
+
 // Nama aplikasi
 const appName = 'Bangka Tengah Super App';
 

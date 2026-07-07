@@ -51,7 +51,7 @@
 
                             <a
                                 href="#"
-                                class="px-7 py-3 rounded-xl border border-gray-300 bg-white hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 transition">
+                                class="px-7 py-3 rounded-xl border border-gray-300 bg-white hover:bg-gray-100 dark:bg-white-800 dark:border-gray-700 dark:hover:bg-gray-700 transition">
 
                                 Lihat Informasi
 
