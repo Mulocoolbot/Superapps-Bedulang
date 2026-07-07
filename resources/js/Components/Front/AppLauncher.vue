@@ -34,71 +34,111 @@ const services = [
 </script>
 
 <template>
-    <section class="py-16 bg-gray-50 dark:bg-gray-900">
+<section
+    id="aplikasi"
+    data-aos="fade-up"
+    class="py-16 bg-white dark:bg-gray-950">
 
-        <div class="container mx-auto px-6">
+    <div class="max-w-7xl mx-auto px-6">
 
-            <!-- HEADER -->
-            <div class="text-center mb-12">
+        <!-- Header -->
 
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white">
-                    Daftar Aplikasi
-                </h2>
+        <div class="text-center mb-12">
 
-                <p class="mt-3 text-gray-600 dark:text-gray-300">
-                    Akses berbagai aplikasi layanan digital Pemerintah Kabupaten Bangka Tengah
-                </p>
+            <h2
+                class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
 
-            </div>
+                Aplikasi Daerah
 
-            <!-- GRID -->
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+            </h2>
 
-                <a
-                    v-for="service in services"
-                    :key="service.name"
-                    :href="service.url"
-                    class="group bg-white dark:bg-gray-800 rounded-2xl shadow-md hover:shadow-xl hover:-translate-y-2 transition-all duration-300 p-5"
-                >
+            <p
+                class="mt-3 text-gray-600 dark:text-gray-400">
 
-                    <!-- BADGE -->
-                    <div class="flex justify-center mb-3">
-                        <span
-                            class="text-xs px-3 py-1 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200"
-                        >
-                            Aplikasi
-                        </span>
-                    </div>
+                Akses berbagai aplikasi digital Pemerintah Kabupaten Bangka Tengah.
 
-                    <!-- LOGO -->
-                    <div class="flex justify-center">
-                        <img
-                            :src="service.logo"
-                            :alt="service.name"
-                            class="w-28 h-28 object-contain group-hover:scale-110 transition duration-300"
-                        >
-                    </div>
-
-                    <!-- NAME -->
-                    <div class="mt-4 text-center">
-
-                        <h3 class="font-bold text-gray-800 dark:text-white">
-                            {{ service.name }}
-                        </h3>
-
-                        <div
-                            class="mt-2 text-blue-600 dark:text-blue-400 text-sm opacity-0 group-hover:opacity-100 transition"
-                        >
-                            Buka Aplikasi →
-                        </div>
-
-                    </div>
-
-                </a>
-
-            </div>
+            </p>
 
         </div>
 
-    </section>
+        <!-- Grid -->
+
+        <div
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+            <a
+                v-for="(service,index) in services"
+                :key="service.name"
+                :href="service.url"
+                target="_blank"
+                data-aos="fade-up"
+                :data-aos-delay="index*50"
+                class="group">
+
+                <div
+                    class="flex items-center gap-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-blue-400 hover:shadow-lg">
+
+                    <!-- Logo -->
+
+                    <div
+                        class="flex h-16 w-16 items-center justify-center rounded-xl bg-gray-50 dark:bg-gray-900">
+
+                        <img
+                            :src="service.logo"
+                            :alt="service.name"
+                            class="h-12 w-12 object-contain transition duration-300 group-hover:scale-105">
+
+                    </div>
+
+                    <!-- Text -->
+
+                    <div class="flex-1">
+
+                        <h3
+                            class="font-semibold text-gray-900 dark:text-white">
+
+                            {{ service.name }}
+
+                        </h3>
+
+                        <p
+                            class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+
+                            Buka aplikasi
+
+                        </p>
+
+                    </div>
+
+                    <!-- Arrow -->
+
+                    <div
+                        class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 transition-all duration-300 group-hover:bg-blue-600 group-hover:text-white">
+
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-5 w-5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor">
+
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M7 17L17 7M17 7H9M17 7V15"/>
+
+                        </svg>
+
+                    </div>
+
+                </div>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
 </template>

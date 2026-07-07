@@ -2,7 +2,12 @@
 </script>
 
 <template>
-    <section class="bg-white dark:bg-gray-900">
+    <section 
+    id="beranda">
+</section>
+
+<section
+    class="bg-white dark:bg-gray-900">
 
         <div class="container mx-auto px-6 py-16">
 

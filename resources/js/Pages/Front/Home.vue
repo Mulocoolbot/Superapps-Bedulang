@@ -5,6 +5,8 @@ import FrontLayout from '@/Layouts/FrontLayout.vue'
 import Hero from '@/Components/Front/Hero.vue'
 import InformationServices from '@/Components/Front/InformationServices.vue'
 import AppLauncher from '@/Components/Front/AppLauncher.vue'
+import Footer from '@/Components/Front/Footer.vue'
+import NewsSection from '@/Components/Front/NewsSection.vue'
 </script>
 
 <template>
@@ -13,14 +15,15 @@ import AppLauncher from '@/Components/Front/AppLauncher.vue'
 
     <FrontLayout>
 
-        <!-- Hero Section -->
         <Hero />
 
-        <!-- Layanan Informasi & Data -->
         <InformationServices />
 
-        <!-- Daftar Aplikasi -->
+        <NewsSection />
+        
         <AppLauncher />
+
+        <Footer />
 
     </FrontLayout>
 

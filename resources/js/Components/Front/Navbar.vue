@@ -56,19 +56,23 @@ const toggleDarkMode = () => {
             <div
                 class="hidden md:flex items-center space-x-8 text-gray-700 dark:text-gray-200 font-medium">
 
-                <a href="#" class="hover:text-blue-600 transition">
+                <a href="#beranda" class="hover:text-blue-600 transition">
                     Beranda
                 </a>
 
-                <a href="#" class="hover:text-blue-600 transition">
+                <a href="#layanan" class="hover:text-blue-600 transition">
                     Layanan
                 </a>
 
-                <a href="#" class="hover:text-blue-600 transition">
+                <a href="#berita" class="hover:text-blue-600 transition">
                     Berita
                 </a>
 
-                <a href="#" class="hover:text-blue-600 transition">
+                <a href="#aplikasi" class="hover:text-blue-600 transition">
+                    Aplikasi
+                </a>
+
+                <a href="#kontak" class="hover:text-blue-600 transition">
                     Kontak
                 </a>
 
@@ -90,7 +94,7 @@ const toggleDarkMode = () => {
             class="absolute flex h-6 w-6 items-center justify-center rounded-full shadow-md transform transition-all duration-300 text-sm"
             :class="darkMode ? 'translate-x-7' : 'translate-x-1'"
         >
-            {{ darkMode ? '🌙' : '☀️' }}
+            {{ darkMode ? '⏾' : '☀︎' }}
         </span>
 
     </button>
@@ -123,19 +127,23 @@ const toggleDarkMode = () => {
             class="md:hidden border-t border-gray-200 dark:border-gray-700 px-6 py-4 space-y-3 bg-white dark:bg-gray-800"
         >
 
-            <a href="#" class="block hover:text-blue-600">
+            <a href="#beranda" class="block hover:text-blue-600">
                 Beranda
             </a>
 
-            <a href="#" class="block hover:text-blue-600">
+            <a href="#layanan" class="block hover:text-blue-600">
                 Layanan
             </a>
 
-            <a href="#" class="block hover:text-blue-600">
+            <a href="#berita" class="block hover:text-blue-600">
                 Berita
             </a>
 
-            <a href="#" class="block hover:text-blue-600">
+            <a href="#aplikasi" class="block hover:text-blue-600">
+                Aplikasi
+            </a>
+
+            <a href="#kontak" class="block hover:text-blue-600">
                 Kontak
             </a>
 

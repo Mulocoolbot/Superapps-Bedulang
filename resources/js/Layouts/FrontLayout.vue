@@ -37,17 +37,6 @@ const toggleDarkMode = () => {
             <slot />
         </main>
 
-        <!-- FOOTER -->
-        <footer class="bg-white dark:bg-gray-800 mt-10">
-
-            <div class="container mx-auto px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-300">
-
-                © 2026 Super App Bangka Tengah
-
-            </div>
-
-        </footer>
-
     </div>
 
 </template>

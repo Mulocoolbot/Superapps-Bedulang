@@ -65,10 +65,10 @@ const apps = [
 
 <template>
 <section
+    id="layanan"
     data-aos="fade-up"
     class="py-14 bg-gradient-to-b from-white via-blue-50/40 to-gray-100 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
 
-    <!-- Container lebih lebar -->
     <div class="w-full max-w-[1600px] mx-auto px-6 lg:px-8">
 
         <!-- Header -->
@@ -79,7 +79,7 @@ const apps = [
             <h2
                 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
 
-                Dashboard
+                Layanan
                 <span class="text-blue-600 dark:text-blue-400">
                     Informasi & Data
                 </span>
@@ -89,7 +89,7 @@ const apps = [
             <p
                 class="mt-3 text-gray-600 dark:text-gray-400">
 
-                Pilih kategori untuk melihat dashboard informasi dan data Kabupaten Bangka Tengah.
+                Pilih kategori untuk melihat informasi dan data Kabupaten Bangka Tengah.
 
             </p>
 
