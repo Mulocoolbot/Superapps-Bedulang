@@ -6,31 +6,31 @@ const news = [
         title: 'Berita Hari Ini',
         date: '10 Juli 2026',
         image: '/services/voting.svg',
-        url: '#'
+        url: ''
     },
     {
         title: 'Berita Hari Ini',
         date: '10 Juli 2026',
         image: '/services/voting.svg',
-        url: '#'
+        url: ''
     },
     {
         title: 'Berita Hari Ini',
         date: '10 Juli 2026',
         image: '/services/voting.svg',
-        url: '#'
+        url: ''
     },
     {
         title: 'Berita Hari Ini',
         date: '10 Juli 2026',
         image: '/services/voting.svg',
-        url: '#'
+        url: ''
     },
     {
         title: 'Berita Hari Ini',
         date: '10 Juli 2026',
         image: '/services/voting.svg',
-        url: '#'
+        url: ''
     },
 ]
 
