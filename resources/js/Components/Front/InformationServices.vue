@@ -104,7 +104,7 @@ const apps = [
                 :key="app.name"
                 :href="app.url"
                 data-aos="fade-up"
-                :data-aos-delay="index * 40"
+               
                 class="group w-[180px] flex-shrink-0">
 
                 <div

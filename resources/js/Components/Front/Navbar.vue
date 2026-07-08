@@ -64,10 +64,6 @@ const toggleDarkMode = () => {
                     Layanan
                 </a>
 
-                <a href="#berita" class="hover:text-blue-600 transition">
-                    Berita
-                </a>
-
                 <a href="#aplikasi" class="hover:text-blue-600 transition">
                     Aplikasi
                 </a>
@@ -133,10 +129,6 @@ const toggleDarkMode = () => {
 
             <a href="#layanan" class="block hover:text-blue-600">
                 Layanan
-            </a>
-
-            <a href="#berita" class="block hover:text-blue-600">
-                Berita
             </a>
 
             <a href="#aplikasi" class="block hover:text-blue-600">

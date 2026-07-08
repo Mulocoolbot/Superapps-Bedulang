@@ -6,7 +6,6 @@ import Hero from '@/Components/Front/Hero.vue'
 import InformationServices from '@/Components/Front/InformationServices.vue'
 import AppLauncher from '@/Components/Front/AppLauncher.vue'
 import Footer from '@/Components/Front/Footer.vue'
-import NewsSection from '@/Components/Front/NewsSection.vue'
 </script>
 
 <template>
@@ -18,8 +17,6 @@ import NewsSection from '@/Components/Front/NewsSection.vue'
         <Hero />
 
         <InformationServices />
-
-        <NewsSection />
         
         <AppLauncher />
 
