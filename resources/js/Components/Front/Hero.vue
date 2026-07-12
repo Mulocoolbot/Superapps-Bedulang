@@ -2,45 +2,93 @@
 </script>
 
 <template>
-    <section class="bg-white dark:bg-gray-900">
+    <section 
+    id="beranda">
+</section>
 
-        <div class="container mx-auto px-6 py-20 text-center">
+<section
+    class="bg-white dark:bg-gray-900">
 
-            <!-- LOGO -->
-            <div class="flex justify-center mb-6">
-                <img
-                    src="/services/logobateng3.png"
-                    alt="Logo Kabupaten Bangka Tengah"
-                    class="h-60 w-60 object-contain"
-                >
-            </div>
+        <div class="container mx-auto px-6 py-16">
 
-          
-            <!-- <h1 class="text-4xl md:text-6xl font-bold text-gray-800 dark:text-white">
-                Bangka Tengah Super App
-            </h1>
+            <div
+                class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-50 via-white to-blue-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 shadow-xl">
 
-           
-            <p class="mt-4 text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                Sistem layanan digital pemerintahan Kab. Bangka Tengah
-            </p> -->
+                <div class="grid lg:grid-cols-2 items-center">
 
-            <!-- BUTTONS -->
-            <div class="mt-8 flex justify-center space-x-4">
+                    <!-- ================= LEFT ================= -->
 
-                <a href="#"
-                   class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
-                    Masuk Layanan
-                </a>
+                    <div class="px-10 py-14 lg:px-14 z-10">
 
-                <a href="#"
-                   class="px-6 py-3 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-white rounded-lg hover:opacity-80 transition">
-                    Lihat Informasi
-                </a>
+                        <h1
+                            class="mt-6 text-5xl font-bold leading-tight text-gray-900 dark:text-white">
+
+                            Selamat Datang di
+                            <span class="text-blue-600">
+                                BEDULANG
+                            </span>
+
+                        </h1>
+
+                        <p
+                            class="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
+
+                            BEDULANG
+                            merupakan platform layanan digital Pemerintah Kabupaten
+                            Bangka Tengah yang menghadirkan berbagai layanan publik
+                            dalam satu aplikasi. Masyarakat dapat mengakses informasi,
+                            pelayanan, serta berbagai kebutuhan administrasi dengan
+                            lebih mudah, cepat, dan transparan.
+
+                        </p>
+
+                        <!-- BUTTON -->
+
+                        <div class="mt-10 flex gap-4">
+
+                            <a
+                                href="#"
+                                class="px-7 py-3 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition shadow-lg">
+
+                                Masuk Layanan
+
+                            </a>
+
+                            <a
+                                href="#"
+                                class="px-7 py-3 rounded-xl border border-gray-300 bg-white hover:bg-gray-100 dark:bg-white-800 dark:border-gray-700 dark:hover:bg-gray-700 transition">
+
+                                Lihat Informasi
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                    <!-- ================= RIGHT ================= -->
+
+                    <div class="relative h-full min-h-[500px] hidden lg:block">
+
+                        <img
+                            src="/services/ketawai.jpg"
+                            alt="Pulau Ketawai"
+                            class="absolute inset-0 h-full w-full object-cover"
+                        >
+
+                        <!-- Gradient -->
+
+                        <div
+                            class="absolute inset-0 bg-gradient-to-r from-white via-white/40 to-transparent dark:from-gray-900 dark:via-gray-900/40">
+                        </div>
+
+                    </div>
+
+                </div>
 
             </div>
 
         </div>
 
     </section>
-</template>
+</template> 

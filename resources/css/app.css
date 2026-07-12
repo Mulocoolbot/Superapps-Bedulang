@@ -1,3 +1,25 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+[data-aos="fade-up"] {
+  transform: translate3d(0, 18px, 0);
+}
+
+[data-aos="fade-down"] {
+  transform: translate3d(0, 0, 0);
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* Chrome, Edge, Safari */
+.scrollbar-hide::-webkit-scrollbar{
+    display:none;
+}
+
+/* Firefox */
+.scrollbar-hide{
+    scrollbar-width:none;
+}

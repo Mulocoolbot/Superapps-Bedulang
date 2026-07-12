@@ -2,101 +2,160 @@
 const apps = [
     {
         name: 'PEMERINTAHAN',
-        desc: 'Informasi pemerintahan daerah dan pelayanan publik',
-        logo: '/services/thumbnail1.png',
+        logo: '/services/govern.svg',
+        url: '/login'
+    },
+    {
+        name: 'PENDIDIKAN',
+        logo: '/services/education.svg',
+        url: '/login'
+    },
+    {
+        name:'KESEHATAN',
+        logo: '/services/health.svg',
+        url: '/login'
+    },
+    {
+        name:'BUDAYA',
+        logo: '/services/culture.svg',
+        url: '/login'
+    },
+    {
+        name:'HUKUM',
+        logo: '/services/law.svg',
         url: '/login'
     },
     {
         name: 'SOSIAL',
-        desc: 'Data sosial, bantuan dan kesejahteraan masyarakat',
-        logo: '/services/thumbnail2.png',
+        logo: '/services/social.svg',
         url: '/login'
     },
     {
         name: 'KEPENDUDUKAN',
-        desc: 'Data dan informasi kependudukan daerah',
-        logo: '/services/thumbnail3.png',
+        logo: '/services/society.svg',
         url: '/login'
     },
     {
         name: 'KEPEGAWAIAN',
-        desc: 'Informasi ASN dan manajemen kepegawaian',
-        logo: '/services/thumbnail4.png',
+        logo: '/services/work.svg',
+        url: '/login'
+    },
+    {
+        name:'LINGKUNGAN',
+        logo: '/services/environment.svg',
+        url: '/login'
+    },
+    {
+        name:'GEOGRAFIS',
+        logo: '/services/geo.svg',
         url: '/login'
     },
     {
         name: 'PARIWISATA',
-        desc: 'Destinasi wisata dan potensi daerah',
-        logo: '/services/thumbnail5.png',
+        logo: '/services/vacation.svg',
         url: '/login'
     },
     {
         name: 'DATA SEKTORAL',
-        desc: 'Bank data sektoral Kabupaten Bangka Tengah',
-        logo: '/services/thumbnail6.png',
+        logo: '/services/voting.svg',
         url: '/login'
     },
 ]
 </script>
 
 <template>
-    <section class="py-16 bg-gray-50 dark:bg-gray-900">
+<section
+    id="layanan"
+    data-aos="fade-up"
+    class="py-14 bg-gradient-to-b from-white via-blue-50/40 to-gray-100 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
 
-        <div class="container mx-auto px-6">
+    <div class="w-full max-w-[1600px] mx-auto px-6 lg:px-8">
 
-            <!-- HEADER -->
-            <div class="text-center mb-10">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 dark:text-white">
-                    Layanan Informasi & Data
-                </h2>
+        <!-- Header -->
+        <div
+            data-aos="fade-up"
+            class="max-w-2xl mx-auto text-center mb-12">
 
-                <p class="mt-3 text-gray-600 dark:text-gray-300">
-                    Akses informasi publik, data sektoral dan layanan informasi Kabupaten Bangka Tengah
-                </p>
-            </div>
+            <h2
+                class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
 
-            <!-- GRID -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                Layanan
+                <span class="text-blue-600 dark:text-blue-400">
+                    Informasi & Data
+                </span>
 
-                <a
-                    v-for="app in apps"
-                    :key="app.name"
-                    :href="app.url"
-                    class="group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition duration-300"
-                >
+            </h2>
 
-                    <!-- IMAGE -->
-                    <div class="overflow-hidden">
-                        <img
-                            :src="app.logo"
-                            :alt="app.name"
-                            class="w-full h-56 object-cover group-hover:scale-105 transition duration-500"
-                        />
-                    </div>
+            <p
+                class="mt-3 text-gray-600 dark:text-gray-400">
 
-                    <!-- CONTENT -->
-                    <div class="p-5">
+                Pilih kategori untuk melihat informasi dan data Kabupaten Bangka Tengah.
 
-                        <h3 class="text-xl font-bold text-gray-800 dark:text-white">
-                            {{ app.name }}
-                        </h3>
-
-                        <p class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                            {{ app.desc }}
-                        </p>
-
-                        <div class="mt-4 flex items-center text-blue-600 dark:text-blue-400 font-medium">
-                            Lihat Informasi
-                            <span class="ml-2">→</span>
-                        </div>
-
-                    </div>
-
-                </a>
-
-            </div>
+            </p>
 
         </div>
 
-    </section>
+        <!-- Grid -->
+        <div
+            class="flex flex-wrap justify-center gap-5">
+
+            <a
+                v-for="(app, index) in apps"
+                :key="app.name"
+                :href="app.url"
+                data-aos="fade-up"
+               
+                class="group w-[180px] flex-shrink-0">
+
+                <div
+                    class="overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-blue-400 dark:hover:border-blue-500">
+
+                    <!-- Thumbnail -->
+                    <div
+                        class="h-28 flex items-center justify-center bg-gray-50 dark:bg-gray-900/70">
+
+                        <img
+                            :src="app.logo"
+                            :alt="app.name"
+                            class="w-[70%] h-[70%] object-contain transition-transform duration-500 ease-out group-hover:scale-105"
+                        >
+
+                    </div>
+
+                    <!-- Footer -->
+                    <div
+                        class="flex items-center justify-between px-3.5 py-3">
+
+                        <h3
+                            class="text-[13px] font-semibold uppercase tracking-wide text-gray-900 dark:text-white transition-colors duration-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+
+                            {{ app.name }}
+
+                        </h3>
+
+                        <svg
+                            class="w-4 h-4 text-gray-400 transition-all duration-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-1"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2.2"
+                            viewBox="0 0 24 24">
+
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M9 5l7 7-7 7"/>
+
+                        </svg>
+
+                    </div>
+
+                </div>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
 </template>
