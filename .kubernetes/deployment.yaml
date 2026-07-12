@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: <PROJECT_NAME>
+  labels:
+    app: <PROJECT_NAME>
+  namespace: default
+spec:
+  progressDeadlineSeconds: 3600
+  selector:
+    matchLabels:
+      app: <PROJECT_NAME>
+  template:
+    metadata:
+      labels:
+        app: <PROJECT_NAME>
+    spec:
+      containers:
+        - name: <PROJECT_NAME>
+          image: <IMAGE>:<VERSION>
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 443
+          #volumeMounts:
+          #  - mountPath: /var/www/html/public/storage
+          #    name: superapp-web-public-storage
+          #  - mountPath: /var/www/html/storage/app/public
+          #    name: superapp-web-storage
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 443
+              scheme: HTTPS
+            initialDelaySeconds: 15
+            failureThreshold: 3
+            periodSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /readiness
+              port: 443
+              scheme: HTTPS
+            initialDelaySeconds: 15
+            failureThreshold: 3
+            periodSeconds: 3
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "250m" 
+      #volumes:
+      #  - name: superapp-web-public-storage
+      #    persistentVolumeClaim:
+      #      claimName: superapp-public-storage-claim
+      #  - name: superapp-web-storage
+      #    persistentVolumeClaim:
+      #      claimName: superapp-storage-claim
+
+      imagePullSecrets:
+        - name: regcred
+
