@@ -16,7 +16,7 @@ const apps = [
         url: '/login'
     },
     {
-        name:'BUDAYA',
+        name:'PERINDAGKOP-UKM',
         logo: '/services/culture.svg',
         url: '/login'
     },
