@@ -25,6 +25,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin', function () {
         return Inertia::render('Admin/Dashboard');
     })->name('dashboard');
+    
+     Route::get('/admin/cctv', function () {
+        return Inertia::render('Admin/CCTV');
+    })->name('admin.cctv');
 
 });
 /*
@@ -45,5 +49,6 @@ Route::middleware('auth')->group(function () {
         ->name('profile.destroy');
 
 });
+
 
 require __DIR__.'/auth.php';
