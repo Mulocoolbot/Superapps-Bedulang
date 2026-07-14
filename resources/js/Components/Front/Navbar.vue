@@ -4,6 +4,45 @@ import { ref, onMounted } from 'vue'
 const open = ref(false)
 const darkMode = ref(false)
 
+const infoServices = [
+    { name: 'Pemerintahan', id: 'pemerintahan' },
+    { name: 'Pendidikan', id: 'pendidikan' },
+    { name: 'Kesehatan', id: 'kesehatan' },
+    { name: 'Perindagkop-UKM', id: 'perindagkop-ukm' },
+    { name: 'Hukum', id: 'hukum' },
+    { name: 'Sosial', id: 'sosial' },
+    { name: 'Kependudukan', id: 'kependudukan' },
+    { name: 'Kepegawaian', id: 'kepegawaian' },
+    { name: 'Lingkungan', id: 'lingkungan' },
+    { name: 'Geografis', id: 'geografis' },
+    { name: 'Pariwisata', id: 'pariwisata' },
+    { name: 'Data Sektoral', id: 'data-sektoral' },
+]
+
+const regionalApps = [
+    { name: 'SIPELAWAN', id: 'sipelawan' },
+    { name: 'SIDOLPIN', id: 'sidolpin' },
+    { name: 'SILAKSO', id: 'silakso' },
+    { name: 'SIKOK DATA', id: 'sikok-data' },
+    { name: 'LAPOR PPID', id: 'lapor-ppid' },
+    { name: 'SIMENTARI', id: 'simentari' },
+]
+
+const scrollToAndHighlight = (targetId) => {
+    const element = document.getElementById(targetId);
+    if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Add active classes
+        element.classList.add('ring-4', 'ring-blue-500', 'scale-[1.03]', 'shadow-2xl', 'dark:ring-blue-400');
+        
+        // Remove after 2 seconds
+        setTimeout(() => {
+            element.classList.remove('ring-4', 'ring-blue-500', 'scale-[1.03]', 'shadow-2xl', 'dark:ring-blue-400');
+        }, 2000);
+    }
+}
+
 onMounted(() => {
     darkMode.value = localStorage.theme === 'dark'
 
@@ -60,13 +99,81 @@ const toggleDarkMode = () => {
                     Beranda
                 </a>
 
-                <a href="#layanan" class="hover:text-blue-600 transition">
-                    Layanan
-                </a>
+                <!-- LAYANAN DROPDOWN -->
+                <div class="relative group py-2">
+                    <a href="#layanan" class="hover:text-blue-600 transition flex items-center gap-1">
+                        Layanan
+                        <svg class="w-4 h-4 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </a>
+                    
+                    <!-- Level 1 Dropdown -->
+                    <div class="absolute left-0 top-full hidden group-hover:block w-72 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl py-3 z-50">
+                        <!-- Layanan Informasi dan Data (Nested Dropdown) -->
+                        <div class="relative group/nested">
+                            <button class="w-full text-left px-5 py-3 hover:bg-blue-50 dark:hover:bg-gray-700 flex justify-between items-center transition">
+                                <span>Layanan Informasi & Data</span>
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                                </svg>
+                            </button>
+                            
+                            <!-- Level 2 Flyout -->
+                            <div class="absolute left-full top-0 hidden group-hover/nested:block w-64 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl py-2 z-50 ml-1 h-[320px] overflow-y-auto custom-scrollbar">
+                                <a 
+                                    v-for="app in infoServices" 
+                                    :key="app.name" 
+                                    href="javascript:void(0)"
+                                    @click="scrollToAndHighlight('layanan-' + app.id)"
+                                    class="block px-5 py-2.5 hover:bg-blue-50 dark:hover:bg-gray-700 text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
+                                >
+                                    {{ app.name }}
+                                </a>
+                            </div>
+                        </div>
 
-                <a href="#aplikasi" class="hover:text-blue-600 transition">
-                    Aplikasi
-                </a>
+                        <!-- Layanan Publik (Empty state) -->
+                        <div class="relative group/nested2">
+                            <button class="w-full text-left px-5 py-3 hover:bg-blue-50 dark:hover:bg-gray-700 flex justify-between items-center transition">
+                                <span>Layanan Publik</span>
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                                </svg>
+                            </button>
+                            
+                            <!-- Level 2 Flyout (Layanan Publik - Kosong) -->
+                            <div class="absolute left-full top-0 hidden group-hover/nested2:block w-60 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl p-4 text-center z-50 ml-1">
+                                <p class="text-sm text-gray-400 dark:text-gray-500 font-normal">
+                                    Belum ada layanan tersedia
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- APLIKASI DROPDOWN -->
+                <div class="relative group py-2">
+                    <a href="#aplikasi" class="hover:text-blue-600 transition flex items-center gap-1">
+                        Aplikasi
+                        <svg class="w-4 h-4 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </a>
+                    
+                    <!-- App Dropdown -->
+                    <div class="absolute left-0 top-full hidden group-hover:block w-64 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl py-2 z-50">
+                        <a 
+                            v-for="app in regionalApps" 
+                            :key="app.name" 
+                            href="javascript:void(0)"
+                            @click="scrollToAndHighlight('aplikasi-' + app.id)"
+                            class="block px-5 py-3 hover:bg-blue-50 dark:hover:bg-gray-700 font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
+                        >
+                            {{ app.name }}
+                        </a>
+                    </div>
+                </div>
 
                 <a href="#kontak" class="hover:text-blue-600 transition">
                     Kontak

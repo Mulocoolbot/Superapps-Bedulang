@@ -111,6 +111,7 @@ const apps = [
             >
 
                 <div
+                    :id="'layanan-' + app.name.toLowerCase().replace(/[^a-z0-9]/g, '-')"
                     class="overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-blue-400 dark:hover:border-blue-500">
 
                     <!-- Thumbnail -->
