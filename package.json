@@ -21,6 +21,9 @@
         "vue": "^3.4.0"
     },
     "dependencies": {
-        "aos": "^2.3.4"
+        "@vue-leaflet/vue-leaflet": "^0.10.1",
+        "aos": "^2.3.4",
+        "leaflet": "^1.9.4",
+        "vue-leaflet": "^0.1.0"
     }
 }

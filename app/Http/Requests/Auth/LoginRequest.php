@@ -33,6 +33,26 @@ class LoginRequest extends FormRequest
         ];
     }
 
+    public function messages(): array
+    {
+        return [
+            'email.required' => 'Email is required.',
+            'password.required' => 'Password is required.',
+            'email.email' => 'Please enter a valid email address.',
+        ];
+    }
+
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            if (empty($this->email) && empty($this->password)) {
+                $validator->errors()->forget('email');
+                $validator->errors()->forget('password');
+                $validator->errors()->add('email', 'Email and password are required.');
+            }
+        });
+    }
+
     /**
      * Attempt to authenticate the request's credentials.
      *
@@ -46,7 +66,7 @@ class LoginRequest extends FormRequest
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                'email' => 'Email or password is invalid.',
             ]);
         }
 

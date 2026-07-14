@@ -1,5 +1,11 @@
 <script setup>
 import { Link } from '@inertiajs/vue3'
+import { ref } from 'vue'
+
+const dropdownOpen = ref(false)
+const toggleDropdown = () => {
+    dropdownOpen.value = !dropdownOpen.value
+}
 </script>
 
 <template>
@@ -23,31 +29,41 @@ import { Link } from '@inertiajs/vue3'
 
         </div>
 
-        <nav class="p-4 space-y-2">
+        <nav class="p-4 space-y-2 flex flex-col h-full justify-between">
 
-            <Link
-                href="/admin"
-                class="block px-4 py-3 rounded-lg hover:bg-blue-50">
+            <div>
+                <Link
+                    href="/admin"
+                    class="block px-4 py-3 rounded-lg hover:bg-blue-50">
 
-                Dashboard
+                    Dashboard
 
-            </Link>
+                </Link>
 
-            <Link
-                href="/admin/cctv"
-                class="block px-4 py-3 rounded-lg hover:bg-blue-50">
+                <Link
+                    href="/admin/cctv"
+                    class="block px-4 py-3 rounded-lg hover:bg-blue-50">
 
-                CCTV
+                    CCTV
 
-            </Link>
+                </Link>
 
-            <Link
-                href="/profile"
-                class="block px-4 py-3 rounded-lg hover:bg-blue-50">
+                <Link
+                    href="/profile"
+                    class="block px-4 py-3 rounded-lg hover:bg-blue-50">
 
-                Profil
+                    Profil
 
-            </Link>
+                </Link>
+
+                <Link
+                    href="/admin/users"
+                    class="block px-4 py-3 rounded-lg hover:bg-blue-50">
+
+                    👥 Kelola Admin
+
+                </Link>
+            </div>
 
         </nav>
 
@@ -69,15 +85,34 @@ import { Link } from '@inertiajs/vue3'
 
             </h1>
 
-            <Link
-                method="post"
-                href="/logout"
-                as="button"
-                class="text-red-600 font-semibold">
+            <div class="relative">
+                <button
+                    type="button"
+                    @click="toggleDropdown"
+                    class="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50">
+                    Admin
+                    <span class="text-gray-400">▾</span>
+                </button>
 
-                Logout
-
-            </Link>
+                <div
+                    v-show="dropdownOpen"
+                    class="absolute right-0 mt-2 w-44 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg"
+                >
+                    <Link
+                        href="/profile"
+                        class="block w-full px-4 py-3 text-left text-gray-700 hover:bg-gray-50">
+                        Profil
+                    </Link>
+                    <div class="border-t border-gray-100"></div>
+                    <Link
+                        method="post"
+                        href="/logout"
+                        as="button"
+                        class="block w-full px-4 py-3 text-left text-red-600 hover:bg-gray-50">
+                        Logout
+                    </Link>
+                </div>
+            </div>
 
         </header>
 
