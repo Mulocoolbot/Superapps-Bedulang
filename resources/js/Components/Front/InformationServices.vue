@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
+import { Link } from '@inertiajs/vue3'
 
 const activeTab = ref('info')
 
@@ -16,14 +17,17 @@ const apps = [
     },
     {
         name: 'KESEHATAN',
+        slug: 'kesehatan',
         logo: '/services/health.svg',
     },
     {
         name: 'PERINDAGKOP-UKM',
+        slug: 'perindagkop-ukm',
         logo: '/services/culture.svg',
     },
     {
         name: 'HUKUM',
+        slug: 'hukum',
         logo: '/services/law.svg',
     },
     {
@@ -43,10 +47,12 @@ const apps = [
     },
     {
         name: 'LINGKUNGAN',
+        slug: 'lingkungan',
         logo: '/services/environment.svg',
     },
     {
         name: 'GEOGRAFIS',
+        slug: 'geografis',
         logo: '/services/geo.svg',
     },
     {
@@ -163,10 +169,10 @@ onMounted(() => {
                     <div class="flex flex-wrap justify-center gap-5">
                         <!-- TAB: INFORMASI & DATA -->
                         <template v-if="activeTab === 'info'">
-                            <a
+                            <Link
                                 v-for="(app, index) in apps"
                                 :key="app.name"
-                                :href="app.url"
+                                :href="'/layanan/' + app.slug"
                                 class="group w-[180px] flex-shrink-0 transition-all duration-300"
                             >
                                 <div 
@@ -187,12 +193,12 @@ onMounted(() => {
                                         </svg>
                                     </div>
                                 </div>
-                            </a>
+                            </Link>
                         </template>
 
                         <!-- TAB: LAYANAN PUBLIK -->
                         <template v-else>
-                            <a
+                            <Link
                                 v-for="(app, index) in publicServices"
                                 :key="app.name"
                                 :href="app.url"
@@ -216,7 +222,7 @@ onMounted(() => {
                                         </svg>
                                     </div>
                                 </div>
-                            </a>
+                            </Link>
                         </template>
                     </div>
                 </div>
