@@ -1,6 +1,5 @@
 <?php
 use App\Http\Controllers\Admin\CCTVController;
-use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\InformationServiceController;
 use App\Http\Controllers\ProfileController;
@@ -28,10 +27,7 @@ Route::get('/layanan/{slug}', [InformationServiceController::class, 'show'])
 
 Route::middleware(['auth', 'admin'])->group(function () {
 
-    Route::get('/admin',[DashboardController::class,'index'])
-    ->name('admin.dashboard');
-
-     Route::get('/admin/cctv', [CCTVController::class, 'index'])
+    Route::get('/admin/cctv', [CCTVController::class, 'index'])
         ->name('admin.cctv');
 
     Route::middleware(['super_admin'])->group(function () {
@@ -62,6 +58,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
 */
 
 Route::middleware('auth')->group(function () {
+
+    Route::get('/dashboard', function () {
+        return Inertia::render('Dashboard');
+    })->name('dashboard');
 
     Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile.edit');
