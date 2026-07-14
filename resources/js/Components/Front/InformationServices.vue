@@ -6,63 +6,58 @@ const activeTab = ref('info')
 const apps = [
     {
         name: 'PEMERINTAHAN',
+        slug: 'pemerintahan',
         logo: '/services/govern.svg',
-        url: '/login'
     },
     {
         name: 'PENDIDIKAN',
+        slug: 'pendidikan',
         logo: '/services/education.svg',
-        url: '/login'
     },
     {
         name: 'KESEHATAN',
         logo: '/services/health.svg',
-        url: '/login'
     },
     {
         name: 'PERINDAGKOP-UKM',
         logo: '/services/culture.svg',
-        url: '/login'
     },
     {
         name: 'HUKUM',
         logo: '/services/law.svg',
-        url: '/login'
     },
     {
         name: 'SOSIAL',
+        slug: 'sosial',
         logo: '/services/social.svg',
-        url: '/login'
     },
     {
         name: 'KEPENDUDUKAN',
+        slug: 'kependudukan',
         logo: '/services/society.svg',
-        url: '/login'
     },
     {
         name: 'KEPEGAWAIAN',
+        slug: 'kepegawaian',
         logo: '/services/work.svg',
-        url: '/login'
     },
     {
         name: 'LINGKUNGAN',
         logo: '/services/environment.svg',
-        url: '/login'
     },
     {
         name: 'GEOGRAFIS',
         logo: '/services/geo.svg',
-        url: '/login'
     },
     {
         name: 'PARIWISATA',
+        slug: 'pariwisata',
         logo: '/services/vacation.svg',
-        url: '/login'
     },
     {
         name: 'DATA SEKTORAL',
+        slug: 'data-sektoral',
         logo: '/services/voting.svg',
-        url: '/login'
     },
 ]
 

@@ -1,8 +1,14 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { Link, usePage } from '@inertiajs/vue3'
 
 const open = ref(false)
+const profileOpen = ref(false)
 const darkMode = ref(false)
+
+const page = usePage()
+const authUser = computed(() => page.props.auth?.user)
+const isAdmin = computed(() => authUser.value && ['admin', 'super_admin'].includes(authUser.value.role))
 
 const infoServices = [
     { name: 'Pemerintahan', id: 'pemerintahan' },
@@ -213,40 +219,89 @@ const toggleDarkMode = () => {
                     Kontak
                 </a>
 
+                <template v-if="authUser && isAdmin">
+                    <Link
+                        :href="route('admin.cctv')"
+                        class="hover:text-blue-600 transition"
+                    >
+                        CCTV
+                    </Link>
+
+                    <Link
+                        :href="route('admin.users')"
+                        class="hover:text-blue-600 transition"
+                    >
+                        Kelola Admin
+                    </Link>
+                </template>
+
             </div>
 
             <!-- ACTION -->
             <div class="hidden md:flex items-center gap-5">
 
-    <!-- Dark Mode Switch -->
-    <div class="flex items-center">
+                <!-- Dark Mode Switch -->
+                <div class="flex items-center">
 
-    <button
-        @click="toggleDarkMode"
-        class="relative inline-flex h-7 w-14 items-center rounded-full transition-all duration-300"
-        :class="darkMode ? 'bg-blue-600' : 'bg-gray-300'"
-    >
+                    <button
+                        @click="toggleDarkMode"
+                        class="relative inline-flex h-7 w-14 items-center rounded-full transition-all duration-300"
+                        :class="darkMode ? 'bg-blue-600' : 'bg-gray-300'"
+                    >
 
-        <span
-            class="absolute flex h-6 w-6 items-center justify-center rounded-full shadow-md transform transition-all duration-300 text-sm"
-            :class="darkMode ? 'translate-x-7' : 'translate-x-1'"
-        >
-            {{ darkMode ? '⏾' : '☀︎' }}
-        </span>
+                        <span
+                            class="absolute flex h-6 w-6 items-center justify-center rounded-full shadow-md transform transition-all duration-300 text-sm"
+                            :class="darkMode ? 'translate-x-7' : 'translate-x-1'"
+                        >
+                            {{ darkMode ? '⏾' : '☀︎' }}
+                        </span>
 
-    </button>
+                    </button>
 
-</div>
+                </div>
 
-    <!-- Login -->
-    <a
-        href="/login"
-        class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium shadow hover:shadow-lg transition"
-    >
-        Login
-    </a>
+                <div v-if="authUser" class="relative">
+                    <button
+                        @click="profileOpen = !profileOpen"
+                        class="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-medium text-gray-700 shadow hover:bg-gray-50 transition"
+                    >
+                        {{ authUser.name }}
+                        <span class="text-gray-400">▾</span>
+                    </button>
 
-</div>
+                    <div
+                        v-show="profileOpen"
+                        class="absolute right-0 mt-2 w-56 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl dark:bg-gray-800 dark:border-gray-700"
+                    >
+                        <Link
+                            :href="route('profile.edit')"
+                            class="block w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700"
+                        >
+                            Profile
+                        </Link>
+
+                        <div class="border-t border-gray-100 dark:border-gray-700"></div>
+
+                        <Link
+                            method="post"
+                            :href="route('logout')"
+                            as="button"
+                            class="block w-full px-4 py-3 text-left text-sm text-red-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                        >
+                            Logout
+                        </Link>
+                    </div>
+                </div>
+
+                <Link
+                    v-else
+                    href="/login"
+                    class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium shadow hover:shadow-lg transition"
+                >
+                    Login
+                </Link>
+
+            </div>
 
             <!-- MOBILE -->
             <button
@@ -287,13 +342,47 @@ const toggleDarkMode = () => {
                 {{ darkMode ? '☀️ Light Mode' : '🌙 Dark Mode' }}
             </button>
 
-            <a
+            <template v-if="authUser">
+                <Link
+                    :href="route('profile.edit')"
+                    class="block text-center mt-2 px-4 py-2 bg-white text-gray-800 rounded-lg border border-gray-200 hover:bg-gray-50"
+                >
+                    Profile
+                </Link>
+
+                <Link
+                    method="post"
+                    :href="route('logout')"
+                    as="button"
+                    class="block text-center mt-2 px-4 py-2 bg-red-600 text-white rounded-lg"
+                >
+                    Logout
+                </Link>
+
+                <template v-if="isAdmin">
+                    <Link
+                        :href="route('admin.cctv')"
+                        class="block text-center mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg"
+                    >
+                        CCTV
+                    </Link>
+
+                    <Link
+                        :href="route('admin.users')"
+                        class="block text-center mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg"
+                    >
+                        Kelola Admin
+                    </Link>
+                </template>
+            </template>
+
+            <Link
+                v-else
                 href="/login"
                 class="block text-center mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg"
             >
                 Login
-            </a>
-
+            </Link>
         </div>
 
     </nav>
