@@ -17,7 +17,7 @@ const services = [
     },
     {
         name: 'SIKOK DATA',
-        logo: '/services/sikok-data.png',
+        logo: '/services/people.svg',
         url: '/login'
     },
     {

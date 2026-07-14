@@ -104,7 +104,7 @@ const apps = [
             <Link
                 v-for="(app, index) in apps"
                 :key="app.slug"
-                :href="route('services.show', { slug: app.slug })"
+                :href="route('layanan.show', { slug: app.slug })"
                 data-aos="fade-up"
                 class="group w-[180px] flex-shrink-0"
                 preserve-scroll
