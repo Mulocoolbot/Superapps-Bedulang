@@ -2,6 +2,7 @@
 use App\Http\Controllers\Admin\CCTVController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\InformationServiceController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -15,6 +16,9 @@ use Inertia\Inertia;
 Route::get('/', function () {
     return Inertia::render('Front/Home');
 });
+
+Route::get('/layanan/{slug}', [InformationServiceController::class, 'show'])
+    ->name('layanan.show');
 
 /*
 |--------------------------------------------------------------------------

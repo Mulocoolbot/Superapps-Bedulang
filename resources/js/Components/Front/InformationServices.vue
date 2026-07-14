@@ -1,64 +1,66 @@
 <script setup>
+import { Link } from '@inertiajs/vue3'
+
 const apps = [
     {
         name: 'PEMERINTAHAN',
+        slug: 'pemerintahan',
         logo: '/services/govern.svg',
-        url: '/login'
     },
     {
         name: 'PENDIDIKAN',
+        slug: 'pendidikan',
         logo: '/services/education.svg',
-        url: '/login'
     },
     {
         name:'KESEHATAN',
+        slug: 'kesehatan',
         logo: '/services/health.svg',
-        url: '/login'
     },
     {
         name:'PERINDAGKOP-UKM',
+        slug: 'perindagkop-ukm',
         logo: '/services/culture.svg',
-        url: '/login'
     },
     {
         name:'HUKUM',
+        slug: 'hukum',
         logo: '/services/law.svg',
-        url: '/login'
     },
     {
         name: 'SOSIAL',
+        slug: 'sosial',
         logo: '/services/social.svg',
-        url: '/login'
     },
     {
         name: 'KEPENDUDUKAN',
+        slug: 'kependudukan',
         logo: '/services/society.svg',
-        url: '/login'
     },
     {
         name: 'KEPEGAWAIAN',
+        slug: 'kepegawaian',
         logo: '/services/work.svg',
-        url: '/login'
     },
     {
         name:'LINGKUNGAN',
+        slug: 'lingkungan',
         logo: '/services/environment.svg',
-        url: '/login'
     },
     {
         name:'GEOGRAFIS',
+        slug: 'geografis',
         logo: '/services/geo.svg',
-        url: '/login'
     },
     {
         name: 'PARIWISATA',
+        slug: 'pariwisata',
         logo: '/services/vacation.svg',
-        url: '/login'
     },
     {
         name: 'DATA SEKTORAL',
+        slug: 'data-sektoral',
         logo: '/services/voting.svg',
-        url: '/login'
     },
 ]
 </script>
@@ -99,13 +101,14 @@ const apps = [
         <div
             class="flex flex-wrap justify-center gap-5">
 
-            <a
+            <Link
                 v-for="(app, index) in apps"
-                :key="app.name"
-                :href="app.url"
+                :key="app.slug"
+                :href="route('services.show', { slug: app.slug })"
                 data-aos="fade-up"
-               
-                class="group w-[180px] flex-shrink-0">
+                class="group w-[180px] flex-shrink-0"
+                preserve-scroll
+            >
 
                 <div
                     class="overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-blue-400 dark:hover:border-blue-500">
@@ -151,7 +154,7 @@ const apps = [
 
                 </div>
 
-            </a>
+            </Link>
 
         </div>
 
