@@ -28,19 +28,47 @@ const regionalApps = [
     { name: 'SIMENTARI', id: 'simentari' },
 ]
 
+const publicServices = [
+    { name: 'Perizinan Terpadu', id: 'perizinan-terpadu' },
+    { name: 'Pelayanan Kesehatan', id: 'pelayanan-kesehatan' },
+    { name: 'Pengaduan PPID', id: 'pengaduan-ppid' },
+    { name: 'Administrasi Warga', id: 'administrasi-warga' },
+]
+
 const scrollToAndHighlight = (targetId) => {
-    const element = document.getElementById(targetId);
-    if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // If it's a layanan ID, toggle the correct tab first
+    if (targetId.startsWith('layanan-')) {
+        const publicIds = [
+            'layanan-perizinan-terpadu',
+            'layanan-pelayanan-kesehatan',
+            'layanan-pengaduan-ppid',
+            'layanan-administrasi-warga'
+        ]
+        const isPublic = publicIds.includes(targetId)
         
-        // Add active classes
-        element.classList.add('ring-4', 'ring-blue-500', 'scale-[1.03]', 'shadow-2xl', 'dark:ring-blue-400');
-        
-        // Remove after 2 seconds
-        setTimeout(() => {
-            element.classList.remove('ring-4', 'ring-blue-500', 'scale-[1.03]', 'shadow-2xl', 'dark:ring-blue-400');
-        }, 2000);
+        // Find buttons in the #layanan section
+        const buttons = document.querySelectorAll('#layanan button')
+        if (buttons && buttons.length >= 2) {
+            const targetBtn = isPublic ? buttons[1] : buttons[0]
+            targetBtn.click()
+        }
     }
+    
+    // Smooth scroll and highlight
+    setTimeout(() => {
+        const element = document.getElementById(targetId)
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+            
+            // Add highlight classes
+            element.classList.add('ring-4', 'ring-blue-500', 'scale-[1.03]', 'shadow-2xl', 'dark:ring-blue-400')
+            
+            // Remove after 2 seconds
+            setTimeout(() => {
+                element.classList.remove('ring-4', 'ring-blue-500', 'scale-[1.03]', 'shadow-2xl', 'dark:ring-blue-400')
+            }, 2000)
+        }
+    }, 150)
 }
 
 onMounted(() => {
@@ -133,7 +161,7 @@ const toggleDarkMode = () => {
                             </div>
                         </div>
 
-                        <!-- Layanan Publik (Empty state) -->
+                        <!-- Layanan Publik (Nested Dropdown) -->
                         <div class="relative group/nested2">
                             <button class="w-full text-left px-5 py-3 hover:bg-blue-50 dark:hover:bg-gray-700 flex justify-between items-center transition">
                                 <span>Layanan Publik</span>
@@ -142,11 +170,17 @@ const toggleDarkMode = () => {
                                 </svg>
                             </button>
                             
-                            <!-- Level 2 Flyout (Layanan Publik - Kosong) -->
-                            <div class="absolute left-full top-0 hidden group-hover/nested2:block w-60 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl p-4 text-center z-50 ml-1">
-                                <p class="text-sm text-gray-400 dark:text-gray-500 font-normal">
-                                    Belum ada layanan tersedia
-                                </p>
+                            <!-- Level 2 Flyout -->
+                            <div class="absolute left-full top-0 hidden group-hover/nested2:block w-64 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl py-2 z-50 ml-1 h-[240px] overflow-y-auto custom-scrollbar">
+                                <a 
+                                    v-for="app in publicServices" 
+                                    :key="app.name" 
+                                    href="javascript:void(0)"
+                                    @click="scrollToAndHighlight('layanan-' + app.id)"
+                                    class="block px-5 py-2.5 hover:bg-blue-50 dark:hover:bg-gray-700 text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
+                                >
+                                    {{ app.name }}
+                                </a>
                             </div>
                         </div>
                     </div>
