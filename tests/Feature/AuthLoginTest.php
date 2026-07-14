@@ -42,7 +42,7 @@ class AuthLoginTest extends TestCase
             'remember' => false,
         ]);
 
-        $response->assertRedirect('/admin');
+        $response->assertRedirect('/');
         $this->assertAuthenticated();
     }
 }

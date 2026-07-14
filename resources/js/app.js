@@ -44,3 +44,15 @@ createInertiaApp({
         color: '#2563EB', 
     },
 });
+
+// Auto-hide scrollbar when idle
+if (typeof window !== 'undefined') {
+    let scrollTimeout;
+    window.addEventListener('scroll', () => {
+        document.documentElement.classList.add('scrolling');
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+            document.documentElement.classList.remove('scrolling');
+        }, 1000);
+    }, { capture: true, passive: true });
+}

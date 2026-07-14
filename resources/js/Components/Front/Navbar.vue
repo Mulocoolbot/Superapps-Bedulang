@@ -34,19 +34,47 @@ const regionalApps = [
     { name: 'SIMENTARI', id: 'simentari' },
 ]
 
+const publicServices = [
+    { name: 'Perizinan Terpadu', id: 'perizinan-terpadu' },
+    { name: 'Pelayanan Kesehatan', id: 'pelayanan-kesehatan' },
+    { name: 'Pengaduan PPID', id: 'pengaduan-ppid' },
+    { name: 'Administrasi Warga', id: 'administrasi-warga' },
+]
+
 const scrollToAndHighlight = (targetId) => {
-    const element = document.getElementById(targetId);
-    if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // If it's a layanan ID, toggle the correct tab first
+    if (targetId.startsWith('layanan-')) {
+        const publicIds = [
+            'layanan-perizinan-terpadu',
+            'layanan-pelayanan-kesehatan',
+            'layanan-pengaduan-ppid',
+            'layanan-administrasi-warga'
+        ]
+        const isPublic = publicIds.includes(targetId)
         
-        // Add active classes
-        element.classList.add('ring-4', 'ring-blue-500', 'scale-[1.03]', 'shadow-2xl', 'dark:ring-blue-400');
-        
-        // Remove after 2 seconds
-        setTimeout(() => {
-            element.classList.remove('ring-4', 'ring-blue-500', 'scale-[1.03]', 'shadow-2xl', 'dark:ring-blue-400');
-        }, 2000);
+        // Find buttons in the #layanan section
+        const buttons = document.querySelectorAll('#layanan button')
+        if (buttons && buttons.length >= 2) {
+            const targetBtn = isPublic ? buttons[1] : buttons[0]
+            targetBtn.click()
+        }
     }
+    
+    // Smooth scroll and highlight
+    setTimeout(() => {
+        const element = document.getElementById(targetId)
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+            
+            // Add highlight classes
+            element.classList.add('ring-4', 'ring-blue-500', 'scale-[1.03]', 'shadow-2xl', 'dark:ring-blue-400')
+            
+            // Remove after 2 seconds
+            setTimeout(() => {
+                element.classList.remove('ring-4', 'ring-blue-500', 'scale-[1.03]', 'shadow-2xl', 'dark:ring-blue-400')
+            }, 2000)
+        }
+    }, 150)
 }
 
 onMounted(() => {
@@ -55,6 +83,15 @@ onMounted(() => {
     if (darkMode.value) {
         document.documentElement.classList.add('dark')
     }
+
+    // Close profile dropdown on click outside
+    window.addEventListener('click', (e) => {
+        const button = document.querySelector('[aria-label="Profile Menu"]')
+        const dropdown = button?.nextElementSibling
+        if (profileOpen.value && button && dropdown && !button.contains(e.target) && !dropdown.contains(e.target)) {
+            profileOpen.value = false
+        }
+    })
 })
 
 const toggleDarkMode = () => {
@@ -139,7 +176,7 @@ const toggleDarkMode = () => {
                             </div>
                         </div>
 
-                        <!-- Layanan Publik (Empty state) -->
+                        <!-- Layanan Publik (Nested Dropdown) -->
                         <div class="relative group/nested2">
                             <button class="w-full text-left px-5 py-3 hover:bg-blue-50 dark:hover:bg-gray-700 flex justify-between items-center transition">
                                 <span>Layanan Publik</span>
@@ -148,11 +185,17 @@ const toggleDarkMode = () => {
                                 </svg>
                             </button>
                             
-                            <!-- Level 2 Flyout (Layanan Publik - Kosong) -->
-                            <div class="absolute left-full top-0 hidden group-hover/nested2:block w-60 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl p-4 text-center z-50 ml-1">
-                                <p class="text-sm text-gray-400 dark:text-gray-500 font-normal">
-                                    Belum ada layanan tersedia
-                                </p>
+                            <!-- Level 2 Flyout -->
+                            <div class="absolute left-full top-0 hidden group-hover/nested2:block w-64 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl py-2 z-50 ml-1 h-[240px] overflow-y-auto custom-scrollbar">
+                                <a 
+                                    v-for="app in publicServices" 
+                                    :key="app.name" 
+                                    href="javascript:void(0)"
+                                    @click="scrollToAndHighlight('layanan-' + app.id)"
+                                    class="block px-5 py-2.5 hover:bg-blue-50 dark:hover:bg-gray-700 text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
+                                >
+                                    {{ app.name }}
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -185,21 +228,7 @@ const toggleDarkMode = () => {
                     Kontak
                 </a>
 
-                <template v-if="authUser && isAdmin">
-                    <Link
-                        :href="route('admin.cctv')"
-                        class="hover:text-blue-600 transition"
-                    >
-                        CCTV
-                    </Link>
 
-                    <Link
-                        :href="route('admin.users')"
-                        class="hover:text-blue-600 transition"
-                    >
-                        Kelola Admin
-                    </Link>
-                </template>
 
             </div>
 
@@ -229,22 +258,47 @@ const toggleDarkMode = () => {
                 <div v-if="authUser" class="relative">
                     <button
                         @click="profileOpen = !profileOpen"
-                        class="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-medium text-gray-700 shadow hover:bg-gray-50 transition"
+                        class="inline-flex items-center justify-center rounded-full bg-blue-100 hover:bg-blue-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 p-2.5 shadow transition-all duration-200"
+                        aria-label="Profile Menu"
                     >
-                        {{ authUser.name }}
-                        <span class="text-gray-400">▾</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                        </svg>
                     </button>
 
                     <div
                         v-show="profileOpen"
-                        class="absolute right-0 mt-2 w-56 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl dark:bg-gray-800 dark:border-gray-700"
+                        class="absolute right-0 mt-3 w-60 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl dark:bg-gray-800 dark:border-gray-700 z-50 transition-all"
                     >
+                        <div class="px-5 py-3.5 border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50">
+                            <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Signed in as</p>
+                            <p class="text-sm font-bold text-gray-800 dark:text-gray-200 truncate">{{ authUser.name }}</p>
+                        </div>
+
                         <Link
                             :href="route('profile.edit')"
-                            class="block w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700"
+                            class="block w-full px-5 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700 transition"
                         >
                             Profile
                         </Link>
+
+                        <template v-if="isAdmin">
+                            <div class="border-t border-gray-100 dark:border-gray-700"></div>
+                            
+                            <Link
+                                :href="route('admin.cctv')"
+                                class="block w-full px-5 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700 font-medium transition"
+                            >
+                                CCTV
+                            </Link>
+
+                            <Link
+                                :href="route('admin.users')"
+                                class="block w-full px-5 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700 font-medium transition"
+                            >
+                                Kelola Admin
+                            </Link>
+                        </template>
 
                         <div class="border-t border-gray-100 dark:border-gray-700"></div>
 
@@ -252,7 +306,7 @@ const toggleDarkMode = () => {
                             method="post"
                             :href="route('logout')"
                             as="button"
-                            class="block w-full px-4 py-3 text-left text-sm text-red-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                            class="block w-full px-5 py-3 text-left text-sm text-red-600 hover:bg-red-50/30 dark:hover:bg-red-950/20 font-semibold transition"
                         >
                             Logout
                         </Link>
