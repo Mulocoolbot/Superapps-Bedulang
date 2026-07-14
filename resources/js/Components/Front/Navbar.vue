@@ -83,6 +83,15 @@ onMounted(() => {
     if (darkMode.value) {
         document.documentElement.classList.add('dark')
     }
+
+    // Close profile dropdown on click outside
+    window.addEventListener('click', (e) => {
+        const button = document.querySelector('[aria-label="Profile Menu"]')
+        const dropdown = button?.nextElementSibling
+        if (profileOpen.value && button && dropdown && !button.contains(e.target) && !dropdown.contains(e.target)) {
+            profileOpen.value = false
+        }
+    })
 })
 
 const toggleDarkMode = () => {
@@ -219,21 +228,7 @@ const toggleDarkMode = () => {
                     Kontak
                 </a>
 
-                <template v-if="authUser && isAdmin">
-                    <Link
-                        :href="route('admin.cctv')"
-                        class="hover:text-blue-600 transition"
-                    >
-                        CCTV
-                    </Link>
 
-                    <Link
-                        :href="route('admin.users')"
-                        class="hover:text-blue-600 transition"
-                    >
-                        Kelola Admin
-                    </Link>
-                </template>
 
             </div>
 
@@ -263,22 +258,47 @@ const toggleDarkMode = () => {
                 <div v-if="authUser" class="relative">
                     <button
                         @click="profileOpen = !profileOpen"
-                        class="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-medium text-gray-700 shadow hover:bg-gray-50 transition"
+                        class="inline-flex items-center justify-center rounded-full bg-blue-100 hover:bg-blue-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-blue-600 dark:text-blue-400 p-2.5 shadow transition-all duration-200"
+                        aria-label="Profile Menu"
                     >
-                        {{ authUser.name }}
-                        <span class="text-gray-400">▾</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                        </svg>
                     </button>
 
                     <div
                         v-show="profileOpen"
-                        class="absolute right-0 mt-2 w-56 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl dark:bg-gray-800 dark:border-gray-700"
+                        class="absolute right-0 mt-3 w-60 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl dark:bg-gray-800 dark:border-gray-700 z-50 transition-all"
                     >
+                        <div class="px-5 py-3.5 border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/50">
+                            <p class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">Signed in as</p>
+                            <p class="text-sm font-bold text-gray-800 dark:text-gray-200 truncate">{{ authUser.name }}</p>
+                        </div>
+
                         <Link
                             :href="route('profile.edit')"
-                            class="block w-full px-4 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700"
+                            class="block w-full px-5 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700 transition"
                         >
                             Profile
                         </Link>
+
+                        <template v-if="isAdmin">
+                            <div class="border-t border-gray-100 dark:border-gray-700"></div>
+                            
+                            <Link
+                                :href="route('admin.cctv')"
+                                class="block w-full px-5 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700 font-medium transition"
+                            >
+                                CCTV
+                            </Link>
+
+                            <Link
+                                :href="route('admin.users')"
+                                class="block w-full px-5 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700 font-medium transition"
+                            >
+                                Kelola Admin
+                            </Link>
+                        </template>
 
                         <div class="border-t border-gray-100 dark:border-gray-700"></div>
 
@@ -286,7 +306,7 @@ const toggleDarkMode = () => {
                             method="post"
                             :href="route('logout')"
                             as="button"
-                            class="block w-full px-4 py-3 text-left text-sm text-red-600 hover:bg-gray-50 dark:hover:bg-gray-700"
+                            class="block w-full px-5 py-3 text-left text-sm text-red-600 hover:bg-red-50/30 dark:hover:bg-red-950/20 font-semibold transition"
                         >
                             Logout
                         </Link>
