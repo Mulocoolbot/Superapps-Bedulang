@@ -106,6 +106,14 @@ onUnmounted(() => {
     window.removeEventListener('scroll', handleScroll)
 })
 
+const selectAboutSlide = (index) => {
+    const tentangSection = document.getElementById('tentang')
+    if (tentangSection) {
+        tentangSection.scrollIntoView({ behavior: 'smooth' })
+    }
+    window.dispatchEvent(new CustomEvent('select-about-slide', { detail: { index } }))
+}
+
 const toggleDarkMode = () => {
     darkMode.value = !darkMode.value
 
@@ -125,7 +133,7 @@ const toggleDarkMode = () => {
             class="mx-auto transition-all duration-500 ease-in-out"
             :class="isScrolled 
                 ? 'max-w-5xl rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg shadow-lg border border-gray-200/50 dark:border-gray-700/50 px-6 py-2 mt-4 mx-4 md:mx-auto' 
-                : 'max-w-full rounded-none bg-white dark:bg-gray-800 border-b border-t-transparent border-x-transparent border-gray-200 dark:border-gray-700 shadow-sm px-6 py-3 mt-0 mx-0'"
+                : 'max-w-full rounded-none bg-white/20 dark:bg-gray-900/20 backdrop-blur-sm border-b border-t-transparent border-x-transparent border-white/20 dark:border-gray-800/20 shadow-sm px-6 py-3 mt-0 mx-0'"
         >
             <div 
                 class="container mx-auto flex justify-between items-center transition-all duration-500 ease-in-out"
@@ -160,9 +168,40 @@ const toggleDarkMode = () => {
                         Beranda
                     </a>
                     
-                    <a href="#tentang" class="hover:text-blue-600 transition">
-                        Tentang
-                    </a>
+                    <!-- TENTANG DROPDOWN -->
+                    <div class="relative group py-2">
+                        <a href="#beranda" class="hover:text-blue-600 transition flex items-center gap-1">
+                            Tentang
+                            <svg class="w-4 h-4 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                            </svg>
+                        </a>
+                        
+                        <!-- Dropdown Menu -->
+                        <div class="absolute left-0 top-full hidden group-hover:block w-48 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl py-2 z-50">
+                            <a 
+                                href="javascript:void(0)"
+                                @click="selectAboutSlide(1)"
+                                class="block px-5 py-2.5 hover:bg-blue-50 dark:hover:bg-gray-700 text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
+                            >
+                                Filosofi
+                            </a>
+                            <a 
+                                href="javascript:void(0)"
+                                @click="selectAboutSlide(2)"
+                                class="block px-5 py-2.5 hover:bg-blue-50 dark:hover:bg-gray-700 text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
+                            >
+                                Visi
+                            </a>
+                            <a 
+                                href="javascript:void(0)"
+                                @click="selectAboutSlide(3)"
+                                class="block px-5 py-2.5 hover:bg-blue-50 dark:hover:bg-gray-700 text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
+                            >
+                                Misi
+                            </a>
+                        </div>
+                    </div>
 
                 <!-- LAYANAN DROPDOWN -->
                 <div class="relative group py-2">
@@ -366,9 +405,30 @@ const toggleDarkMode = () => {
                 Beranda
             </a>
 
-            <a href="#tentang" class="block hover:text-blue-600">
-                Tentang
-            </a>
+            <div class="space-y-1">
+                <span class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mt-2 px-1">Tentang</span>
+                <a 
+                    href="javascript:void(0)" 
+                    @click="open = false; selectAboutSlide(1)" 
+                    class="block pl-3 py-1 hover:text-blue-600 transition text-sm text-gray-700 dark:text-gray-300"
+                >
+                    • Filosofi
+                </a>
+                <a 
+                    href="javascript:void(0)" 
+                    @click="open = false; selectAboutSlide(2)" 
+                    class="block pl-3 py-1 hover:text-blue-600 transition text-sm text-gray-700 dark:text-gray-300"
+                >
+                    • Visi
+                </a>
+                <a 
+                    href="javascript:void(0)" 
+                    @click="open = false; selectAboutSlide(3)" 
+                    class="block pl-3 py-1 hover:text-blue-600 transition text-sm text-gray-700 dark:text-gray-300"
+                >
+                    • Misi
+                </a>
+            </div>
 
             <a href="#layanan" class="block hover:text-blue-600">
                 Layanan
