@@ -108,7 +108,7 @@ onMounted(() => {
 
         <!-- Header -->
         <div class="max-w-2xl mx-auto text-center mb-8">
-            <h2 class="text-5xl md:text-6xl font-black text-gray-900 dark:text-white tracking-tight">
+            <h2 class="text-5xl font-bold leading-tight text-gray-900 dark:text-white tracking-tight">
                 Layanan <span class="text-blue-600 dark:text-blue-400">Bedulang</span>
             </h2>
         </div>
