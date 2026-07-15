@@ -108,7 +108,7 @@ onMounted(() => {
 
         <!-- Header -->
         <div class="max-w-2xl mx-auto text-center mb-8">
-            <h2 class="text-5xl md:text-6xl font-black text-gray-900 dark:text-white tracking-tight">
+            <h2 class="text-5xl font-bold leading-tight text-gray-900 dark:text-white tracking-tight">
                 Layanan <span class="text-blue-600 dark:text-blue-400">Bedulang</span>
             </h2>
         </div>
@@ -166,14 +166,14 @@ onMounted(() => {
                         </p>
                     </div>
 
-                    <div class="flex flex-wrap justify-center gap-5">
+                    <div class="grid grid-cols-2 gap-4 md:flex md:flex-wrap md:justify-center md:gap-5 max-h-[385px] md:max-h-none overflow-y-auto md:overflow-visible pr-1">
                         <!-- TAB: INFORMASI & DATA -->
                         <template v-if="activeTab === 'info'">
                             <Link
                                 v-for="(app, index) in apps"
                                 :key="app.name"
                                 :href="'/layanan/' + app.slug"
-                                class="group w-[180px] flex-shrink-0 transition-all duration-300"
+                                class="group w-full md:w-[180px] flex-shrink-0 transition-all duration-300"
                             >
                                 <div 
                                     :id="'layanan-' + app.name.toLowerCase().replace(/[^a-z0-9]/g, '-')"
@@ -202,7 +202,7 @@ onMounted(() => {
                                 v-for="(app, index) in publicServices"
                                 :key="app.name"
                                 :href="app.url"
-                                class="group w-[180px] flex-shrink-0 transition-all duration-300"
+                                class="group w-full md:w-[180px] flex-shrink-0 transition-all duration-300"
                             >
                                 <div 
                                     :id="'layanan-' + app.name.toLowerCase().replace(/[^a-z0-9]/g, '-')"

@@ -2,6 +2,7 @@
 import { Head } from '@inertiajs/vue3'
 
 import FrontLayout from '@/Layouts/FrontLayout.vue'
+import VideoHero from '@/Components/Front/VideoHero.vue'
 import Hero from '@/Components/Front/Hero.vue'
 import InformationServices from '@/Components/Front/InformationServices.vue'
 import AppLauncher from '@/Components/Front/AppLauncher.vue'
@@ -13,6 +14,8 @@ import Footer from '@/Components/Front/Footer.vue'
     <Head title="Beranda" />
 
     <FrontLayout>
+
+        <VideoHero />
 
         <Hero />
 
