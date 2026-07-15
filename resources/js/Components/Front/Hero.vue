@@ -12,7 +12,7 @@ const slides = [
     {
         titleHtml: 'Filosofi <span class="text-blue-600">BEDULANG</span>',
         description: 'Sebagaimana tradisi bedulang menyatukan masyarakat dalam satu hidangan, superapp bedulang menyatukan seluruh layanan digital pemerintah Kab. Bangka Tengah dalam satu platform digital',
-        image: '/services/ketawai.jpg'
+        image: '/services/filosofi_bedulang.jpg'
     },
     {
         titleHtml: '<span class="text-blue-600">Visi</span>',
@@ -22,7 +22,7 @@ const slides = [
     {
         titleHtml: '<span class="text-blue-600">Misi</span>',
         description: '', // Blank
-        image: '/services/ketawai.jpg'
+        image: '/services/misi_kaolin.jpg'
     }
 ]
 
@@ -187,11 +187,11 @@ onUnmounted(() => {
                     <!-- Right Image Column -->
                     <div class="relative h-full min-h-[500px] hidden lg:block">
                         <img
-                            src="/services/ketawai.jpg"
-                            alt="Pulau Ketawai"
-                            class="absolute inset-0 h-full w-full object-cover"
+                            src="/services/bupati_wakil.jpg"
+                            alt="Bupati & Wakil Bupati Bangka Tengah"
+                            class="absolute inset-0 h-full w-full object-cover object-[78%_center]"
                         />
-                        <div class="absolute inset-0 bg-gradient-to-r from-white via-white/40 to-transparent dark:from-gray-900 dark:via-gray-900/40"></div>
+                        <div class="absolute inset-0 bg-gradient-to-r from-white via-white/60 via-white/15 to-transparent dark:from-gray-900 dark:via-gray-900/60 dark:via-gray-900/15"></div>
                     </div>
                 </div>
             </div>
