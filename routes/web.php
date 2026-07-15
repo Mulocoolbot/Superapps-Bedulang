@@ -27,8 +27,12 @@ Route::get('/layanan/{slug}', [InformationServiceController::class, 'show'])
 
 Route::middleware(['auth', 'admin'])->group(function () {
 
-    Route::get('/admin/cctv', [CCTVController::class, 'index'])
+Route::middleware(['auth'])->prefix('admin')->group(function () {
+    // ... route lain
+
+    Route::get('/cctv', [CCTVController::class, 'index'])
         ->name('admin.cctv');
+});
 
     Route::middleware(['super_admin'])->group(function () {
         Route::get('/admin/users', [UserController::class, 'index'])

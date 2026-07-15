@@ -13,31 +13,31 @@ class CCTVController extends Controller
 
             [
                 'id' => 1,
-                'nama' => 'Bundaran Koba',
-                'lokasi' => 'Koba',
+                'name' => 'Bundaran Koba',
+                'location' => 'Koba',
                 'status' => 'Online',
-                'latitude' => -2.4876,
-                'longitude' => 106.1088,
+                'lat' => -2.4876,
+                'lng' => 106.1088,
                 'stream' => '',
             ],
 
             [
                 'id' => 2,
-                'nama' => 'Pasar Modern',
-                'lokasi' => 'Koba',
+                'name' => 'Pasar Modern',
+                'location' => 'Koba',
                 'status' => 'Offline',
-                'latitude' => -2.4895,
-                'longitude' => 106.1105,
+                'lat' => -2.4895,
+                'lng' => 106.1105,
                 'stream' => '',
             ],
 
             [
                 'id' => 3,
-                'nama' => 'Simpang Namang',
-                'lokasi' => 'Namang',
+                'name' => 'Simpang Namang',
+                'location' => 'Namang',
                 'status' => 'Online',
-                'latitude' => -2.3590,
-                'longitude' => 106.1805,
+                'lat' => -2.3590,
+                'lng' => 106.1805,
                 'stream' => '',
             ],
 
