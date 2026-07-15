@@ -1,10 +1,15 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { Link, usePage } from '@inertiajs/vue3'
 
 const open = ref(false)
 const profileOpen = ref(false)
 const darkMode = ref(false)
+const isScrolled = ref(false)
+
+const handleScroll = () => {
+    isScrolled.value = window.scrollY > 20
+}
 
 const page = usePage()
 const authUser = computed(() => page.props.auth?.user)
@@ -84,6 +89,9 @@ onMounted(() => {
         document.documentElement.classList.add('dark')
     }
 
+    // Attach scroll listener
+    window.addEventListener('scroll', handleScroll)
+
     // Close profile dropdown on click outside
     window.addEventListener('click', (e) => {
         const button = document.querySelector('[aria-label="Profile Menu"]')
@@ -92,6 +100,10 @@ onMounted(() => {
             profileOpen.value = false
         }
     })
+})
+
+onUnmounted(() => {
+    window.removeEventListener('scroll', handleScroll)
 })
 
 const toggleDarkMode = () => {
@@ -108,39 +120,49 @@ const toggleDarkMode = () => {
 </script>
 
 <template>
-    <nav
-        class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm sticky top-0 z-50">
-
-        <div class="container mx-auto px-6 h-20 flex justify-between items-center">
-
-            <!-- LOGO -->
-            <div class="flex items-center gap-3">
-
-            <img
-            src="/services/logobateng3.png"
-            alt="logo bangka tengah"
-            class="w-12 h-12 object-contain"
+    <nav class="sticky top-0 z-50 w-full bg-transparent">
+        <div
+            class="mx-auto transition-all duration-500 ease-in-out"
+            :class="isScrolled 
+                ? 'max-w-5xl rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg shadow-lg border border-gray-200/50 dark:border-gray-700/50 px-6 py-2 mt-4 mx-4 md:mx-auto' 
+                : 'max-w-full rounded-none bg-white dark:bg-gray-800 border-b border-t-transparent border-x-transparent border-gray-200 dark:border-gray-700 shadow-sm px-6 py-3 mt-0 mx-0'"
+        >
+            <div 
+                class="container mx-auto flex justify-between items-center transition-all duration-500 ease-in-out"
+                :class="isScrolled ? 'h-12' : 'h-14'"
             >
-
-                <div>
-                    <h1 class="text-xl font-bold text-gray-800 dark:text-white">
-                        BEDULANG
-                    </h1>
-
-                    <p class="text-sm text-gray-500 dark:text-gray-300">
-                        Bangka Tengah
-                    </p>
+                <!-- LOGO -->
+                <div class="flex items-center gap-3">
+                    <img
+                        src="/services/logobateng3.png"
+                        alt="logo bangka tengah"
+                        class="transition-all duration-500 ease-in-out object-contain"
+                        :class="isScrolled ? 'w-9 h-9' : 'w-11 h-11'"
+                    >
+                    <div 
+                        class="flex flex-col transition-all duration-500 ease-in-out overflow-hidden"
+                        :class="isScrolled ? 'max-w-0 opacity-0 pointer-events-none' : 'max-w-[200px] opacity-100'"
+                    >
+                        <h1 class="text-xl font-bold text-gray-800 dark:text-white whitespace-nowrap leading-none">
+                            BEDULANG
+                        </h1>
+                        <p class="text-[10px] text-gray-500 dark:text-gray-300 whitespace-nowrap leading-none mt-1">
+                            Beragam Layanan Dalam Satu Wadah
+                        </p>
+                    </div>
                 </div>
 
-            </div>
-
-            <!-- MENU -->
-            <div
-                class="hidden md:flex items-center space-x-8 text-gray-700 dark:text-gray-200 font-medium">
-
-                <a href="#beranda" class="hover:text-blue-600 transition">
-                    Beranda
-                </a>
+                <!-- MENU -->
+                <div
+                    class="hidden md:flex items-center space-x-8 text-gray-700 dark:text-gray-200 font-medium"
+                >
+                    <a href="#beranda" class="hover:text-blue-600 transition">
+                        Beranda
+                    </a>
+                    
+                    <a href="#tentang" class="hover:text-blue-600 transition">
+                        Tentang
+                    </a>
 
                 <!-- LAYANAN DROPDOWN -->
                 <div class="relative group py-2">
@@ -332,6 +354,7 @@ const toggleDarkMode = () => {
             </button>
 
         </div>
+        </div>
 
         <!-- MOBILE MENU -->
         <div
@@ -341,6 +364,10 @@ const toggleDarkMode = () => {
 
             <a href="#beranda" class="block hover:text-blue-600">
                 Beranda
+            </a>
+
+            <a href="#tentang" class="block hover:text-blue-600">
+                Tentang
             </a>
 
             <a href="#layanan" class="block hover:text-blue-600">
