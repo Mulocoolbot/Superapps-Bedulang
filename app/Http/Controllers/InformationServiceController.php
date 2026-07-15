@@ -44,9 +44,9 @@ class InformationServiceController extends Controller
                 'icon' => '📈',
                 'description' => 'Dashboard informasi Perindagkop dan UKM Kabupaten Bangka Tengah.',
                 'filters' => [
-                    ['label' => 'Harga Cabe', 'value' => 'harga-cabe'],
-                    ['label' => 'Harga Terigu', 'value' => 'harga-terigu'],
-                    ['label' => 'Gender', 'value' => 'gender'],
+                    ['label' => 'Telur', 'value' => 'harga-cabe'],
+                    ['label' => 'Terigu', 'value' => 'harga-terigu'],
+                    ['label' => 'Minyak Goreng', 'value' => 'gender'],
                 ],
             ],
             'hukum' => [
@@ -161,7 +161,10 @@ class InformationServiceController extends Controller
         ];
 
         return Inertia::render('Front/Services/Show', [
-            'service' => $services[$slug],
+            'service' => [
+                ...$services[$slug],
+                'slug' => $slug,
+            ],
             'dashboard' => $dashboard,
         ]);
     }
