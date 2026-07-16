@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue'
-import { Head, Link } from '@inertiajs/vue3'
+import { Head, Link, router } from '@inertiajs/vue3'
 import FrontLayout from '@/Layouts/FrontLayout.vue'
 
 const props = defineProps({
@@ -36,12 +36,17 @@ const serviceTypes = computed(() =>
 const selectedType = ref(serviceTypes.value[0]?.value ?? 'all')
 const selectedStartDate = ref('')
 const selectedEndDate = ref('')
+const selectedPasar = ref('')
 
 const title = computed(() => `Dashboard ${props.service.name}`)
 const subtitle = computed(() => props.service.description)
 const serviceIcon = computed(() => props.service.icon ?? '📊')
 
 const chartData = computed(() => {
+    if (isPerindagkop.value && (props.dashboard?.commodity_chart?.labels?.length || 0)) {
+        return props.dashboard.commodity_chart
+    }
+
     return dashboardData.value.chart ?? {
         labels: [],
         series: [],
@@ -75,13 +80,34 @@ const visibleChart = computed(() => {
 })
 
 const maxChartValue = computed(() => Math.max(...(visibleChart.value.series ?? [0]), 1))
+const isPerindagkop = computed(() => props.service?.slug === 'perindagkop-ukm')
+const priceTrends = computed(() => props.dashboard?.price_trends ?? [])
+const hasPriceTrends = computed(() => priceTrends.value.length > 0)
+
+const applyFilters = () => {
+    router.get(`/layanan/${props.service.slug}`, {
+        start_date: selectedStartDate.value || undefined,
+        end_date: selectedEndDate.value || undefined,
+        pasar_id: selectedPasar.value || undefined,
+    }, {
+        preserveState: true,
+        preserveScroll: true,
+    })
+}
+
+const resetFilters = () => {
+    selectedStartDate.value = ''
+    selectedEndDate.value = ''
+    selectedPasar.value = ''
+    applyFilters()
+}
 </script>
 
 <template>
     <FrontLayout>
         <Head :title="title" />
 
-        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
+        <div class="mx-auto max-w-7xl px-4 pt-24 pb-6 sm:px-6 lg:px-8 lg:pt-28 lg:pb-10">
 
             <!-- Back Button - subtle ghost style -->
             <Link
@@ -177,10 +203,29 @@ const maxChartValue = computed(() => Math.max(...(visibleChart.value.series ?? [
                                 />
                             </div>
 
-                            <!-- Reset Button -->
+                            <div v-if="isPerindagkop" class="relative">
+                                <select
+                                    v-model="selectedPasar"
+                                    class="h-9 appearance-none rounded-lg border border-slate-200 bg-slate-50 px-3 pr-8 text-sm text-slate-700 outline-none transition hover:border-slate-300 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100"
+                                >
+                                    <option value="">Semua Pasar</option>
+                                    <option v-for="pasar in 7" :key="pasar" :value="pasar">Pasar {{ pasar }}</option>
+                                </select>
+                                <svg class="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                </svg>
+                            </div>
+
                             <button
-                                v-if="selectedStartDate || selectedEndDate"
-                                @click="selectedStartDate = ''; selectedEndDate = ''"
+                                @click="applyFilters"
+                                class="inline-flex h-9 items-center rounded-lg bg-cyan-600 px-3 text-sm font-medium text-white transition hover:bg-cyan-700"
+                            >
+                                Terapkan
+                            </button>
+
+                            <button
+                                v-if="selectedStartDate || selectedEndDate || selectedPasar"
+                                @click="resetFilters"
                                 class="inline-flex h-9 items-center gap-1 rounded-lg px-3 text-sm text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
                             >
                                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -197,7 +242,7 @@ const maxChartValue = computed(() => Math.max(...(visibleChart.value.series ?? [
                             Belum ada data untuk ditampilkan
                         </div>
                         <div v-else class="overflow-x-auto pb-2">
-                            <div class="flex items-end gap-3 min-h-[220px]">
+                            <div class="flex items-end gap-3 min-h-[220px]" :class="isPerindagkop ? 'items-end' : 'items-end'">
                                 <template v-for="(value, index) in visibleChart.series" :key="index">
                                     <div class="flex-1 min-w-[32px]">
                                         <div class="relative h-48 overflow-hidden rounded-xl bg-cyan-100/60">
@@ -211,6 +256,48 @@ const maxChartValue = computed(() => Math.max(...(visibleChart.value.series ?? [
                                         </p>
                                     </div>
                                 </template>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-if="isPerindagkop" class="mt-6 space-y-4">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Perubahan Harga</p>
+                            <h3 class="mt-0.5 text-base font-semibold text-slate-900">Data harga komoditas terbaru</h3>
+                        </div>
+
+                        <div v-if="!hasPriceTrends" class="rounded-xl border border-dashed border-slate-200 bg-slate-50/60 p-6 text-center text-sm text-slate-500">
+                            Belum ada data harga yang tersedia untuk filter saat ini.
+                        </div>
+
+                        <div v-else class="overflow-hidden rounded-xl border border-slate-200/80 bg-white">
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-slate-200 text-sm">
+                                    <thead class="bg-slate-50">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left font-semibold text-slate-600">Komoditas</th>
+                                            <th class="px-4 py-3 text-left font-semibold text-slate-600">Harga Awal</th>
+                                            <th class="px-4 py-3 text-left font-semibold text-slate-600">Harga Akhir</th>
+                                            <th class="px-4 py-3 text-left font-semibold text-slate-600">Selisih</th>
+                                            <th class="px-4 py-3 text-left font-semibold text-slate-600">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-200 bg-white">
+                                        <tr v-for="item in priceTrends" :key="item.commodity" class="hover:bg-slate-50">
+                                            <td class="px-4 py-3 font-medium text-slate-800">{{ item.commodity }}</td>
+                                            <td class="px-4 py-3 text-slate-700">{{ item.price_i }}</td>
+                                            <td class="px-4 py-3 text-slate-700">{{ item.price_ii }}</td>
+                                            <td class="px-4 py-3" :class="item.selisih >= 0 ? 'text-emerald-600' : 'text-rose-600'">
+                                                {{ item.selisih > 0 ? '+' : '' }}{{ item.selisih }}
+                                            </td>
+                                            <td class="px-4 py-3">
+                                                <span class="rounded-full px-2.5 py-1 text-xs font-semibold" :class="item.status === 'naik' ? 'bg-emerald-100 text-emerald-700' : item.status === 'turun' ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-700'">
+                                                    {{ item.status }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>

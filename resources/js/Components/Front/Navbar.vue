@@ -6,6 +6,7 @@ const open = ref(false)
 const profileOpen = ref(false)
 const darkMode = ref(false)
 const isScrolled = ref(false)
+const animateNavbar = ref(false)
 
 const handleScroll = () => {
     isScrolled.value = window.scrollY > 20
@@ -14,6 +15,20 @@ const handleScroll = () => {
 const page = usePage()
 const authUser = computed(() => page.props.auth?.user)
 const isAdmin = computed(() => authUser.value && ['admin', 'super_admin'].includes(authUser.value.role))
+
+const isHomePage = () => {
+    return !!document.getElementById('beranda')
+}
+
+const navigateMenu = (e, targetHash) => {
+    if (isHomePage()) {
+        e.preventDefault()
+        const element = document.getElementById(targetHash.replace('#', ''))
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' })
+        }
+    }
+}
 
 const infoServices = [
     { name: 'Pemerintahan', id: 'pemerintahan' },
@@ -92,6 +107,11 @@ onMounted(() => {
     // Attach scroll listener
     window.addEventListener('scroll', handleScroll)
 
+    // Trigger navbar entrance transition
+    setTimeout(() => {
+        animateNavbar.value = true
+    }, 100)
+
     // Close profile dropdown on click outside
     window.addEventListener('click', (e) => {
         const button = document.querySelector('[aria-label="Profile Menu"]')
@@ -107,11 +127,15 @@ onUnmounted(() => {
 })
 
 const selectAboutSlide = (index) => {
-    const tentangSection = document.getElementById('tentang')
-    if (tentangSection) {
-        tentangSection.scrollIntoView({ behavior: 'smooth' })
+    if (isHomePage()) {
+        const tentangSection = document.getElementById('tentang')
+        if (tentangSection) {
+            tentangSection.scrollIntoView({ behavior: 'smooth' })
+        }
+        window.dispatchEvent(new CustomEvent('select-about-slide', { detail: { index } }))
+    } else {
+        window.location.href = `/?slide=${index}#tentang`
     }
-    window.dispatchEvent(new CustomEvent('select-about-slide', { detail: { index } }))
 }
 
 const toggleDarkMode = () => {
@@ -128,7 +152,10 @@ const toggleDarkMode = () => {
 </script>
 
 <template>
-    <nav class="fixed top-0 left-0 right-0 z-50 bg-transparent">
+    <nav 
+        class="fixed top-0 left-0 right-0 z-50 bg-transparent transition-all duration-[1200ms] transform ease-out"
+        :class="animateNavbar ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'"
+    >
         <div
             class="mx-auto transition-all duration-500 ease-in-out"
             :class="isScrolled 
@@ -164,13 +191,13 @@ const toggleDarkMode = () => {
                 <div
                     class="hidden md:flex items-center space-x-8 text-gray-700 dark:text-gray-200 font-medium"
                 >
-                    <a href="#beranda" class="hover:text-blue-600 transition">
+                    <a href="/#beranda" @click="navigateMenu($event, '#beranda')" class="hover:text-blue-600 transition">
                         Beranda
                     </a>
                     
                     <!-- TENTANG DROPDOWN -->
                     <div class="relative group py-2">
-                        <a href="#beranda" class="hover:text-blue-600 transition flex items-center gap-1">
+                        <a href="/#tentang" @click="navigateMenu($event, '#tentang')" class="hover:text-blue-600 transition flex items-center gap-1">
                             Tentang
                             <svg class="w-4 h-4 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -205,7 +232,7 @@ const toggleDarkMode = () => {
 
                 <!-- LAYANAN DROPDOWN -->
                 <div class="relative group py-2">
-                    <a href="#layanan" class="hover:text-blue-600 transition flex items-center gap-1">
+                    <a href="/#layanan" @click="navigateMenu($event, '#layanan')" class="hover:text-blue-600 transition flex items-center gap-1">
                         Layanan
                         <svg class="w-4 h-4 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -225,15 +252,14 @@ const toggleDarkMode = () => {
                             
                             <!-- Level 2 Flyout -->
                             <div class="absolute left-full top-0 hidden group-hover/nested:block w-64 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl py-2 z-50 ml-1 h-[320px] overflow-y-auto custom-scrollbar">
-                                <a 
+                                <Link 
                                     v-for="app in infoServices" 
                                     :key="app.name" 
-                                    href="javascript:void(0)"
-                                    @click="scrollToAndHighlight('layanan-' + app.id)"
+                                    :href="'/layanan/' + app.id"
                                     class="block px-5 py-2.5 hover:bg-blue-50 dark:hover:bg-gray-700 text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
                                 >
                                     {{ app.name }}
-                                </a>
+                                </Link>
                             </div>
                         </div>
 
@@ -248,15 +274,14 @@ const toggleDarkMode = () => {
                             
                             <!-- Level 2 Flyout -->
                             <div class="absolute left-full top-0 hidden group-hover/nested2:block w-64 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl py-2 z-50 ml-1 h-[240px] overflow-y-auto custom-scrollbar">
-                                <a 
+                                <Link 
                                     v-for="app in publicServices" 
                                     :key="app.name" 
-                                    href="javascript:void(0)"
-                                    @click="scrollToAndHighlight('layanan-' + app.id)"
+                                    :href="'/layanan/' + app.id"
                                     class="block px-5 py-2.5 hover:bg-blue-50 dark:hover:bg-gray-700 text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
                                 >
                                     {{ app.name }}
-                                </a>
+                                </Link>
                             </div>
                         </div>
                     </div>
@@ -264,7 +289,7 @@ const toggleDarkMode = () => {
 
                 <!-- APLIKASI DROPDOWN -->
                 <div class="relative group py-2">
-                    <a href="#aplikasi" class="hover:text-blue-600 transition flex items-center gap-1">
+                    <a href="/#aplikasi" @click="navigateMenu($event, '#aplikasi')" class="hover:text-blue-600 transition flex items-center gap-1">
                         Aplikasi
                         <svg class="w-4 h-4 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -273,19 +298,18 @@ const toggleDarkMode = () => {
                     
                     <!-- App Dropdown -->
                     <div class="absolute left-0 top-full hidden group-hover:block w-64 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl py-2 z-50">
-                        <a 
+                        <Link 
                             v-for="app in regionalApps" 
                             :key="app.name" 
-                            href="javascript:void(0)"
-                            @click="scrollToAndHighlight('aplikasi-' + app.id)"
+                            href="/login"
                             class="block px-5 py-3 hover:bg-blue-50 dark:hover:bg-gray-700 font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
                         >
                             {{ app.name }}
-                        </a>
+                        </Link>
                     </div>
                 </div>
 
-                <a href="#kontak" class="hover:text-blue-600 transition">
+                <a href="/#kontak" @click="navigateMenu($event, '#kontak')" class="hover:text-blue-600 transition">
                     Kontak
                 </a>
 
@@ -401,7 +425,7 @@ const toggleDarkMode = () => {
             class="md:hidden border-t border-gray-200 dark:border-gray-700 px-6 py-4 space-y-3 bg-white dark:bg-gray-800"
         >
 
-            <a href="#beranda" class="block hover:text-blue-600">
+            <a href="/#beranda" @click="open = false; navigateMenu($event, '#beranda')" class="block hover:text-blue-600">
                 Beranda
             </a>
 
@@ -430,15 +454,15 @@ const toggleDarkMode = () => {
                 </a>
             </div>
 
-            <a href="#layanan" class="block hover:text-blue-600">
+            <a href="/#layanan" @click="open = false; navigateMenu($event, '#layanan')" class="block hover:text-blue-600">
                 Layanan
             </a>
 
-            <a href="#aplikasi" class="block hover:text-blue-600">
+            <a href="/#aplikasi" @click="open = false; navigateMenu($event, '#aplikasi')" class="block hover:text-blue-600">
                 Aplikasi
             </a>
 
-            <a href="#kontak" class="block hover:text-blue-600">
+            <a href="/#kontak" @click="open = false; navigateMenu($event, '#kontak')" class="block hover:text-blue-600">
                 Kontak
             </a>
 
