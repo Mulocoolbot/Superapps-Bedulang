@@ -5,6 +5,9 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 const virtualOffset = ref(300) // Start at a mid-point multiple of 3
 const activeIndex = computed(() => ((virtualOffset.value % 3) + 3) % 3)
 
+const animateWelcome = ref(false)
+const animateTentang = ref(false)
+
 const progress = ref(0)
 const isWaiting = ref(true)
 
@@ -139,6 +142,38 @@ const handleAboutSlideSelect = (e) => {
 onMounted(() => {
     startTimers()
     window.addEventListener('select-about-slide', handleAboutSlideSelect)
+
+    // Scroll entrance animations via Intersection Observer
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                if (entry.target.id === 'beranda') {
+                    animateWelcome.value = true
+                } else if (entry.target.id === 'tentang') {
+                    animateTentang.value = true
+                }
+                observer.unobserve(entry.target)
+            }
+        })
+    }, { threshold: 0.08 })
+
+    const welcomeEl = document.getElementById('beranda')
+    const tentangEl = document.getElementById('tentang')
+    if (welcomeEl) observer.observe(welcomeEl)
+    if (tentangEl) observer.observe(tentangEl)
+
+    // Check URL parameters for sliding or highlighting when redirected from other pages
+    const urlParams = new URLSearchParams(window.location.search)
+    const slideParam = urlParams.get('slide')
+    if (slideParam) {
+        setTimeout(() => {
+            const idx = parseInt(slideParam) - 1
+            goToSlide(idx)
+            // Clear URL param to prevent slide popping on subsequent manual slides
+            const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '#tentang'
+            window.history.replaceState({ path: cleanUrl }, '', cleanUrl)
+        }, 500)
+    }
 })
 
 onUnmounted(() => {
@@ -153,7 +188,10 @@ onUnmounted(() => {
         id="beranda"
         class="bg-white dark:bg-gray-900 pt-6"
     >
-        <div class="container mx-auto px-6 py-12">
+        <div 
+            class="container mx-auto px-6 py-12 transition-all duration-[1200ms] transform ease-out"
+            :class="animateWelcome ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'"
+        >
             <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-50 via-white to-blue-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 shadow-xl border border-gray-100 dark:border-gray-800">
                 <div class="grid lg:grid-cols-2 items-center">
                     <!-- Left Column -->
@@ -187,11 +225,16 @@ onUnmounted(() => {
                     <!-- Right Image Column -->
                     <div class="relative h-full min-h-[500px] hidden lg:block">
                         <img
-                            src="/services/bupati_wakil.jpg"
+                            src="/services/bg2.png"
                             alt="Bupati & Wakil Bupati Bangka Tengah"
-                            class="absolute inset-0 h-full w-full object-cover object-[78%_center]"
+                            class="absolute inset-0 h-full w-full object-cover object-right"
                         />
-                        <div class="absolute inset-0 bg-gradient-to-r from-white via-white/60 via-white/15 to-transparent dark:from-gray-900 dark:via-gray-900/60 dark:via-gray-900/15"></div>
+                        <div class="absolute inset-0 bg-gradient-to-r from-white via-white/60 via-white/15 to-transparent dark:from-gray-900 dark:via-gray-900/60 dark:via-gray-900/15 z-10"></div>
+                        <img
+                            src="/services/bupat-wakil.png"
+                            alt="Bupati dan Wakil Bupati Bangka Tengah"
+                            class="absolute inset-0 h-full w-full object-cover object-right z-20"
+                        />
                     </div>
                 </div>
             </div>
@@ -203,7 +246,10 @@ onUnmounted(() => {
         id="tentang"
         class="bg-gray-50 dark:bg-gray-950 border-t border-b border-gray-100 dark:border-gray-900 py-16"
     >
-        <div class="container mx-auto px-6 relative">
+        <div 
+            class="container mx-auto px-6 relative transition-all duration-[1200ms] transform ease-out"
+            :class="animateTentang ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'"
+        >
             
             <!-- Section Header -->
             <div class="text-center mb-12">
