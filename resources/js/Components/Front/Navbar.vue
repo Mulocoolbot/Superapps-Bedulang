@@ -6,6 +6,7 @@ const open = ref(false)
 const profileOpen = ref(false)
 const darkMode = ref(false)
 const isScrolled = ref(false)
+const animateNavbar = ref(false)
 
 const handleScroll = () => {
     isScrolled.value = window.scrollY > 20
@@ -92,6 +93,11 @@ onMounted(() => {
     // Attach scroll listener
     window.addEventListener('scroll', handleScroll)
 
+    // Trigger navbar entrance transition
+    setTimeout(() => {
+        animateNavbar.value = true
+    }, 100)
+
     // Close profile dropdown on click outside
     window.addEventListener('click', (e) => {
         const button = document.querySelector('[aria-label="Profile Menu"]')
@@ -128,7 +134,10 @@ const toggleDarkMode = () => {
 </script>
 
 <template>
-    <nav class="fixed top-0 left-0 right-0 z-50 bg-transparent">
+    <nav 
+        class="fixed top-0 left-0 right-0 z-50 bg-transparent transition-all duration-[1200ms] transform ease-out"
+        :class="animateNavbar ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-8'"
+    >
         <div
             class="mx-auto transition-all duration-500 ease-in-out"
             :class="isScrolled 

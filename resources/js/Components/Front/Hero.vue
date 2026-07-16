@@ -5,6 +5,9 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 const virtualOffset = ref(300) // Start at a mid-point multiple of 3
 const activeIndex = computed(() => ((virtualOffset.value % 3) + 3) % 3)
 
+const animateWelcome = ref(false)
+const animateTentang = ref(false)
+
 const progress = ref(0)
 const isWaiting = ref(true)
 
@@ -139,6 +142,25 @@ const handleAboutSlideSelect = (e) => {
 onMounted(() => {
     startTimers()
     window.addEventListener('select-about-slide', handleAboutSlideSelect)
+
+    // Scroll entrance animations via Intersection Observer
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                if (entry.target.id === 'beranda') {
+                    animateWelcome.value = true
+                } else if (entry.target.id === 'tentang') {
+                    animateTentang.value = true
+                }
+                observer.unobserve(entry.target)
+            }
+        })
+    }, { threshold: 0.08 })
+
+    const welcomeEl = document.getElementById('beranda')
+    const tentangEl = document.getElementById('tentang')
+    if (welcomeEl) observer.observe(welcomeEl)
+    if (tentangEl) observer.observe(tentangEl)
 })
 
 onUnmounted(() => {
@@ -153,7 +175,10 @@ onUnmounted(() => {
         id="beranda"
         class="bg-white dark:bg-gray-900 pt-6"
     >
-        <div class="container mx-auto px-6 py-12">
+        <div 
+            class="container mx-auto px-6 py-12 transition-all duration-[1200ms] transform ease-out"
+            :class="animateWelcome ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'"
+        >
             <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-50 via-white to-blue-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 shadow-xl border border-gray-100 dark:border-gray-800">
                 <div class="grid lg:grid-cols-2 items-center">
                     <!-- Left Column -->
@@ -203,7 +228,10 @@ onUnmounted(() => {
         id="tentang"
         class="bg-gray-50 dark:bg-gray-950 border-t border-b border-gray-100 dark:border-gray-900 py-16"
     >
-        <div class="container mx-auto px-6 relative">
+        <div 
+            class="container mx-auto px-6 relative transition-all duration-[1200ms] transform ease-out"
+            :class="animateTentang ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'"
+        >
             
             <!-- Section Header -->
             <div class="text-center mb-12">

@@ -33,8 +33,7 @@ const scrollToContent = () => {
         </video>
 
         <!-- LIGHT OVERLAY IN LIGHT MODE, DARK OVERLAY IN DARK MODE -->
-        <div class="absolute inset-0 bg-white/50 dark:bg-black/40 z-0"></div>
-
+        <div class="absolute inset-0 bg-white/30 dark:bg-black/40 z-0"></div>
         <!-- CENTER CONTENT (LOGO ONLY) -->
         <div class="relative z-10 flex flex-col items-center text-center px-6">
             <!-- Logo with entrance transition - Full centerpiece size -->
