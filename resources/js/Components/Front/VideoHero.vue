@@ -27,13 +27,13 @@ const scrollToContent = () => {
             loop
             muted
             playsinline
-            class="absolute inset-0 w-full h-full object-cover z-0 opacity-70 dark:opacity-40"
+            class="absolute inset-0 w-full h-full object-cover z-0 opacity-70 dark:opacity-70"
         >
             <source src="/videos/hero-bg.mp4" type="video/mp4" />
         </video>
 
         <!-- LIGHT OVERLAY IN LIGHT MODE, DARK OVERLAY IN DARK MODE -->
-        <div class="absolute inset-0 bg-white/50 dark:bg-black/65 z-0"></div>
+        <div class="absolute inset-0 bg-white/50 dark:bg-black/40 z-0"></div>
 
         <!-- CENTER CONTENT (LOGO ONLY) -->
         <div class="relative z-10 flex flex-col items-center text-center px-6">
