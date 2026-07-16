@@ -33,7 +33,7 @@ const toggleDarkMode = () => {
         <Navbar />
 
         <!-- CONTENT -->
-        <main class="pt-20">
+        <main class="pt-28 relative z-0 min-h-[calc(100vh-5.5rem)]">
             <slot />
         </main>
 

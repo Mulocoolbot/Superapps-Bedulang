@@ -11,6 +11,14 @@ import {
     LPopup,
 } from '@vue-leaflet/vue-leaflet'
 
+const goBack = () => {
+    if (window.history.length > 1) {
+        window.history.back()
+    } else {
+        window.location.href = '/'
+    }
+}
+
 // Perbaiki ikon marker
 import L from 'leaflet'
 delete L.Icon.Default.prototype._getIconUrl
@@ -32,9 +40,17 @@ const center = [-2.45, 106.15]
     <FrontLayout>
         <Head title="CCTV" />
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+            <button
+                type="button"
+                @click="goBack"
+                class="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-100 z-10"
+            >
+                ← Kembali
+            </button>
+
             <!-- Header -->
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+            <div class="pt-14 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
                 <div>
                     <h1 class="text-2xl font-bold text-slate-900">CCTV</h1>
                     <p class="text-sm text-slate-500 mt-1">Pantau lokasi CCTV dan kelola data kamera.</p>
