@@ -139,6 +139,17 @@ const handleAboutSlideSelect = (e) => {
     }
 }
 
+const goToServicesSection = (tab) => {
+    const servicesSection = document.getElementById('layanan')
+    if (servicesSection) {
+        servicesSection.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+
+    window.dispatchEvent(new CustomEvent('select-services-tab', {
+        detail: { tab }
+    }))
+}
+
 onMounted(() => {
     startTimers()
     window.addEventListener('select-about-slide', handleAboutSlideSelect)
@@ -207,15 +218,17 @@ onUnmounted(() => {
 
                         <div class="mt-10 flex gap-4">
                             <a
-                                href="#"
+                                href="#layanan"
+                                @click.prevent="goToServicesSection('publik')"
                                 class="px-7 py-3 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition shadow-lg"
                             >
                                 Masuk Layanan
                             </a>
 
                             <a
-                                href="#"
-                                class="px-7 py-3 rounded-xl border border-gray-300 bg-white hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 transition"
+                                href="#layanan"
+                                @click.prevent="goToServicesSection('info')"
+                                class="px-7 py-3 rounded-xl border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 dark:hover:bg-gray-700 transition"
                             >
                                 Lihat Informasi
                             </a>

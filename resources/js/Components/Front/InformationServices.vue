@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { Link } from '@inertiajs/vue3'
 
 const activeTab = ref('info')
@@ -93,8 +93,19 @@ const setTab = (tab) => {
     activeTab.value = tab
 }
 
+const handleServicesTabSelect = (event) => {
+    const requestedTab = event.detail?.tab
+    if (requestedTab === 'info' || requestedTab === 'publik') {
+        activeTab.value = requestedTab
+    }
+}
+
 onMounted(() => {
-    // No scroll check needed
+    window.addEventListener('select-services-tab', handleServicesTabSelect)
+})
+
+onUnmounted(() => {
+    window.removeEventListener('select-services-tab', handleServicesTabSelect)
 })
 </script>
 
