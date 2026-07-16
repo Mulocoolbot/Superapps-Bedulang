@@ -161,6 +161,19 @@ onMounted(() => {
     const tentangEl = document.getElementById('tentang')
     if (welcomeEl) observer.observe(welcomeEl)
     if (tentangEl) observer.observe(tentangEl)
+
+    // Check URL parameters for sliding or highlighting when redirected from other pages
+    const urlParams = new URLSearchParams(window.location.search)
+    const slideParam = urlParams.get('slide')
+    if (slideParam) {
+        setTimeout(() => {
+            const idx = parseInt(slideParam) - 1
+            goToSlide(idx)
+            // Clear URL param to prevent slide popping on subsequent manual slides
+            const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '#tentang'
+            window.history.replaceState({ path: cleanUrl }, '', cleanUrl)
+        }, 500)
+    }
 })
 
 onUnmounted(() => {

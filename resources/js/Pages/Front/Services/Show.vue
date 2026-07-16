@@ -81,7 +81,7 @@ const maxChartValue = computed(() => Math.max(...(visibleChart.value.series ?? [
     <FrontLayout>
         <Head :title="title" />
 
-        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
+        <div class="mx-auto max-w-7xl px-4 pt-24 pb-6 sm:px-6 lg:px-8 lg:pt-28 lg:pb-10">
 
             <!-- Back Button - subtle ghost style -->
             <Link
