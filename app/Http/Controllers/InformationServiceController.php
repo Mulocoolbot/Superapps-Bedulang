@@ -253,24 +253,24 @@ class InformationServiceController extends Controller
             $endDate = request('end_date');
             $pasarId = request('pasar_id');
 
+            // Always fetch the absolute latest date available from the API
+            $latestDate = '2026-07-17'; // default fallback
+            try {
+                $latestResponse = Http::withOptions(['verify' => false])
+                    ->timeout(10)
+                    ->get('https://disperindagkop-ukm.bangkatengahkab.go.id/api/updateharga');
+                if ($latestResponse->successful()) {
+                    $latestData = $latestResponse->json();
+                    if (!empty($latestData['data']) && is_array($latestData['data'])) {
+                        $latestDate = $latestData['data'][0]['tanggal'];
+                    }
+                }
+            } catch (\Throwable) {
+                // Keep default
+            }
+
             // Find D_latest and D_prev if not specified
             if (!$startDate || !$endDate) {
-                // Fetch first page to find latest date
-                try {
-                    $latestResponse = Http::withOptions(['verify' => false])
-                        ->timeout(10)
-                        ->get('https://disperindagkop-ukm.bangkatengahkab.go.id/api/updateharga');
-                    $latestDate = '2026-07-17'; // default fallback
-                    if ($latestResponse->successful()) {
-                        $latestData = $latestResponse->json();
-                        if (!empty($latestData['data']) && is_array($latestData['data'])) {
-                            $latestDate = $latestData['data'][0]['tanggal'];
-                        }
-                    }
-                } catch (\Throwable) {
-                    $latestDate = '2026-07-17';
-                }
-                
                 $endDate = $latestDate;
                 $startDate = date('Y-m-d', strtotime($latestDate . ' -1 day'));
             }
@@ -278,7 +278,7 @@ class InformationServiceController extends Controller
             // Generate cache key based on query params
             $cacheKey = "perindagkop_api_{$startDate}_{$endDate}_" . ($pasarId ?? 'all');
             
-            $dashboard = Cache::remember($cacheKey, 600, function () use ($startDate, $endDate, $pasarId) {
+            $dashboard = Cache::remember($cacheKey, 600, function () use ($startDate, $endDate, $pasarId, $latestDate) {
                 $rawItems = [];
 
                 if ($pasarId) {
@@ -297,8 +297,9 @@ class InformationServiceController extends Controller
                         $rawItems = [];
                     }
                 } else {
-                    // Fetch for all 7 markets
-                    for ($p = 1; $p <= 7; $p++) {
+                    // Fetch for active markets only
+                    $activePasars = [1, 2, 3, 4, 5, 6, 7];
+                    foreach ($activePasars as $p) {
                         try {
                             $response = Http::withOptions(['verify' => false])
                                 ->timeout(15)
@@ -352,29 +353,43 @@ class InformationServiceController extends Controller
 
                 $priceTrends = [];
                 $chartLabels = [];
-                $chartSeries = [];
+                $chartSeriesI = [];
+                $chartSeriesII = [];
                 
                 foreach ($commodityGroups as $name => $g) {
                     $avgPriceI = $g['price_i_count'] > 0 ? round($g['price_i_sum'] / $g['price_i_count']) : 0;
                     $avgPriceII = $g['price_ii_count'] > 0 ? round($g['price_ii_sum'] / $g['price_ii_count']) : 0;
                     
-                    $diff = $avgPriceII - $avgPriceI;
-                    
-                    $status = 'tetap';
-                    if ($diff > 0) {
-                        $status = 'naik';
-                    } elseif ($diff < 0) {
-                        $status = 'turun';
-                    }
+                    // If either price on the start date or end date is missing (0 or below)
+                    if ($avgPriceI <= 0 || $avgPriceII <= 0) {
+                        $priceTrends[] = [
+                            'commodity' => $name,
+                            'price_i' => $avgPriceI > 0 ? 'Rp ' . number_format($avgPriceI, 0, ',', '.') : 'data tidak tersedia',
+                            'price_ii' => $avgPriceII > 0 ? 'Rp ' . number_format($avgPriceII, 0, ',', '.') : 'data tidak tersedia',
+                            'selisih' => '-',
+                            'status' => '-',
+                            'raw_price_i' => $avgPriceI,
+                            'raw_price_ii' => $avgPriceII,
+                        ];
+                    } else {
+                        $diff = $avgPriceII - $avgPriceI;
+                        $status = 'tetap';
+                        if ($diff > 0) {
+                            $status = 'naik';
+                        } elseif ($diff < 0) {
+                            $status = 'turun';
+                        }
 
-                    $priceTrends[] = [
-                        'commodity' => $name,
-                        'price_i' => 'Rp ' . number_format($avgPriceI, 0, ',', '.'),
-                        'price_ii' => 'Rp ' . number_format($avgPriceII, 0, ',', '.'),
-                        'selisih' => $diff,
-                        'status' => $status,
-                        'raw_price_ii' => $avgPriceII,
-                    ];
+                        $priceTrends[] = [
+                            'commodity' => $name,
+                            'price_i' => 'Rp ' . number_format($avgPriceI, 0, ',', '.'),
+                            'price_ii' => 'Rp ' . number_format($avgPriceII, 0, ',', '.'),
+                            'selisih' => $diff,
+                            'status' => $status,
+                            'raw_price_i' => $avgPriceI,
+                            'raw_price_ii' => $avgPriceII,
+                        ];
+                    }
                 }
 
                 // Sort commodities by price_ii descending to show top/main items
@@ -382,11 +397,11 @@ class InformationServiceController extends Controller
                     return $b['raw_price_ii'] <=> $a['raw_price_ii'];
                 });
 
-                // Top 7 for chart
-                $topChartItems = array_slice($priceTrends, 0, 7);
-                foreach ($topChartItems as $c) {
+                // Populate ALL commodities in the chart
+                foreach ($priceTrends as $c) {
                     $chartLabels[] = $c['commodity'];
-                    $chartSeries[] = $c['raw_price_ii'];
+                    $chartSeriesI[] = $c['raw_price_i'];
+                    $chartSeriesII[] = $c['raw_price_ii'];
                 }
 
                 $latestFormattedDate = date('d F Y', strtotime($endDate));
@@ -402,6 +417,10 @@ class InformationServiceController extends Controller
                     'metadata' => [
                         'total' => count($priceTrends),
                         'updated_at' => $latestFormattedDate,
+                        'latest_date' => $latestDate,
+                        'start_date' => $startDate,
+                        'end_date' => $endDate,
+                        'pasar_id' => $pasarId,
                         'source' => 'Disperindagkop-UKM Bangka Tengah',
                     ],
                     'info' => [
@@ -410,7 +429,8 @@ class InformationServiceController extends Controller
                     ],
                     'commodity_chart' => [
                         'labels' => $chartLabels,
-                        'series' => $chartSeries,
+                        'series_i' => $chartSeriesI,
+                        'series_ii' => $chartSeriesII,
                     ],
                     'price_trends' => $priceTrends,
                 ];

@@ -34,17 +34,17 @@ const serviceTypes = computed(() =>
 )
 
 const selectedType = ref(serviceTypes.value[0]?.value ?? 'all')
-const selectedStartDate = ref('')
-const selectedEndDate = ref('')
-const selectedPasar = ref('')
+const selectedStartDate = ref(props.dashboard?.metadata?.start_date ?? '')
+const selectedEndDate = ref(props.dashboard?.metadata?.end_date ?? '')
+const selectedPasar = ref(props.dashboard?.metadata?.pasar_id ?? '')
 
 const pasarMap = {
     1: 'Pasar Modern Koba',
-    2: 'Pasar Simpang Katis',
-    3: 'Pasar Namang',
+    2: 'Pasar Namang',
+    3: 'Pasar Air Mesu',
     4: 'Pasar Sungaiselan',
     5: 'Pasar Kayu Besi',
-    6: 'Pasar Pangkalan Baru',
+    6: 'Pasar Simpang Katis',
     7: 'Pasar Lubuk Besar'
 }
 
@@ -63,7 +63,7 @@ const chartData = computed(() => {
     }
 })
 
-const hasChart = computed(() => (chartData.value.series ?? []).length > 0)
+const hasChart = computed(() => (chartData.value.labels ?? []).length > 0)
 
 const visibleChart = computed(() => {
     const labels = chartData.value.labels ?? []
@@ -94,7 +94,35 @@ const isPerindagkop = computed(() => props.service?.slug === 'perindagkop-ukm')
 const priceTrends = computed(() => props.dashboard?.price_trends ?? [])
 const hasPriceTrends = computed(() => priceTrends.value.length > 0)
 
+const latestDateLimit = computed(() => props.dashboard?.metadata?.latest_date ?? '')
+
+const maxPriceValue = computed(() => {
+    const seriesI = chartData.value.series_i ?? []
+    const seriesII = chartData.value.series_ii ?? []
+    return Math.max(...seriesI, ...seriesII, 1)
+})
+
+const getBarWidth = (val) => {
+    return Math.max(0, Math.min(100, Math.ceil((val / maxPriceValue.value) * 100)))
+}
+
+const formatNumber = (val) => {
+    return new Intl.NumberFormat('id-ID').format(val || 0)
+}
+
 const applyFilters = () => {
+    if (selectedStartDate.value && selectedEndDate.value) {
+        if (selectedStartDate.value > selectedEndDate.value) {
+            alert('Tanggal Pembanding (Awal) tidak boleh lebih dari Tanggal Acuan (Akhir)!')
+            return
+        }
+    }
+    if (selectedEndDate.value && latestDateLimit.value) {
+        if (selectedEndDate.value > latestDateLimit.value) {
+            alert(`Tanggal Acuan (Akhir) tidak boleh melebihi Tanggal Terkini (${latestDateLimit.value})!`)
+            return
+        }
+    }
     router.get(`/layanan/${props.service.slug}`, {
         start_date: selectedStartDate.value || undefined,
         end_date: selectedEndDate.value || undefined,
@@ -154,23 +182,11 @@ const resetFilters = () => {
                         </p>
                     </div>
 
-                    <!-- Total Data Card -->
-                    <div class="flex min-w-[180px] items-center gap-4 rounded-xl border border-slate-200/80 bg-slate-50/80 px-5 py-4 backdrop-blur-sm">
-                        <div class="flex h-11 w-11 items-center justify-center rounded-full bg-cyan-100 text-cyan-700">
-                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-xs font-medium uppercase tracking-[0.12em] text-slate-400">Total Data</p>
-                            <p class="text-2xl font-bold text-slate-900">{{ metadata.total ?? '—' }}</p>
-                        </div>
-                    </div>
                 </div>
             </div>
 
             <!-- Main Grid -->
-            <div class="mt-6 grid gap-6 lg:grid-cols-[2fr_1fr]">
+            <div class="mt-6 grid gap-6" :class="isPerindagkop ? 'lg:grid-cols-[2fr_1fr]' : 'grid-cols-1'">
 
                 <!-- Chart Section -->
                 <section class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
@@ -182,7 +198,7 @@ const resetFilters = () => {
                         </div>
                         <div class="flex flex-wrap items-center gap-2">
                             <!-- Type Filter -->
-                            <div class="relative">
+                            <div class="relative" v-if="!isPerindagkop">
                                 <select
                                     v-model="selectedType"
                                     class="h-9 appearance-none rounded-lg border border-slate-200 bg-slate-50 px-3 pr-8 text-sm text-slate-700 outline-none transition hover:border-slate-300 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100"
@@ -201,6 +217,8 @@ const resetFilters = () => {
                                 <input
                                     type="date"
                                     v-model="selectedStartDate"
+                                    :max="selectedEndDate || latestDateLimit"
+                                    @change="applyFilters"
                                     class="h-7 w-32 rounded-md border-0 bg-transparent px-2 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-cyan-100"
                                     placeholder="Mulai"
                                 />
@@ -208,6 +226,9 @@ const resetFilters = () => {
                                 <input
                                     type="date"
                                     v-model="selectedEndDate"
+                                    :min="selectedStartDate"
+                                    :max="latestDateLimit"
+                                    @change="applyFilters"
                                     class="h-7 w-32 rounded-md border-0 bg-transparent px-2 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-cyan-100"
                                     placeholder="Selesai"
                                 />
@@ -216,6 +237,7 @@ const resetFilters = () => {
                             <div v-if="isPerindagkop" class="relative">
                                 <select
                                     v-model="selectedPasar"
+                                    @change="applyFilters"
                                     class="h-9 appearance-none rounded-lg border border-slate-200 bg-slate-50 px-3 pr-8 text-sm text-slate-700 outline-none transition hover:border-slate-300 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100"
                                 >
                                     <option value="">Semua Pasar</option>
@@ -225,24 +247,6 @@ const resetFilters = () => {
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                                 </svg>
                             </div>
-
-                            <button
-                                @click="applyFilters"
-                                class="inline-flex h-9 items-center rounded-lg bg-cyan-600 px-3 text-sm font-medium text-white transition hover:bg-cyan-700"
-                            >
-                                Terapkan
-                            </button>
-
-                            <button
-                                v-if="selectedStartDate || selectedEndDate || selectedPasar"
-                                @click="resetFilters"
-                                class="inline-flex h-9 items-center gap-1 rounded-lg px-3 text-sm text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
-                            >
-                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                                Reset
-                            </button>
                         </div>
                     </div>
 
@@ -251,131 +255,120 @@ const resetFilters = () => {
                         <div v-if="!hasChart" class="flex min-h-[220px] items-center justify-center rounded-xl border border-dashed border-slate-200 bg-white text-center text-sm text-slate-400">
                             Belum ada data untuk ditampilkan
                         </div>
-                        <div v-else class="overflow-x-auto pb-2">
-                            <div class="flex items-end gap-3 min-h-[220px]" :class="isPerindagkop ? 'items-end' : 'items-end'">
-                                <template v-for="(value, index) in visibleChart.series" :key="index">
-                                    <div class="flex-1 min-w-[32px]">
-                                        <div class="relative h-48 overflow-hidden rounded-xl bg-cyan-100/60">
-                                            <div
-                                                class="absolute bottom-0 left-0 right-0 rounded-t-xl bg-gradient-to-t from-cyan-600 to-cyan-500 transition-all duration-700 ease-out"
-                                                :style="{ height: `${Math.ceil((value / maxChartValue) * 100)}%` }"
-                                            />
-                                        </div>
-                                        <p class="mt-2 text-center text-xs font-medium text-slate-400 truncate">
-                                            {{ visibleChart.labels[index] ?? '—' }}
-                                        </p>
+                        <template v-else>
+                            <!-- Horizontal Dual Bar Chart for Perindagkop -->
+                            <div v-if="isPerindagkop" class="space-y-6 max-h-[750px] overflow-y-auto pr-2 custom-scrollbar">
+                                <div class="flex items-center justify-between text-xs font-semibold text-slate-500 border-b border-slate-200/60 pb-2">
+                                    <span>Komoditas</span>
+                                    <div class="flex gap-4">
+                                        <span class="flex items-center gap-1.5">
+                                            <span class="h-2.5 w-2.5 rounded bg-slate-300 dark:bg-slate-600"></span>
+                                            Awal (Price I)
+                                        </span>
+                                        <span class="flex items-center gap-1.5">
+                                            <span class="h-2.5 w-2.5 rounded bg-blue-600 dark:bg-blue-500"></span>
+                                            Akhir (Price II)
+                                        </span>
                                     </div>
-                                </template>
+                                </div>
+                                <div class="space-y-4">
+                                    <div v-for="(label, idx) in chartData.labels" :key="idx" class="space-y-1.5">
+                                        <div class="flex justify-between text-sm font-medium text-slate-700">
+                                            <span class="font-semibold text-slate-800 dark:text-slate-200">{{ label }}</span>
+                                            <div class="flex gap-3 text-xs text-slate-500">
+                                                <span>Rp {{ formatNumber(chartData.series_i[idx]) }}</span>
+                                                <span>→</span>
+                                                <span class="font-semibold text-blue-600 dark:text-blue-400">Rp {{ formatNumber(chartData.series_ii[idx]) }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="space-y-1">
+                                            <!-- Bar Price I -->
+                                            <div class="w-full bg-slate-200/40 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
+                                                <div 
+                                                    class="bg-slate-300 dark:bg-slate-600 h-full rounded-full transition-all duration-700 ease-out" 
+                                                    :style="{ width: `${getBarWidth(chartData.series_i[idx])}%` }"
+                                                ></div>
+                                            </div>
+                                            <!-- Bar Price II -->
+                                            <div class="w-full bg-slate-200/40 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
+                                                <div 
+                                                    class="bg-blue-600 dark:bg-blue-500 h-full rounded-full transition-all duration-700 ease-out" 
+                                                    :style="{ width: `${getBarWidth(chartData.series_ii[idx])}%` }"
+                                                ></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+
+                            <!-- Standard Vertical Chart for non-Perindagkop -->
+                            <div v-else class="overflow-x-auto pb-2">
+                                <div class="flex items-end gap-3 min-h-[220px]">
+                                    <template v-for="(value, index) in visibleChart.series" :key="index">
+                                        <div class="flex-1 min-w-[32px]">
+                                            <div class="relative h-48 overflow-hidden rounded-xl bg-cyan-100/60">
+                                                <div
+                                                    class="absolute bottom-0 left-0 right-0 rounded-t-xl bg-gradient-to-t from-cyan-600 to-cyan-500 transition-all duration-700 ease-out"
+                                                    :style="{ height: `${Math.ceil((value / maxChartValue) * 100)}%` }"
+                                                />
+                                            </div>
+                                            <p class="mt-2 text-center text-xs font-medium text-slate-400 truncate">
+                                                {{ visibleChart.labels[index] ?? '—' }}
+                                            </p>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </template>
                     </div>
 
-                    <div v-if="isPerindagkop" class="mt-6 space-y-4">
+                </section>
+
+                <!-- Sidebar -->
+                <aside v-if="isPerindagkop" class="space-y-5">
+
+                    <!-- Perubahan Harga Card in Sidebar -->
+                    <div v-if="isPerindagkop" class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 space-y-4">
                         <div>
                             <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Perubahan Harga</p>
                             <h3 class="mt-0.5 text-base font-semibold text-slate-900">Data harga komoditas terbaru</h3>
                         </div>
-
+                        
                         <div v-if="!hasPriceTrends" class="rounded-xl border border-dashed border-slate-200 bg-slate-50/60 p-6 text-center text-sm text-slate-500">
                             Belum ada data harga yang tersedia untuk filter saat ini.
                         </div>
-
                         <div v-else class="overflow-hidden rounded-xl border border-slate-200/80 bg-white">
-                            <div class="overflow-x-auto">
+                            <div class="overflow-x-auto max-h-[500px] overflow-y-auto custom-scrollbar">
                                 <table class="min-w-full divide-y divide-slate-200 text-sm">
-                                    <thead class="bg-slate-50">
+                                    <thead class="bg-slate-50 sticky top-0 z-10">
                                         <tr>
-                                            <th class="px-4 py-3 text-left font-semibold text-slate-600">Komoditas</th>
-                                            <th class="px-4 py-3 text-left font-semibold text-slate-600">Harga Awal</th>
-                                            <th class="px-4 py-3 text-left font-semibold text-slate-600">Harga Akhir</th>
-                                            <th class="px-4 py-3 text-left font-semibold text-slate-600">Selisih</th>
-                                            <th class="px-4 py-3 text-left font-semibold text-slate-600">Status</th>
+                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50">Komoditas</th>
+                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50">Awal</th>
+                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50">Akhir</th>
+                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50">Selisih</th>
+                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50">Status</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-slate-200 bg-white">
                                         <tr v-for="item in priceTrends" :key="item.commodity" class="hover:bg-slate-50">
-                                            <td class="px-4 py-3 font-medium text-slate-800">{{ item.commodity }}</td>
-                                            <td class="px-4 py-3 text-slate-700">{{ item.price_i }}</td>
-                                            <td class="px-4 py-3 text-slate-700">{{ item.price_ii }}</td>
-                                            <td class="px-4 py-3" :class="item.selisih >= 0 ? 'text-emerald-600' : 'text-rose-600'">
-                                                {{ item.selisih > 0 ? '+' : '' }}{{ item.selisih }}
+                                            <td class="px-3 py-2 font-medium text-slate-800">{{ item.commodity }}</td>
+                                            <td class="px-3 py-2 text-slate-700">{{ item.price_i }}</td>
+                                            <td class="px-3 py-2 text-slate-700">{{ item.price_ii }}</td>
+                                            <td class="px-3 py-2 whitespace-nowrap" :class="item.selisih === '-' ? 'text-slate-500' : (item.selisih > 0 ? 'text-emerald-600' : (item.selisih < 0 ? 'text-rose-600' : 'text-slate-500'))">
+                                                {{ item.selisih === '-' ? '-' : (item.selisih > 0 ? '+' : '') + formatNumber(item.selisih) }}
                                             </td>
-                                            <td class="px-4 py-3">
-                                                <span class="rounded-full px-2.5 py-1 text-xs font-semibold" :class="item.status === 'naik' ? 'bg-emerald-100 text-emerald-700' : item.status === 'turun' ? 'bg-rose-100 text-rose-700' : 'bg-slate-100 text-slate-700'">
-                                                    {{ item.status }}
+                                            <td class="px-3 py-2">
+                                                <span class="font-bold text-lg">
+                                                    <span v-if="item.status === 'naik'" class="text-emerald-600" title="Naik">▲</span>
+                                                    <span v-else-if="item.status === 'turun'" class="text-rose-600" title="Turun">▼</span>
+                                                    <span v-else-if="item.status === 'tetap'" class="text-slate-400" title="Tetap">=</span>
+                                                    <span v-else class="text-slate-400" title="Tidak Tersedia">-</span>
                                                 </span>
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Chart Info Footer -->
-                    <div class="mt-4 grid gap-3 sm:grid-cols-2">
-                        <div class="rounded-xl border border-slate-200/80 bg-slate-50/60 px-4 py-3">
-                            <p class="text-xs font-medium uppercase tracking-[0.12em] text-slate-400">Jenis Terpilih</p>
-                            <p class="mt-1 text-sm font-semibold text-slate-800">
-                                {{ serviceTypes.find((f) => f.value === selectedType)?.label ?? 'Semua Jenis' }}
-                            </p>
-                        </div>
-                        <div class="rounded-xl border border-slate-200/80 bg-slate-50/60 px-4 py-3">
-                            <p class="text-xs font-medium uppercase tracking-[0.12em] text-slate-400">Periode</p>
-                            <p class="mt-1 text-sm font-semibold text-slate-800">
-                                {{ selectedStartDate && selectedEndDate ? `${selectedStartDate} – ${selectedEndDate}` : 'Semua waktu' }}
-                            </p>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Sidebar -->
-                <aside class="space-y-5">
-                    <!-- Highlight Card -->
-                    <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
-                        <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Sorotan</p>
-                        <div class="mt-4 space-y-4">
-                            <div class="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4">
-                                <p class="text-xs font-medium text-slate-400">Info Ringkas</p>
-                                <p class="mt-1.5 text-base font-semibold text-slate-900">
-                                    {{ dashboardInfo.title ?? 'Belum ada informasi' }}
-                                </p>
-                                <p class="mt-1.5 text-sm leading-6 text-slate-500">
-                                    {{ dashboardInfo.message ?? 'Informasi akan muncul ketika data tersedia.' }}
-                                </p>
-                            </div>
-                            <div class="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4">
-                                <p class="text-xs font-medium text-slate-400">Sumber & Pembaruan</p>
-                                <div class="mt-2 space-y-0.5 text-sm">
-                                    <p class="text-slate-700">
-                                        <span class="font-medium text-slate-500">Sumber</span>
-                                        <span class="ml-2 text-slate-800">{{ metadata.source ?? 'Belum tersedia' }}</span>
-                                    </p>
-                                    <p class="text-slate-700">
-                                        <span class="font-medium text-slate-500">Terakhir</span>
-                                        <span class="ml-2 text-slate-800">{{ metadata.updated_at ?? 'Belum tersedia' }}</span>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Quick Action -->
-                    <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
-                        <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Aksi Cepat</p>
-                        <div class="mt-4 flex flex-wrap gap-2">
-                            <button class="inline-flex items-center gap-2 rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-cyan-700 focus:ring-2 focus:ring-cyan-300">
-                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                </svg>
-                                Ekspor
-                            </button>
-                            <button class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus:ring-2 focus:ring-cyan-200">
-                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                </svg>
-                                Segarkan
-                            </button>
                         </div>
                     </div>
                 </aside>
