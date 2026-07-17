@@ -273,6 +273,20 @@ class InformationServiceController extends Controller
             if (!$startDate || !$endDate) {
                 $endDate = $latestDate;
                 $startDate = date('Y-m-d', strtotime($latestDate . ' -1 day'));
+            } else {
+                // Ensure startDate is at least -1 day from latestDate
+                $maxStartDate = date('Y-m-d', strtotime($latestDate . ' -1 day'));
+                if ($startDate > $maxStartDate) {
+                    $startDate = $maxStartDate;
+                }
+                // Ensure endDate is strictly greater than startDate, up to latestDate
+                if ($endDate <= $startDate) {
+                    $endDate = date('Y-m-d', strtotime($startDate . ' +1 day'));
+                    if ($endDate > $latestDate) {
+                        $endDate = $latestDate;
+                        $startDate = date('Y-m-d', strtotime($latestDate . ' -1 day'));
+                    }
+                }
             }
 
             // Generate cache key based on query params

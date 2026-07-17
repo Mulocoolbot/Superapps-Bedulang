@@ -63,7 +63,45 @@ const chartData = computed(() => {
     }
 })
 
+const basicChartData = computed(() => {
+    const labels = []
+    const series_i = []
+    const series_ii = []
+    const sourceLabels = chartData.value.labels ?? []
+    const sourceSeriesI = chartData.value.series_i ?? []
+    const sourceSeriesII = chartData.value.series_ii ?? []
+
+    sourceLabels.forEach((label, idx) => {
+        if (label !== 'Gas LPG 3 Kg') {
+            labels.push(label)
+            series_i.push(sourceSeriesI[idx] ?? 0)
+            series_ii.push(sourceSeriesII[idx] ?? 0)
+        }
+    })
+    return { labels, series_i, series_ii }
+})
+
+const importantChartData = computed(() => {
+    const labels = []
+    const series_i = []
+    const series_ii = []
+    const sourceLabels = chartData.value.labels ?? []
+    const sourceSeriesI = chartData.value.series_i ?? []
+    const sourceSeriesII = chartData.value.series_ii ?? []
+
+    sourceLabels.forEach((label, idx) => {
+        if (label === 'Gas LPG 3 Kg') {
+            labels.push(label)
+            series_i.push(sourceSeriesI[idx] ?? 0)
+            series_ii.push(sourceSeriesII[idx] ?? 0)
+        }
+    })
+    return { labels, series_i, series_ii }
+})
+
 const hasChart = computed(() => (chartData.value.labels ?? []).length > 0)
+const hasBasicChart = computed(() => basicChartData.value.labels.length > 0)
+const hasImportantChart = computed(() => importantChartData.value.labels.length > 0)
 
 const visibleChart = computed(() => {
     const labels = chartData.value.labels ?? []
@@ -94,7 +132,45 @@ const isPerindagkop = computed(() => props.service?.slug === 'perindagkop-ukm')
 const priceTrends = computed(() => props.dashboard?.price_trends ?? [])
 const hasPriceTrends = computed(() => priceTrends.value.length > 0)
 
+const basicPriceTrends = computed(() => {
+    return priceTrends.value.filter(item => item.commodity !== 'Gas LPG 3 Kg')
+})
+
+const importantPriceTrends = computed(() => {
+    return priceTrends.value.filter(item => item.commodity === 'Gas LPG 3 Kg')
+})
+
+const hasBasicPriceTrends = computed(() => basicPriceTrends.value.length > 0)
+const hasImportantPriceTrends = computed(() => importantPriceTrends.value.length > 0)
+
 const latestDateLimit = computed(() => props.dashboard?.metadata?.latest_date ?? '')
+
+const maxStartDateLimit = computed(() => {
+    const dates = []
+    if (latestDateLimit.value) {
+        const latest = new Date(latestDateLimit.value)
+        latest.setDate(latest.getDate() - 1)
+        dates.push(latest.toISOString().split('T')[0])
+    }
+    if (selectedEndDate.value) {
+        const end = new Date(selectedEndDate.value)
+        end.setDate(end.getDate() - 1)
+        dates.push(end.toISOString().split('T')[0])
+    }
+    if (dates.length > 0) {
+        return dates.reduce((a, b) => a < b ? a : b)
+    }
+    return ''
+})
+
+const minEndDateLimit = computed(() => {
+    if (selectedStartDate.value) {
+        const start = new Date(selectedStartDate.value)
+        start.setDate(start.getDate() + 1)
+        return start.toISOString().split('T')[0]
+    }
+    return ''
+})
 
 const maxPriceValue = computed(() => {
     const seriesI = chartData.value.series_i ?? []
@@ -111,15 +187,25 @@ const formatNumber = (val) => {
 }
 
 const applyFilters = () => {
+    if (selectedStartDate.value && latestDateLimit.value) {
+        if (selectedStartDate.value >= latestDateLimit.value) {
+            alert(`Tanggal Pembanding (Mulai) harus minimal H-1 sebelum Tanggal Terkini (${latestDateLimit.value})!`)
+            return
+        }
+    }
     if (selectedStartDate.value && selectedEndDate.value) {
         if (selectedStartDate.value > selectedEndDate.value) {
-            alert('Tanggal Pembanding (Awal) tidak boleh lebih dari Tanggal Acuan (Akhir)!')
+            alert('Tanggal Pembanding (Mulai) tidak boleh lebih dari Tanggal Acuan (Selesai)!')
+            return
+        }
+        if (selectedStartDate.value === selectedEndDate.value) {
+            alert('Tanggal Acuan (Selesai) tidak boleh sama dengan Tanggal Pembanding (Mulai)!')
             return
         }
     }
     if (selectedEndDate.value && latestDateLimit.value) {
         if (selectedEndDate.value > latestDateLimit.value) {
-            alert(`Tanggal Acuan (Akhir) tidak boleh melebihi Tanggal Terkini (${latestDateLimit.value})!`)
+            alert(`Tanggal Acuan (Selesai) tidak boleh melebihi Tanggal Terkini (${latestDateLimit.value})!`)
             return
         }
     }
@@ -194,7 +280,9 @@ const resetFilters = () => {
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                         <div>
                             <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Visualisasi</p>
-                            <h2 class="mt-0.5 text-lg font-semibold text-slate-900">Tren Data</h2>
+                            <h2 class="mt-0.5 text-lg font-semibold text-slate-900">
+                                {{ isPerindagkop ? 'Grafik Perbandingan Harga' : 'Tren Data' }}
+                            </h2>
                         </div>
                         <div class="flex flex-wrap items-center gap-2">
                             <!-- Type Filter -->
@@ -217,7 +305,7 @@ const resetFilters = () => {
                                 <input
                                     type="date"
                                     v-model="selectedStartDate"
-                                    :max="selectedEndDate || latestDateLimit"
+                                    :max="maxStartDateLimit"
                                     @change="applyFilters"
                                     class="h-7 w-32 rounded-md border-0 bg-transparent px-2 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-cyan-100"
                                     placeholder="Mulai"
@@ -226,7 +314,7 @@ const resetFilters = () => {
                                 <input
                                     type="date"
                                     v-model="selectedEndDate"
-                                    :min="selectedStartDate"
+                                    :min="minEndDateLimit"
                                     :max="latestDateLimit"
                                     @change="applyFilters"
                                     class="h-7 w-32 rounded-md border-0 bg-transparent px-2 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-cyan-100"
@@ -250,73 +338,139 @@ const resetFilters = () => {
                         </div>
                     </div>
 
-                    <!-- Chart -->
-                    <div class="mt-5 rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 transition">
-                        <div v-if="!hasChart" class="flex min-h-[220px] items-center justify-center rounded-xl border border-dashed border-slate-200 bg-white text-center text-sm text-slate-400">
-                            Belum ada data untuk ditampilkan
-                        </div>
-                        <template v-else>
-                            <!-- Horizontal Dual Bar Chart for Perindagkop -->
-                            <div v-if="isPerindagkop" class="space-y-6 max-h-[750px] overflow-y-auto pr-2 custom-scrollbar">
-                                <div class="flex items-center justify-between text-xs font-semibold text-slate-500 border-b border-slate-200/60 pb-2">
-                                    <span>Komoditas</span>
-                                    <div class="flex gap-4">
-                                        <span class="flex items-center gap-1.5">
-                                            <span class="h-2.5 w-2.5 rounded bg-slate-300 dark:bg-slate-600"></span>
-                                            Awal (Price I)
-                                        </span>
-                                        <span class="flex items-center gap-1.5">
-                                            <span class="h-2.5 w-2.5 rounded bg-blue-600 dark:bg-blue-500"></span>
-                                            Akhir (Price II)
-                                        </span>
-                                    </div>
+                    <!-- Charts Wrapper -->
+                    <div class="mt-5 space-y-6">
+                        <!-- Perindagkop Split Charts -->
+                        <template v-if="isPerindagkop">
+                            <!-- 1. Kebutuhan Pokok Chart -->
+                            <div class="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 transition shadow-sm">
+                                <h4 class="text-xs font-bold uppercase tracking-[0.16em] text-slate-700 mb-3 border-b border-slate-200/60 pb-2">
+                                    GRAFIK PERBANDINGAN HARGA BARANG KEBUTUHAN POKOK {{ selectedPasar ? 'DI ' + pasarMap[selectedPasar].toUpperCase() : 'DI SEMUA PASAR' }}
+                                </h4>
+                                <div v-if="!hasBasicChart" class="flex min-h-[180px] items-center justify-center rounded-xl border border-dashed border-slate-200 bg-white text-center text-sm text-slate-400">
+                                    Belum ada data barang kebutuhan pokok untuk ditampilkan
                                 </div>
-                                <div class="space-y-4">
-                                    <div v-for="(label, idx) in chartData.labels" :key="idx" class="space-y-1.5">
-                                        <div class="flex justify-between text-sm font-medium text-slate-700">
-                                            <span class="font-semibold text-slate-800 dark:text-slate-200">{{ label }}</span>
-                                            <div class="flex gap-3 text-xs text-slate-500">
-                                                <span>Rp {{ formatNumber(chartData.series_i[idx]) }}</span>
-                                                <span>→</span>
-                                                <span class="font-semibold text-blue-600 dark:text-blue-400">Rp {{ formatNumber(chartData.series_ii[idx]) }}</span>
-                                            </div>
+                                <div v-else class="space-y-6 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                                    <div class="flex items-center justify-between text-xs font-semibold text-slate-500 border-b border-slate-200/40 pb-2">
+                                        <span>Komoditas Pokok</span>
+                                        <div class="flex gap-4">
+                                            <span class="flex items-center gap-1.5">
+                                                <span class="h-2.5 w-2.5 rounded bg-slate-300 dark:bg-slate-600"></span>
+                                                Awal (Price I)
+                                            </span>
+                                            <span class="flex items-center gap-1.5">
+                                                <span class="h-2.5 w-2.5 rounded bg-blue-600 dark:bg-blue-500"></span>
+                                                Akhir (Price II)
+                                            </span>
                                         </div>
-                                        <div class="space-y-1">
-                                            <!-- Bar Price I -->
-                                            <div class="w-full bg-slate-200/40 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
-                                                <div 
-                                                    class="bg-slate-300 dark:bg-slate-600 h-full rounded-full transition-all duration-700 ease-out" 
-                                                    :style="{ width: `${getBarWidth(chartData.series_i[idx])}%` }"
-                                                ></div>
+                                    </div>
+                                    <div class="space-y-4">
+                                        <div v-for="(label, idx) in basicChartData.labels" :key="idx" class="space-y-1.5">
+                                            <div class="flex justify-between text-sm font-medium text-slate-700">
+                                                <span class="font-semibold text-slate-800 dark:text-slate-200">{{ label }}</span>
+                                                <div class="flex gap-3 text-xs text-slate-500">
+                                                    <span>Rp {{ formatNumber(basicChartData.series_i[idx]) }}</span>
+                                                    <span>→</span>
+                                                    <span class="font-semibold text-blue-600 dark:text-blue-400">Rp {{ formatNumber(basicChartData.series_ii[idx]) }}</span>
+                                                </div>
                                             </div>
-                                            <!-- Bar Price II -->
-                                            <div class="w-full bg-slate-200/40 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
-                                                <div 
-                                                    class="bg-blue-600 dark:bg-blue-500 h-full rounded-full transition-all duration-700 ease-out" 
-                                                    :style="{ width: `${getBarWidth(chartData.series_ii[idx])}%` }"
-                                                ></div>
+                                            <div class="space-y-1">
+                                                <!-- Bar Price I -->
+                                                <div class="w-full bg-slate-200/40 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
+                                                    <div 
+                                                        class="bg-slate-300 dark:bg-slate-600 h-full rounded-full transition-all duration-700 ease-out" 
+                                                        :style="{ width: `${getBarWidth(basicChartData.series_i[idx])}%` }"
+                                                    ></div>
+                                                </div>
+                                                <!-- Bar Price II -->
+                                                <div class="w-full bg-slate-200/40 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
+                                                    <div 
+                                                        class="bg-blue-600 dark:bg-blue-500 h-full rounded-full transition-all duration-700 ease-out" 
+                                                        :style="{ width: `${getBarWidth(basicChartData.series_ii[idx])}%` }"
+                                                    ></div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Standard Vertical Chart for non-Perindagkop -->
-                            <div v-else class="overflow-x-auto pb-2">
-                                <div class="flex items-end gap-3 min-h-[220px]">
-                                    <template v-for="(value, index) in visibleChart.series" :key="index">
-                                        <div class="flex-1 min-w-[32px]">
-                                            <div class="relative h-48 overflow-hidden rounded-xl bg-cyan-100/60">
-                                                <div
-                                                    class="absolute bottom-0 left-0 right-0 rounded-t-xl bg-gradient-to-t from-cyan-600 to-cyan-500 transition-all duration-700 ease-out"
-                                                    :style="{ height: `${Math.ceil((value / maxChartValue) * 100)}%` }"
-                                                />
-                                            </div>
-                                            <p class="mt-2 text-center text-xs font-medium text-slate-400 truncate">
-                                                {{ visibleChart.labels[index] ?? '—' }}
-                                            </p>
+                            <!-- 2. Barang Penting Chart -->
+                            <div class="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 transition shadow-sm">
+                                <h4 class="text-xs font-bold uppercase tracking-[0.16em] text-slate-700 mb-3 border-b border-slate-200/60 pb-2">
+                                    GRAFIK PERBANDINGAN HARGA BARANG PENTING {{ selectedPasar ? 'DI ' + pasarMap[selectedPasar].toUpperCase() : 'DI SEMUA PASAR' }}
+                                </h4>
+                                <div v-if="!hasImportantChart" class="flex min-h-[120px] items-center justify-center rounded-xl border border-dashed border-slate-200 bg-white text-center text-sm text-slate-400">
+                                    Belum ada data barang penting untuk ditampilkan
+                                </div>
+                                <div v-else class="space-y-6">
+                                    <div class="flex items-center justify-between text-xs font-semibold text-slate-500 border-b border-slate-200/40 pb-2">
+                                        <span>Barang Penting</span>
+                                        <div class="flex gap-4">
+                                            <span class="flex items-center gap-1.5">
+                                                <span class="h-2.5 w-2.5 rounded bg-slate-300 dark:bg-slate-600"></span>
+                                                Awal (Price I)
+                                            </span>
+                                            <span class="flex items-center gap-1.5">
+                                                <span class="h-2.5 w-2.5 rounded bg-blue-600 dark:bg-blue-500"></span>
+                                                Akhir (Price II)
+                                            </span>
                                         </div>
-                                    </template>
+                                    </div>
+                                    <div class="space-y-4">
+                                        <div v-for="(label, idx) in importantChartData.labels" :key="idx" class="space-y-1.5">
+                                            <div class="flex justify-between text-sm font-medium text-slate-700">
+                                                <span class="font-semibold text-slate-800 dark:text-slate-200">{{ label }}</span>
+                                                <div class="flex gap-3 text-xs text-slate-500">
+                                                    <span>Rp {{ formatNumber(importantChartData.series_i[idx]) }}</span>
+                                                    <span>→</span>
+                                                    <span class="font-semibold text-blue-600 dark:text-blue-400">Rp {{ formatNumber(importantChartData.series_ii[idx]) }}</span>
+                                                </div>
+                                            </div>
+                                            <div class="space-y-1">
+                                                <!-- Bar Price I -->
+                                                <div class="w-full bg-slate-200/40 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
+                                                    <div 
+                                                        class="bg-slate-300 dark:bg-slate-600 h-full rounded-full transition-all duration-700 ease-out" 
+                                                        :style="{ width: `${getBarWidth(importantChartData.series_i[idx])}%` }"
+                                                    ></div>
+                                                </div>
+                                                <!-- Bar Price II -->
+                                                <div class="w-full bg-slate-200/40 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
+                                                    <div 
+                                                        class="bg-blue-600 dark:bg-blue-500 h-full rounded-full transition-all duration-700 ease-out" 
+                                                        :style="{ width: `${getBarWidth(importantChartData.series_ii[idx])}%` }"
+                                                    ></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- Standard Vertical Chart for non-Perindagkop -->
+                        <template v-else>
+                            <div class="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 transition shadow-sm">
+                                <div v-if="!hasChart" class="flex min-h-[220px] items-center justify-center rounded-xl border border-dashed border-slate-200 bg-white text-center text-sm text-slate-400">
+                                    Belum ada data untuk ditampilkan
+                                </div>
+                                <div v-else class="overflow-x-auto pb-2">
+                                    <div class="flex items-end gap-3 min-h-[220px]">
+                                        <template v-for="(value, index) in visibleChart.series" :key="index">
+                                            <div class="flex-1 min-w-[32px]">
+                                                <div class="relative h-48 overflow-hidden rounded-xl bg-cyan-100/60">
+                                                    <div
+                                                        class="absolute bottom-0 left-0 right-0 rounded-t-xl bg-gradient-to-t from-cyan-600 to-cyan-500 transition-all duration-700 ease-out"
+                                                        :style="{ height: `${Math.ceil((value / maxChartValue) * 100)}%` }"
+                                                    />
+                                                </div>
+                                                <p class="mt-2 text-center text-xs font-medium text-slate-400 truncate">
+                                                    {{ visibleChart.labels[index] ?? '—' }}
+                                                </p>
+                                            </div>
+                                        </template>
+                                    </div>
                                 </div>
                             </div>
                         </template>
@@ -325,20 +479,20 @@ const resetFilters = () => {
                 </section>
 
                 <!-- Sidebar -->
-                <aside v-if="isPerindagkop" class="space-y-5">
+                <aside v-if="isPerindagkop" class="space-y-6">
 
-                    <!-- Perubahan Harga Card in Sidebar -->
-                    <div v-if="isPerindagkop" class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 space-y-4">
+                    <!-- 1. Perbandingan Harga Barang Kebutuhan Pokok -->
+                    <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 space-y-4">
                         <div>
-                            <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Perubahan Harga</p>
-                            <h3 class="mt-0.5 text-base font-semibold text-slate-900">Data harga komoditas terbaru</h3>
+                            <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Tabel Data</p>
+                            <h3 class="mt-0.5 text-base font-semibold text-slate-900">Perbandingan Harga Barang Kebutuhan Pokok</h3>
                         </div>
                         
-                        <div v-if="!hasPriceTrends" class="rounded-xl border border-dashed border-slate-200 bg-slate-50/60 p-6 text-center text-sm text-slate-500">
-                            Belum ada data harga yang tersedia untuk filter saat ini.
+                        <div v-if="!hasBasicPriceTrends" class="rounded-xl border border-dashed border-slate-200 bg-slate-50/60 p-6 text-center text-sm text-slate-500">
+                            Belum ada data kebutuhan pokok untuk filter saat ini.
                         </div>
                         <div v-else class="overflow-hidden rounded-xl border border-slate-200/80 bg-white">
-                            <div class="overflow-x-auto max-h-[500px] overflow-y-auto custom-scrollbar">
+                            <div class="overflow-x-auto max-h-[400px] overflow-y-auto custom-scrollbar">
                                 <table class="min-w-full divide-y divide-slate-200 text-sm">
                                     <thead class="bg-slate-50 sticky top-0 z-10">
                                         <tr>
@@ -350,7 +504,7 @@ const resetFilters = () => {
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-slate-200 bg-white">
-                                        <tr v-for="item in priceTrends" :key="item.commodity" class="hover:bg-slate-50">
+                                        <tr v-for="item in basicPriceTrends" :key="item.commodity" class="hover:bg-slate-50">
                                             <td class="px-3 py-2 font-medium text-slate-800">{{ item.commodity }}</td>
                                             <td class="px-3 py-2 text-slate-700">{{ item.price_i }}</td>
                                             <td class="px-3 py-2 text-slate-700">{{ item.price_ii }}</td>
@@ -371,6 +525,52 @@ const resetFilters = () => {
                             </div>
                         </div>
                     </div>
+
+                    <!-- 2. Perbandingan Harga Barang Penting -->
+                    <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 space-y-4">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Tabel Data</p>
+                            <h3 class="mt-0.5 text-base font-semibold text-slate-900">Perbandingan Harga Barang Penting</h3>
+                        </div>
+                        
+                        <div v-if="!hasImportantPriceTrends" class="rounded-xl border border-dashed border-slate-200 bg-slate-50/60 p-6 text-center text-sm text-slate-500">
+                            Belum ada data barang penting untuk filter saat ini.
+                        </div>
+                        <div v-else class="overflow-hidden rounded-xl border border-slate-200/80 bg-white">
+                            <div class="overflow-x-auto max-h-[200px] overflow-y-auto custom-scrollbar">
+                                <table class="min-w-full divide-y divide-slate-200 text-sm">
+                                    <thead class="bg-slate-50 sticky top-0 z-10">
+                                        <tr>
+                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50">Komoditas</th>
+                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50">Awal</th>
+                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50">Akhir</th>
+                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50">Selisih</th>
+                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-200 bg-white">
+                                        <tr v-for="item in importantPriceTrends" :key="item.commodity" class="hover:bg-slate-50">
+                                            <td class="px-3 py-2 font-medium text-slate-800">{{ item.commodity }}</td>
+                                            <td class="px-3 py-2 text-slate-700">{{ item.price_i }}</td>
+                                            <td class="px-3 py-2 text-slate-700">{{ item.price_ii }}</td>
+                                            <td class="px-3 py-2 whitespace-nowrap" :class="item.selisih === '-' ? 'text-slate-500' : (item.selisih > 0 ? 'text-emerald-600' : (item.selisih < 0 ? 'text-rose-600' : 'text-slate-500'))">
+                                                {{ item.selisih === '-' ? '-' : (item.selisih > 0 ? '+' : '') + formatNumber(item.selisih) }}
+                                            </td>
+                                            <td class="px-3 py-2">
+                                                <span class="font-bold text-lg">
+                                                    <span v-if="item.status === 'naik'" class="text-emerald-600" title="Naik">▲</span>
+                                                    <span v-else-if="item.status === 'turun'" class="text-rose-600" title="Turun">▼</span>
+                                                    <span v-else-if="item.status === 'tetap'" class="text-slate-400" title="Tetap">=</span>
+                                                    <span v-else class="text-slate-400" title="Tidak Tersedia">-</span>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
                 </aside>
             </div>
         </div>
