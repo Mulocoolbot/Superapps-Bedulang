@@ -1,5 +1,7 @@
 <?php
+
 use App\Http\Controllers\Admin\CCTVController;
+use App\Http\Controllers\Admin\ComplaintController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\InformationServiceController;
 use App\Http\Controllers\ProfileController;
@@ -19,6 +21,10 @@ Route::get('/', function () {
 Route::get('/layanan/{slug}', [InformationServiceController::class, 'show'])
     ->name('layanan.show');
 
+Route::post('/complaints', [ComplaintController::class, 'store'])
+    ->middleware(['auth', 'throttle:10,1'])
+    ->name('complaints.store');
+
 /*
 |--------------------------------------------------------------------------
 | Dashboard
@@ -27,12 +33,25 @@ Route::get('/layanan/{slug}', [InformationServiceController::class, 'show'])
 
 Route::middleware(['auth', 'admin'])->group(function () {
 
-Route::middleware(['auth'])->prefix('admin')->group(function () {
-    // ... route lain
+    Route::middleware(['auth'])->prefix('admin')->group(function () {
+        // ... route lain
 
-    Route::get('/cctv', [CCTVController::class, 'index'])
-        ->name('admin.cctv');
-});
+        Route::get('/cctv', [CCTVController::class, 'index'])
+            ->name('admin.cctv');
+
+        // Complaint routes
+        Route::get('/complaints', [ComplaintController::class, 'index'])
+            ->name('admin.complaints.index');
+
+        Route::get('/complaints/{complaint}', [ComplaintController::class, 'show'])
+            ->name('admin.complaints.show');
+
+        Route::put('/complaints/{complaint}', [ComplaintController::class, 'update'])
+            ->name('admin.complaints.update');
+
+        Route::delete('/complaints/{complaint}', [ComplaintController::class, 'destroy'])
+            ->name('admin.complaints.destroy');
+    });
 
     Route::middleware(['super_admin'])->group(function () {
         Route::get('/admin/users', [UserController::class, 'index'])
@@ -77,6 +96,5 @@ Route::middleware('auth')->group(function () {
         ->name('profile.destroy');
 
 });
-
 
 require __DIR__.'/auth.php';

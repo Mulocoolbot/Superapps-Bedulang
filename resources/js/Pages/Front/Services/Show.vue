@@ -1,7 +1,8 @@
 <script setup>
 import { computed, ref } from 'vue'
-import { Head, Link, router } from '@inertiajs/vue3'
+import { Head, Link, router, usePage } from '@inertiajs/vue3'
 import FrontLayout from '@/Layouts/FrontLayout.vue'
+import ComplaintModal from '@/Components/ComplaintModal.vue'
 
 const props = defineProps({
     service: {
@@ -37,6 +38,9 @@ const selectedType = ref(serviceTypes.value[0]?.value ?? 'all')
 const selectedStartDate = ref('')
 const selectedEndDate = ref('')
 const selectedPasar = ref('')
+const complaintModalOpen = ref(false)
+const page = usePage()
+const isAuthenticated = computed(() => Boolean(page.props.auth?.user))
 
 const title = computed(() => `Dashboard ${props.service.name}`)
 const subtitle = computed(() => props.service.description)
@@ -152,7 +156,7 @@ const resetFilters = () => {
                             </svg>
                         </div>
                         <div>
-                            <p class="text-xs font-medium uppercase tracking-[0.12em] text-slate-400">Total Data</p>
+                            <p class="text-xs font-medium uppercase tracking-[0.12em] text-slate-400">Total Komoditi</p>
                             <p class="text-2xl font-bold text-slate-900">{{ metadata.total ?? '—' }}</p>
                         </div>
                     </div>
@@ -366,10 +370,19 @@ const resetFilters = () => {
                                 </svg>
                                 Segarkan
                             </button>
+                            <button v-if="isAuthenticated" @click="complaintModalOpen = true" class="inline-flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-medium text-amber-800 transition hover:bg-amber-100 focus:ring-2 focus:ring-amber-200">
+                                Ajukan Pengaduan
+                            </button>
                         </div>
                     </div>
                 </aside>
             </div>
         </div>
+        <ComplaintModal
+            :is-open="complaintModalOpen"
+            :service-name="service.name"
+            :service-slug="service.slug"
+            @close="complaintModalOpen = false"
+        />
     </FrontLayout>
 </template>

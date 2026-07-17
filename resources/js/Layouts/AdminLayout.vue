@@ -49,6 +49,14 @@ const toggleDropdown = () => {
                 </Link>
 
                 <Link
+                    href="/admin/complaints"
+                    class="block px-4 py-3 rounded-lg hover:bg-blue-50">
+
+                    Pengaduan
+
+                </Link>
+
+                <Link
                     href="/profile"
                     class="block px-4 py-3 rounded-lg hover:bg-blue-50">
 
