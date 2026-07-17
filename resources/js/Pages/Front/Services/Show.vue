@@ -38,6 +38,16 @@ const selectedStartDate = ref('')
 const selectedEndDate = ref('')
 const selectedPasar = ref('')
 
+const pasarMap = {
+    1: 'Pasar Modern Koba',
+    2: 'Pasar Simpang Katis',
+    3: 'Pasar Namang',
+    4: 'Pasar Sungaiselan',
+    5: 'Pasar Kayu Besi',
+    6: 'Pasar Pangkalan Baru',
+    7: 'Pasar Lubuk Besar'
+}
+
 const title = computed(() => `Dashboard ${props.service.name}`)
 const subtitle = computed(() => props.service.description)
 const serviceIcon = computed(() => props.service.icon ?? '📊')
@@ -209,7 +219,7 @@ const resetFilters = () => {
                                     class="h-9 appearance-none rounded-lg border border-slate-200 bg-slate-50 px-3 pr-8 text-sm text-slate-700 outline-none transition hover:border-slate-300 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100"
                                 >
                                     <option value="">Semua Pasar</option>
-                                    <option v-for="pasar in 7" :key="pasar" :value="pasar">Pasar {{ pasar }}</option>
+                                    <option v-for="(name, id) in pasarMap" :key="id" :value="id">{{ name }}</option>
                                 </select>
                                 <svg class="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
