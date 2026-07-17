@@ -244,7 +244,7 @@ onUnmounted(() => {
                         />
                         <div class="absolute inset-0 bg-gradient-to-r from-white via-white/60 via-white/15 to-transparent dark:from-gray-900 dark:via-gray-900/60 dark:via-gray-900/15 z-10"></div>
                         <img
-                            src="/services/bupat_wakil.png"
+                            src="/services/bupat-wakil.png"
                             alt="Bupati dan Wakil Bupati Bangka Tengah"
                             class="absolute inset-0 h-full w-full object-cover object-right z-20"
                         />
