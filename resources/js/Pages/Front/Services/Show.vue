@@ -172,6 +172,18 @@ const minEndDateLimit = computed(() => {
     return ''
 })
 
+const formatDateDMY = (dateStr) => {
+    if (!dateStr) return ''
+    const parts = dateStr.split('-')
+    if (parts.length === 3) {
+        return `${parts[2]}/${parts[1]}/${parts[0]}`
+    }
+    return dateStr
+}
+
+const formattedStartDate = computed(() => formatDateDMY(selectedStartDate.value))
+const formattedEndDate = computed(() => formatDateDMY(selectedEndDate.value))
+
 const maxPriceValue = computed(() => {
     const seriesI = chartData.value.series_i ?? []
     const seriesII = chartData.value.series_ii ?? []
@@ -355,39 +367,61 @@ const resetFilters = () => {
                                         <span>Komoditas Pokok</span>
                                         <div class="flex gap-4">
                                             <span class="flex items-center gap-1.5">
-                                                <span class="h-2.5 w-2.5 rounded bg-slate-300 dark:bg-slate-600"></span>
-                                                Awal (Price I)
+                                                <span class="h-2.5 w-2.5 rounded bg-slate-400"></span>
+                                                {{ formattedStartDate }} (Awal)
                                             </span>
                                             <span class="flex items-center gap-1.5">
-                                                <span class="h-2.5 w-2.5 rounded bg-blue-600 dark:bg-blue-500"></span>
-                                                Akhir (Price II)
+                                                <span class="h-2.5 w-2.5 rounded bg-blue-600"></span>
+                                                {{ formattedEndDate }} (Akhir)
                                             </span>
                                         </div>
                                     </div>
                                     <div class="space-y-4">
-                                        <div v-for="(label, idx) in basicChartData.labels" :key="idx" class="space-y-1.5">
-                                            <div class="flex justify-between text-sm font-medium text-slate-700">
-                                                <span class="font-semibold text-slate-800 dark:text-slate-200">{{ label }}</span>
-                                                <div class="flex gap-3 text-xs text-slate-500">
-                                                    <span>Rp {{ formatNumber(basicChartData.series_i[idx]) }}</span>
-                                                    <span>→</span>
-                                                    <span class="font-semibold text-blue-600 dark:text-blue-400">Rp {{ formatNumber(basicChartData.series_ii[idx]) }}</span>
-                                                </div>
+                                        <div v-for="(label, idx) in basicChartData.labels" :key="idx" class="space-y-2">
+                                            <div class="flex justify-between text-sm font-semibold text-slate-800 dark:text-slate-200">
+                                                <span>{{ label }}</span>
                                             </div>
-                                            <div class="space-y-1">
+                                            <!-- Box Bars Container -->
+                                            <div class="grid grid-cols-1 gap-2 bg-slate-100/50 dark:bg-slate-900/40 p-2.5 rounded-lg border border-slate-200/40 dark:border-slate-800">
                                                 <!-- Bar Price I -->
-                                                <div class="w-full bg-slate-200/40 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
-                                                    <div 
-                                                        class="bg-slate-300 dark:bg-slate-600 h-full rounded-full transition-all duration-700 ease-out" 
-                                                        :style="{ width: `${getBarWidth(basicChartData.series_i[idx])}%` }"
-                                                    ></div>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="w-20 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider text-left">{{ formattedStartDate }}</span>
+                                                    <div class="flex-1 relative group py-1 focus:outline-none" tabindex="0">
+                                                        <!-- Track -->
+                                                        <div class="bg-slate-200/50 dark:bg-slate-800 h-5 rounded-md overflow-hidden cursor-help">
+                                                            <div 
+                                                                class="bg-slate-400 h-full rounded-r transition-all duration-700 ease-out" 
+                                                                :style="{ width: `${getBarWidth(basicChartData.series_i[idx])}%` }"
+                                                            ></div>
+                                                        </div>
+                                                        <!-- Tooltip Information Box -->
+                                                        <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none transition-all duration-200 ease-out z-30 scale-95 group-hover:scale-100">
+                                                            <div class="bg-slate-900/95 dark:bg-slate-850/95 text-white text-[11px] font-semibold px-2.5 py-1.5 rounded-lg shadow-xl border border-slate-700/30 whitespace-nowrap">
+                                                                Nominal: Rp {{ formatNumber(basicChartData.series_i[idx]) }}
+                                                            </div>
+                                                            <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900/95"></div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <!-- Bar Price II -->
-                                                <div class="w-full bg-slate-200/40 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
-                                                    <div 
-                                                        class="bg-blue-600 dark:bg-blue-500 h-full rounded-full transition-all duration-700 ease-out" 
-                                                        :style="{ width: `${getBarWidth(basicChartData.series_ii[idx])}%` }"
-                                                    ></div>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="w-20 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider text-left">{{ formattedEndDate }}</span>
+                                                    <div class="flex-1 relative group py-1 focus:outline-none" tabindex="0">
+                                                        <!-- Track -->
+                                                        <div class="bg-slate-200/50 dark:bg-slate-800 h-5 rounded-md overflow-hidden cursor-help">
+                                                            <div 
+                                                                class="bg-blue-600 dark:bg-blue-500 h-full rounded-r transition-all duration-700 ease-out" 
+                                                                :style="{ width: `${getBarWidth(basicChartData.series_ii[idx])}%` }"
+                                                            ></div>
+                                                        </div>
+                                                        <!-- Tooltip Information Box -->
+                                                        <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none transition-all duration-200 ease-out z-30 scale-95 group-hover:scale-100">
+                                                            <div class="bg-slate-900/95 dark:bg-slate-850/95 text-white text-[11px] font-semibold px-2.5 py-1.5 rounded-lg shadow-xl border border-slate-700/30 whitespace-nowrap">
+                                                                Nominal: Rp {{ formatNumber(basicChartData.series_ii[idx]) }}
+                                                            </div>
+                                                            <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900/95"></div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -408,39 +442,61 @@ const resetFilters = () => {
                                         <span>Barang Penting</span>
                                         <div class="flex gap-4">
                                             <span class="flex items-center gap-1.5">
-                                                <span class="h-2.5 w-2.5 rounded bg-slate-300 dark:bg-slate-600"></span>
-                                                Awal (Price I)
+                                                <span class="h-2.5 w-2.5 rounded bg-slate-400"></span>
+                                                {{ formattedStartDate }} (Awal)
                                             </span>
                                             <span class="flex items-center gap-1.5">
-                                                <span class="h-2.5 w-2.5 rounded bg-blue-600 dark:bg-blue-500"></span>
-                                                Akhir (Price II)
+                                                <span class="h-2.5 w-2.5 rounded bg-blue-600"></span>
+                                                {{ formattedEndDate }} (Akhir)
                                             </span>
                                         </div>
                                     </div>
                                     <div class="space-y-4">
-                                        <div v-for="(label, idx) in importantChartData.labels" :key="idx" class="space-y-1.5">
-                                            <div class="flex justify-between text-sm font-medium text-slate-700">
-                                                <span class="font-semibold text-slate-800 dark:text-slate-200">{{ label }}</span>
-                                                <div class="flex gap-3 text-xs text-slate-500">
-                                                    <span>Rp {{ formatNumber(importantChartData.series_i[idx]) }}</span>
-                                                    <span>→</span>
-                                                    <span class="font-semibold text-blue-600 dark:text-blue-400">Rp {{ formatNumber(importantChartData.series_ii[idx]) }}</span>
-                                                </div>
+                                        <div v-for="(label, idx) in importantChartData.labels" :key="idx" class="space-y-2">
+                                            <div class="flex justify-between text-sm font-semibold text-slate-800 dark:text-slate-200">
+                                                <span>{{ label }}</span>
                                             </div>
-                                            <div class="space-y-1">
+                                            <!-- Box Bars Container -->
+                                            <div class="grid grid-cols-1 gap-2 bg-slate-100/50 dark:bg-slate-900/40 p-2.5 rounded-lg border border-slate-200/40 dark:border-slate-800">
                                                 <!-- Bar Price I -->
-                                                <div class="w-full bg-slate-200/40 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
-                                                    <div 
-                                                        class="bg-slate-300 dark:bg-slate-600 h-full rounded-full transition-all duration-700 ease-out" 
-                                                        :style="{ width: `${getBarWidth(importantChartData.series_i[idx])}%` }"
-                                                    ></div>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="w-20 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider text-left">{{ formattedStartDate }}</span>
+                                                    <div class="flex-1 relative group py-1 focus:outline-none" tabindex="0">
+                                                        <!-- Track -->
+                                                        <div class="bg-slate-200/50 dark:bg-slate-800 h-5 rounded-md overflow-hidden cursor-help">
+                                                            <div 
+                                                                class="bg-slate-400 h-full rounded-r transition-all duration-700 ease-out" 
+                                                                :style="{ width: `${getBarWidth(importantChartData.series_i[idx])}%` }"
+                                                            ></div>
+                                                        </div>
+                                                        <!-- Tooltip Information Box -->
+                                                        <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none transition-all duration-200 ease-out z-30 scale-95 group-hover:scale-100">
+                                                            <div class="bg-slate-900/95 dark:bg-slate-850/95 text-white text-[11px] font-semibold px-2.5 py-1.5 rounded-lg shadow-xl border border-slate-700/30 whitespace-nowrap">
+                                                                Nominal: Rp {{ formatNumber(importantChartData.series_i[idx]) }}
+                                                            </div>
+                                                            <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900/95"></div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <!-- Bar Price II -->
-                                                <div class="w-full bg-slate-200/40 dark:bg-slate-800 rounded-full h-2 overflow-hidden">
-                                                    <div 
-                                                        class="bg-blue-600 dark:bg-blue-500 h-full rounded-full transition-all duration-700 ease-out" 
-                                                        :style="{ width: `${getBarWidth(importantChartData.series_ii[idx])}%` }"
-                                                    ></div>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="w-20 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider text-left">{{ formattedEndDate }}</span>
+                                                    <div class="flex-1 relative group py-1 focus:outline-none" tabindex="0">
+                                                        <!-- Track -->
+                                                        <div class="bg-slate-200/50 dark:bg-slate-800 h-5 rounded-md overflow-hidden cursor-help">
+                                                            <div 
+                                                                class="bg-blue-600 dark:bg-blue-500 h-full rounded-r transition-all duration-700 ease-out" 
+                                                                :style="{ width: `${getBarWidth(importantChartData.series_ii[idx])}%` }"
+                                                            ></div>
+                                                        </div>
+                                                        <!-- Tooltip Information Box -->
+                                                        <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none transition-all duration-200 ease-out z-30 scale-95 group-hover:scale-100">
+                                                            <div class="bg-slate-900/95 dark:bg-slate-850/95 text-white text-[11px] font-semibold px-2.5 py-1.5 rounded-lg shadow-xl border border-slate-700/30 whitespace-nowrap">
+                                                                Nominal: Rp {{ formatNumber(importantChartData.series_ii[idx]) }}
+                                                            </div>
+                                                            <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900/95"></div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -455,21 +511,27 @@ const resetFilters = () => {
                                 <div v-if="!hasChart" class="flex min-h-[220px] items-center justify-center rounded-xl border border-dashed border-slate-200 bg-white text-center text-sm text-slate-400">
                                     Belum ada data untuk ditampilkan
                                 </div>
-                                <div v-else class="overflow-x-auto pb-2">
-                                    <div class="flex items-end gap-3 min-h-[220px]">
-                                        <template v-for="(value, index) in visibleChart.series" :key="index">
-                                            <div class="flex-1 min-w-[32px]">
-                                                <div class="relative h-48 overflow-hidden rounded-xl bg-cyan-100/60">
-                                                    <div
-                                                        class="absolute bottom-0 left-0 right-0 rounded-t-xl bg-gradient-to-t from-cyan-600 to-cyan-500 transition-all duration-700 ease-out"
-                                                        :style="{ height: `${Math.ceil((value / maxChartValue) * 100)}%` }"
-                                                    />
-                                                </div>
-                                                <p class="mt-2 text-center text-xs font-medium text-slate-400 truncate">
-                                                    {{ visibleChart.labels[index] ?? '—' }}
-                                                </p>
+                                <div v-else class="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                                    <div v-for="(value, index) in visibleChart.series" :key="index" class="space-y-1.5">
+                                        <div class="flex justify-between text-sm font-semibold text-slate-700 dark:text-slate-200">
+                                            <span>{{ visibleChart.labels[index] ?? '—' }}</span>
+                                        </div>
+                                        <div class="relative group py-1 focus:outline-none" tabindex="0">
+                                            <!-- Track -->
+                                            <div class="bg-slate-200/50 dark:bg-slate-800 h-6 rounded-md overflow-hidden cursor-help">
+                                                <div 
+                                                    class="bg-cyan-600 dark:bg-cyan-500 h-full rounded-r transition-all duration-700 ease-out" 
+                                                    :style="{ width: `${Math.max(0, Math.min(100, Math.ceil((value / maxChartValue) * 100)))}%` }"
+                                                ></div>
                                             </div>
-                                        </template>
+                                            <!-- Tooltip Information Box -->
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none transition-all duration-200 ease-out z-30 scale-95 group-hover:scale-100">
+                                                <div class="bg-slate-900/95 dark:bg-slate-850/95 text-white text-[11px] font-semibold px-2.5 py-1.5 rounded-lg shadow-xl border border-slate-700/30 whitespace-nowrap">
+                                                    Jumlah: {{ value }}
+                                                </div>
+                                                <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900/95"></div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
