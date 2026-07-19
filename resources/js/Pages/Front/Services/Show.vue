@@ -248,7 +248,7 @@ const resetFilters = () => {
             <!-- Back Button - subtle ghost style -->
             <Link
                 href="/"
-                class="group mb-6 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-700"
+                class="group mb-6 inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -264,18 +264,18 @@ const resetFilters = () => {
             </Link>
 
             <!-- Header -->
-            <div class="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm sm:p-8">
-                <div class="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-cyan-50/60 blur-2xl" />
+            <div class="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm sm:p-8 dark:border-slate-800 dark:bg-slate-900">
+                <div class="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-cyan-50/60 blur-2xl dark:bg-cyan-950/20" />
                 <div class="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
                     <div>
-                        <div class="inline-flex items-center gap-2 rounded-full bg-cyan-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-cyan-700">
+                        <div class="inline-flex items-center gap-2 rounded-full bg-cyan-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-cyan-700 dark:bg-cyan-950/40 dark:text-cyan-400">
                             <span>{{ serviceIcon }}</span>
                             <span>Data & Informasi</span>
                         </div>
-                        <h1 class="mt-3 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+                        <h1 class="mt-3 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl dark:text-white">
                             {{ title }}
                         </h1>
-                        <p class="mt-1.5 max-w-2xl text-sm leading-6 text-slate-500">
+                        <p class="mt-1.5 max-w-2xl text-sm leading-6 text-slate-500 dark:text-slate-400">
                             {{ subtitle }}
                         </p>
                     </div>
@@ -287,12 +287,12 @@ const resetFilters = () => {
             <div class="mt-6 grid gap-6" :class="isPerindagkop ? 'lg:grid-cols-[2fr_1fr]' : 'grid-cols-1'">
 
                 <!-- Chart Section -->
-                <section class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
+                <section class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900">
                     <!-- Filter Controls -->
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                         <div>
                             <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Visualisasi</p>
-                            <h2 class="mt-0.5 text-lg font-semibold text-slate-900">
+                            <h2 class="mt-0.5 text-lg font-semibold text-slate-900 dark:text-white">
                                 {{ isPerindagkop ? 'Grafik Perbandingan Harga' : 'Tren Data' }}
                             </h2>
                         </div>
@@ -301,35 +301,35 @@ const resetFilters = () => {
                             <div class="relative" v-if="!isPerindagkop">
                                 <select
                                     v-model="selectedType"
-                                    class="h-9 appearance-none rounded-lg border border-slate-200 bg-slate-50 px-3 pr-8 text-sm text-slate-700 outline-none transition hover:border-slate-300 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100"
+                                    class="h-9 appearance-none rounded-lg border border-slate-200 bg-slate-50 px-3 pr-8 text-sm text-slate-700 outline-none transition hover:border-slate-300 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-slate-600 dark:focus:border-cyan-500 dark:focus:ring-cyan-950/50"
                                 >
                                     <option v-for="filter in serviceTypes" :key="filter.value" :value="filter.value">
                                         {{ filter.label }}
                                     </option>
                                 </select>
-                                <svg class="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <svg class="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                                 </svg>
                             </div>
 
                             <!-- Date Range -->
-                            <div class="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 p-1">
+                            <div class="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 p-1 dark:border-slate-700 dark:bg-slate-800">
                                 <input
                                     type="date"
                                     v-model="selectedStartDate"
                                     :max="maxStartDateLimit"
                                     @change="applyFilters"
-                                    class="h-7 w-32 rounded-md border-0 bg-transparent px-2 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-cyan-100"
+                                    class="h-7 w-32 rounded-md border-0 bg-transparent px-2 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-cyan-100 dark:text-slate-300 dark:focus:ring-cyan-950/50"
                                     placeholder="Mulai"
                                 />
-                                <span class="text-xs text-slate-400">→</span>
+                                <span class="text-xs text-slate-400 dark:text-slate-500">→</span>
                                 <input
                                     type="date"
                                     v-model="selectedEndDate"
                                     :min="minEndDateLimit"
                                     :max="latestDateLimit"
                                     @change="applyFilters"
-                                    class="h-7 w-32 rounded-md border-0 bg-transparent px-2 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-cyan-100"
+                                    class="h-7 w-32 rounded-md border-0 bg-transparent px-2 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-cyan-100 dark:text-slate-300 dark:focus:ring-cyan-950/50"
                                     placeholder="Selesai"
                                 />
                             </div>
@@ -338,12 +338,12 @@ const resetFilters = () => {
                                 <select
                                     v-model="selectedPasar"
                                     @change="applyFilters"
-                                    class="h-9 appearance-none rounded-lg border border-slate-200 bg-slate-50 px-3 pr-8 text-sm text-slate-700 outline-none transition hover:border-slate-300 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100"
+                                    class="h-9 appearance-none rounded-lg border border-slate-200 bg-slate-50 px-3 pr-8 text-sm text-slate-700 outline-none transition hover:border-slate-300 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-slate-600 dark:focus:border-cyan-500 dark:focus:ring-cyan-950/50"
                                 >
                                     <option value="">Semua Pasar</option>
                                     <option v-for="(name, id) in pasarMap" :key="id" :value="id">{{ name }}</option>
                                 </select>
-                                <svg class="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <svg class="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                                 </svg>
                             </div>
@@ -355,15 +355,15 @@ const resetFilters = () => {
                         <!-- Perindagkop Split Charts -->
                         <template v-if="isPerindagkop">
                             <!-- 1. Kebutuhan Pokok Chart -->
-                            <div class="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 transition shadow-sm">
-                                <h4 class="text-xs font-bold uppercase tracking-[0.16em] text-slate-700 mb-3 border-b border-slate-200/60 pb-2">
+                            <div class="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 transition shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
+                                <h4 class="text-xs font-bold uppercase tracking-[0.16em] text-slate-700 mb-3 border-b border-slate-200/60 pb-2 dark:text-slate-300 dark:border-slate-800/80">
                                     GRAFIK PERBANDINGAN HARGA BARANG KEBUTUHAN POKOK {{ selectedPasar ? 'DI ' + pasarMap[selectedPasar].toUpperCase() : 'DI SEMUA PASAR' }}
                                 </h4>
-                                <div v-if="!hasBasicChart" class="flex min-h-[180px] items-center justify-center rounded-xl border border-dashed border-slate-200 bg-white text-center text-sm text-slate-400">
+                                <div v-if="!hasBasicChart" class="flex min-h-[180px] items-center justify-center rounded-xl border border-dashed border-slate-200 bg-white text-center text-sm text-slate-400 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-500">
                                     Belum ada data barang kebutuhan pokok untuk ditampilkan
                                 </div>
                                 <div v-else class="space-y-6 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                                    <div class="flex items-center justify-between text-xs font-semibold text-slate-500 border-b border-slate-200/40 pb-2">
+                                    <div class="flex items-center justify-between text-xs font-semibold text-slate-500 border-b border-slate-200/40 pb-2 dark:text-slate-400 dark:border-slate-800/60">
                                         <span>Komoditas Pokok</span>
                                         <div class="flex gap-4">
                                             <span class="flex items-center gap-1.5">
@@ -396,10 +396,10 @@ const resetFilters = () => {
                                                         </div>
                                                         <!-- Tooltip Information Box -->
                                                         <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none transition-all duration-200 ease-out z-30 scale-95 group-hover:scale-100">
-                                                            <div class="bg-slate-900/95 dark:bg-slate-850/95 text-white text-[11px] font-semibold px-2.5 py-1.5 rounded-lg shadow-xl border border-slate-700/30 whitespace-nowrap">
+                                                            <div class="bg-slate-900/95 dark:bg-slate-800/95 text-white text-[11px] font-semibold px-2.5 py-1.5 rounded-lg shadow-xl border border-slate-700/30 whitespace-nowrap">
                                                                 Nominal: Rp {{ formatNumber(basicChartData.series_i[idx]) }}
                                                             </div>
-                                                            <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900/95"></div>
+                                                            <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900/95 dark:border-t-slate-800/95"></div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -416,10 +416,10 @@ const resetFilters = () => {
                                                         </div>
                                                         <!-- Tooltip Information Box -->
                                                         <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none transition-all duration-200 ease-out z-30 scale-95 group-hover:scale-100">
-                                                            <div class="bg-slate-900/95 dark:bg-slate-850/95 text-white text-[11px] font-semibold px-2.5 py-1.5 rounded-lg shadow-xl border border-slate-700/30 whitespace-nowrap">
+                                                            <div class="bg-slate-900/95 dark:bg-slate-800/95 text-white text-[11px] font-semibold px-2.5 py-1.5 rounded-lg shadow-xl border border-slate-700/30 whitespace-nowrap">
                                                                 Nominal: Rp {{ formatNumber(basicChartData.series_ii[idx]) }}
                                                             </div>
-                                                            <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900/95"></div>
+                                                            <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900/95 dark:border-t-slate-800/95"></div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -430,15 +430,15 @@ const resetFilters = () => {
                             </div>
 
                             <!-- 2. Barang Penting Chart -->
-                            <div class="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 transition shadow-sm">
-                                <h4 class="text-xs font-bold uppercase tracking-[0.16em] text-slate-700 mb-3 border-b border-slate-200/60 pb-2">
+                            <div class="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 transition shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
+                                <h4 class="text-xs font-bold uppercase tracking-[0.16em] text-slate-700 mb-3 border-b border-slate-200/60 pb-2 dark:text-slate-300 dark:border-slate-800/80">
                                     GRAFIK PERBANDINGAN HARGA BARANG PENTING {{ selectedPasar ? 'DI ' + pasarMap[selectedPasar].toUpperCase() : 'DI SEMUA PASAR' }}
                                 </h4>
-                                <div v-if="!hasImportantChart" class="flex min-h-[120px] items-center justify-center rounded-xl border border-dashed border-slate-200 bg-white text-center text-sm text-slate-400">
+                                <div v-if="!hasImportantChart" class="flex min-h-[120px] items-center justify-center rounded-xl border border-dashed border-slate-200 bg-white text-center text-sm text-slate-400 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-500">
                                     Belum ada data barang penting untuk ditampilkan
                                 </div>
                                 <div v-else class="space-y-6">
-                                    <div class="flex items-center justify-between text-xs font-semibold text-slate-500 border-b border-slate-200/40 pb-2">
+                                    <div class="flex items-center justify-between text-xs font-semibold text-slate-500 border-b border-slate-200/40 pb-2 dark:text-slate-400 dark:border-slate-800/60">
                                         <span>Barang Penting</span>
                                         <div class="flex gap-4">
                                             <span class="flex items-center gap-1.5">
@@ -471,10 +471,10 @@ const resetFilters = () => {
                                                         </div>
                                                         <!-- Tooltip Information Box -->
                                                         <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none transition-all duration-200 ease-out z-30 scale-95 group-hover:scale-100">
-                                                            <div class="bg-slate-900/95 dark:bg-slate-850/95 text-white text-[11px] font-semibold px-2.5 py-1.5 rounded-lg shadow-xl border border-slate-700/30 whitespace-nowrap">
+                                                            <div class="bg-slate-900/95 dark:bg-slate-800/95 text-white text-[11px] font-semibold px-2.5 py-1.5 rounded-lg shadow-xl border border-slate-700/30 whitespace-nowrap">
                                                                 Nominal: Rp {{ formatNumber(importantChartData.series_i[idx]) }}
                                                             </div>
-                                                            <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900/95"></div>
+                                                            <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900/95 dark:border-t-slate-800/95"></div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -491,10 +491,10 @@ const resetFilters = () => {
                                                         </div>
                                                         <!-- Tooltip Information Box -->
                                                         <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none transition-all duration-200 ease-out z-30 scale-95 group-hover:scale-100">
-                                                            <div class="bg-slate-900/95 dark:bg-slate-850/95 text-white text-[11px] font-semibold px-2.5 py-1.5 rounded-lg shadow-xl border border-slate-700/30 whitespace-nowrap">
+                                                            <div class="bg-slate-900/95 dark:bg-slate-800/95 text-white text-[11px] font-semibold px-2.5 py-1.5 rounded-lg shadow-xl border border-slate-700/30 whitespace-nowrap">
                                                                 Nominal: Rp {{ formatNumber(importantChartData.series_ii[idx]) }}
                                                             </div>
-                                                            <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900/95"></div>
+                                                            <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900/95 dark:border-t-slate-800/95"></div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -507,8 +507,8 @@ const resetFilters = () => {
 
                         <!-- Standard Vertical Chart for non-Perindagkop -->
                         <template v-else>
-                            <div class="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 transition shadow-sm">
-                                <div v-if="!hasChart" class="flex min-h-[220px] items-center justify-center rounded-xl border border-dashed border-slate-200 bg-white text-center text-sm text-slate-400">
+                            <div class="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 transition shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
+                                <div v-if="!hasChart" class="flex min-h-[220px] items-center justify-center rounded-xl border border-dashed border-slate-200 bg-white text-center text-sm text-slate-400 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-500">
                                     Belum ada data untuk ditampilkan
                                 </div>
                                 <div v-else class="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
@@ -526,10 +526,10 @@ const resetFilters = () => {
                                             </div>
                                             <!-- Tooltip Information Box -->
                                             <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none transition-all duration-200 ease-out z-30 scale-95 group-hover:scale-100">
-                                                <div class="bg-slate-900/95 dark:bg-slate-850/95 text-white text-[11px] font-semibold px-2.5 py-1.5 rounded-lg shadow-xl border border-slate-700/30 whitespace-nowrap">
+                                                <div class="bg-slate-900/95 dark:bg-slate-800/95 text-white text-[11px] font-semibold px-2.5 py-1.5 rounded-lg shadow-xl border border-slate-700/30 whitespace-nowrap">
                                                     Jumlah: {{ value }}
                                                 </div>
-                                                <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900/95"></div>
+                                                <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900/95 dark:border-t-slate-800/95"></div>
                                             </div>
                                         </div>
                                     </div>
@@ -544,32 +544,32 @@ const resetFilters = () => {
                 <aside v-if="isPerindagkop" class="space-y-6">
 
                     <!-- 1. Perbandingan Harga Barang Kebutuhan Pokok -->
-                    <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 space-y-4">
+                    <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 space-y-4 dark:border-slate-800 dark:bg-slate-900">
                         <div>
                             <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Tabel Data</p>
-                            <h3 class="mt-0.5 text-base font-semibold text-slate-900">Perbandingan Harga Barang Kebutuhan Pokok</h3>
+                            <h3 class="mt-0.5 text-base font-semibold text-slate-900 dark:text-white">Perbandingan Harga Barang Kebutuhan Pokok</h3>
                         </div>
                         
-                        <div v-if="!hasBasicPriceTrends" class="rounded-xl border border-dashed border-slate-200 bg-slate-50/60 p-6 text-center text-sm text-slate-500">
+                        <div v-if="!hasBasicPriceTrends" class="rounded-xl border border-dashed border-slate-200 bg-slate-50/60 p-6 text-center text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-900/50">
                             Belum ada data kebutuhan pokok untuk filter saat ini.
                         </div>
-                        <div v-else class="overflow-hidden rounded-xl border border-slate-200/80 bg-white">
+                        <div v-else class="overflow-hidden rounded-xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900">
                             <div class="overflow-x-auto max-h-[400px] overflow-y-auto custom-scrollbar">
-                                <table class="min-w-full divide-y divide-slate-200 text-sm">
-                                    <thead class="bg-slate-50 sticky top-0 z-10">
+                                <table class="min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-800">
+                                    <thead class="bg-slate-50 sticky top-0 z-10 dark:bg-slate-800">
                                         <tr>
-                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50">Komoditas</th>
-                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50">Awal</th>
-                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50">Akhir</th>
-                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50">Selisih</th>
-                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50">Status</th>
+                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Komoditas</th>
+                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Awal</th>
+                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Akhir</th>
+                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Selisih</th>
+                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Status</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y divide-slate-200 bg-white">
-                                        <tr v-for="item in basicPriceTrends" :key="item.commodity" class="hover:bg-slate-50">
-                                            <td class="px-3 py-2 font-medium text-slate-800">{{ item.commodity }}</td>
-                                            <td class="px-3 py-2 text-slate-700">{{ item.price_i }}</td>
-                                            <td class="px-3 py-2 text-slate-700">{{ item.price_ii }}</td>
+                                    <tbody class="divide-y divide-slate-200 bg-white dark:divide-slate-800 dark:bg-slate-900">
+                                        <tr v-for="item in basicPriceTrends" :key="item.commodity" class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                                            <td class="px-3 py-2 font-medium text-slate-800 dark:text-slate-200">{{ item.commodity }}</td>
+                                            <td class="px-3 py-2 text-slate-700 dark:text-slate-300">{{ item.price_i }}</td>
+                                            <td class="px-3 py-2 text-slate-700 dark:text-slate-300">{{ item.price_ii }}</td>
                                             <td class="px-3 py-2 whitespace-nowrap" :class="item.selisih === '-' ? 'text-slate-500' : (item.selisih > 0 ? 'text-emerald-600' : (item.selisih < 0 ? 'text-rose-600' : 'text-slate-500'))">
                                                 {{ item.selisih === '-' ? '-' : (item.selisih > 0 ? '+' : '') + formatNumber(item.selisih) }}
                                             </td>
@@ -589,32 +589,32 @@ const resetFilters = () => {
                     </div>
 
                     <!-- 2. Perbandingan Harga Barang Penting -->
-                    <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 space-y-4">
+                    <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 space-y-4 dark:border-slate-800 dark:bg-slate-900">
                         <div>
                             <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Tabel Data</p>
-                            <h3 class="mt-0.5 text-base font-semibold text-slate-900">Perbandingan Harga Barang Penting</h3>
+                            <h3 class="mt-0.5 text-base font-semibold text-slate-900 dark:text-white">Perbandingan Harga Barang Penting</h3>
                         </div>
                         
-                        <div v-if="!hasImportantPriceTrends" class="rounded-xl border border-dashed border-slate-200 bg-slate-50/60 p-6 text-center text-sm text-slate-500">
+                        <div v-if="!hasImportantPriceTrends" class="rounded-xl border border-dashed border-slate-200 bg-slate-50/60 p-6 text-center text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-900/50">
                             Belum ada data barang penting untuk filter saat ini.
                         </div>
-                        <div v-else class="overflow-hidden rounded-xl border border-slate-200/80 bg-white">
+                        <div v-else class="overflow-hidden rounded-xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900">
                             <div class="overflow-x-auto max-h-[200px] overflow-y-auto custom-scrollbar">
-                                <table class="min-w-full divide-y divide-slate-200 text-sm">
-                                    <thead class="bg-slate-50 sticky top-0 z-10">
+                                <table class="min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-800">
+                                    <thead class="bg-slate-50 sticky top-0 z-10 dark:bg-slate-800">
                                         <tr>
-                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50">Komoditas</th>
-                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50">Awal</th>
-                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50">Akhir</th>
-                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50">Selisih</th>
-                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50">Status</th>
+                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Komoditas</th>
+                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Awal</th>
+                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Akhir</th>
+                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Selisih</th>
+                                            <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Status</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y divide-slate-200 bg-white">
-                                        <tr v-for="item in importantPriceTrends" :key="item.commodity" class="hover:bg-slate-50">
-                                            <td class="px-3 py-2 font-medium text-slate-800">{{ item.commodity }}</td>
-                                            <td class="px-3 py-2 text-slate-700">{{ item.price_i }}</td>
-                                            <td class="px-3 py-2 text-slate-700">{{ item.price_ii }}</td>
+                                    <tbody class="divide-y divide-slate-200 bg-white dark:divide-slate-800 dark:bg-slate-900">
+                                        <tr v-for="item in importantPriceTrends" :key="item.commodity" class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                                            <td class="px-3 py-2 font-medium text-slate-800 dark:text-slate-200">{{ item.commodity }}</td>
+                                            <td class="px-3 py-2 text-slate-700 dark:text-slate-300">{{ item.price_i }}</td>
+                                            <td class="px-3 py-2 text-slate-700 dark:text-slate-300">{{ item.price_ii }}</td>
                                             <td class="px-3 py-2 whitespace-nowrap" :class="item.selisih === '-' ? 'text-slate-500' : (item.selisih > 0 ? 'text-emerald-600' : (item.selisih < 0 ? 'text-rose-600' : 'text-slate-500'))">
                                                 {{ item.selisih === '-' ? '-' : (item.selisih > 0 ? '+' : '') + formatNumber(item.selisih) }}
                                             </td>
