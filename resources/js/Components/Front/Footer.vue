@@ -81,19 +81,19 @@
                     <ul class="space-y-3 text-sm">
 
                         <li>
-                            <a href="#" class="hover:text-blue-300 transition">
+                            <a href="#beranda" class="hover:text-blue-300 transition">
                                 Beranda
                             </a>
                         </li>
 
                         <li>
-                            <a href="#" class="hover:text-blue-300 transition">
-                                Informasi & Data
+                            <a href="#layanan" class="hover:text-blue-300 transition">
+                                Layanan Bedulang
                             </a>
                         </li>
 
                         <li>
-                            <a href="#" class="hover:text-blue-300 transition">
+                            <a href="#aplikasi" class="hover:text-blue-300 transition">
                                 Daftar Aplikasi
                             </a>
                         </li>
