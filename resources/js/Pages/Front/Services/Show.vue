@@ -317,6 +317,12 @@ const handleStokCompDateChange = () => {
         return
     }
     
+    if (!isMonday(stokCompDate.value)) {
+        const adjusted = getNearestMonday(stokCompDate.value)
+        alert(`Tanggal Pembanding hanya boleh hari Senin. Tanggal disesuaikan ke hari Senin terdekat: ${formatDateDMY(adjusted)}.`);
+        stokCompDate.value = adjusted
+    }
+    
     if (stokCompDate.value === stokDate.value) {
         alert('Tanggal Pembanding tidak boleh sama dengan Tanggal Stok!');
         initStokCompDate()
@@ -920,6 +926,8 @@ const getPasarBarPercent = (val) => {
                                 <input
                                     type="date"
                                     v-model="stokDate"
+                                    min="2020-01-06"
+                                    step="7"
                                     :max="todayStr"
                                     @change="handleStokDateChange"
                                     class="h-9 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-700 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
@@ -930,6 +938,8 @@ const getPasarBarPercent = (val) => {
                                 <input
                                     type="date"
                                     v-model="stokCompDate"
+                                    min="2020-01-06"
+                                    step="7"
                                     :max="todayStr"
                                     @change="handleStokCompDateChange"
                                     class="h-9 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-700 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
@@ -1037,15 +1047,10 @@ const getPasarBarPercent = (val) => {
                                             {{ item.diff > 0 ? '+' : '' }}{{ item.diff }} T
                                         </td>
                                         <td class="px-3 py-2.5 text-center">
-                                            <span 
-                                                class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold"
-                                                :class="item.diff > 0 
-                                                    ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400' 
-                                                    : (item.diff < 0 
-                                                        ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-400' 
-                                                        : 'bg-slate-50 text-slate-700 dark:bg-slate-800/50 dark:text-slate-400')"
-                                            >
-                                                {{ item.diff > 0 ? 'Naik' : (item.diff < 0 ? 'Turun' : 'Tetap') }}
+                                            <span class="font-bold text-lg">
+                                                <span v-if="item.diff > 0" class="text-emerald-600" title="Naik">▲</span>
+                                                <span v-else-if="item.diff < 0" class="text-rose-600" title="Turun">▼</span>
+                                                <span v-else class="text-slate-400" title="Tetap">=</span>
                                             </span>
                                         </td>
                                     </tr>
