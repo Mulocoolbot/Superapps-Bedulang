@@ -18,8 +18,6 @@ class Complaint extends Model
         'description',
         'category',
         'contact_person_name',
-        'contact_email',
-        'contact_phone',
         'status',
         'whatsapp_phone',
         'whatsapp_sent_at',

@@ -2,6 +2,9 @@
 import { computed, ref } from 'vue'
 import { Head, Link, router } from '@inertiajs/vue3'
 import FrontLayout from '@/Layouts/FrontLayout.vue'
+import ComplaintModal from '@/Components/ComplaintModal.vue'
+
+const isComplaintModalOpen = ref(false)
 
 const props = defineProps({
     service: {
@@ -280,6 +283,25 @@ const resetFilters = () => {
                         </p>
                     </div>
 
+                    <!-- Complaint Action Button -->
+                    <div class="flex shrink-0 items-center">
+                        <button
+                            @click="isComplaintModalOpen = true"
+                            class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 shadow-md shadow-blue-500/10 hover:shadow-lg hover:shadow-blue-500/20"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-5 w-5"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                stroke-width="2"
+                            >
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                            </svg>
+                            Ajukan Pengaduan
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -636,5 +658,13 @@ const resetFilters = () => {
                 </aside>
             </div>
         </div>
+
+        <!-- Complaint Modal -->
+        <ComplaintModal
+            :is-open="isComplaintModalOpen"
+            :service-name="service.name"
+            :service-slug="service.slug"
+            @close="isComplaintModalOpen = false"
+        />
     </FrontLayout>
 </template>

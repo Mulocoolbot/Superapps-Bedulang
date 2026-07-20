@@ -41,7 +41,7 @@ const toggleDropdown = () => {
                 </Link>
 
                 <Link
-                    href="/admin/cctv"
+                    href="admin/cctv"
                     class="block px-4 py-3 rounded-lg hover:bg-blue-50">
 
                     CCTV

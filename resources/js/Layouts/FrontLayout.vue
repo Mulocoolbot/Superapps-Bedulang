@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import Navbar from '@/Components/Front/Navbar.vue'
+import WhatsAppWidget from '@/Components/Front/WhatsAppWidget.vue'
 
 const darkMode = ref(false)
 

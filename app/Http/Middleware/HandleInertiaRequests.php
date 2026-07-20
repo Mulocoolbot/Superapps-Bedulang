@@ -35,6 +35,9 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             'csrf_token' => fn () => csrf_token(),
+            'whatsapp' => [
+                'complaint_phone' => config('services.whatsapp.complaint_phone', '6283128848371'),
+            ],
         ];
     }
 }

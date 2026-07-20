@@ -19,6 +19,7 @@ class PerindagService implements InformationServiceInterface
             'name' => 'Perindagkop-UKM',
             'icon' => '📈',
             'description' => 'Dashboard informasi Perindagkop dan UKM Kabupaten Bangka Tengah.',
+            'whatsapp_phone' => '6283128848371',
             'filters' => [
                 ['label' => 'Telur', 'value' => 'harga-cabe'],
                 ['label' => 'Terigu', 'value' => 'harga-terigu'],

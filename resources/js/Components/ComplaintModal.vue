@@ -53,7 +53,7 @@
               </div>
 
               <p class="mb-6 text-sm text-gray-600">
-                Kirimkan pengaduan Anda terkait layanan {{ serviceName }}. Data Anda akan
+                Kirimkan pengaduan Anda terkait layanan {{ serviceSlug ? serviceName : 'kami' }}. Data Anda akan
                 diproses dengan baik oleh tim kami.
               </p>
 
@@ -85,6 +85,26 @@
                   </div>
                 </div>
 
+                <!-- Service Selection Dropdown if serviceSlug is empty -->
+                <div v-if="!serviceSlug">
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Pilih Layanan Terkait *
+                  </label>
+                  <select
+                    v-model="selectedServiceSlug"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    required
+                  >
+                    <option value="">Pilih layanan...</option>
+                    <option v-for="s in servicesList" :key="s.slug" :value="s.slug">
+                      {{ s.name }}
+                    </option>
+                  </select>
+                  <span v-if="errors.service_slug" class="text-sm text-red-600">
+                    {{ errors.service_slug }}
+                  </span>
+                </div>
+
                 <!-- Title -->
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -99,28 +119,6 @@
                   />
                   <span v-if="errors.title" class="text-sm text-red-600">
                     {{ errors.title }}
-                  </span>
-                </div>
-
-                <!-- Category -->
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">
-                    Kategori *
-                  </label>
-                  <select
-                    v-model="form.category"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    required
-                  >
-                    <option value="">Pilih kategori</option>
-                    <option value="layanan">Keluhan Layanan</option>
-                    <option value="administrasi">Keluhan Administrasi</option>
-                    <option value="staff">Keluhan Terhadap Staff</option>
-                    <option value="fasilitas">Keluhan Fasilitas</option>
-                    <option value="umum">Lainnya</option>
-                  </select>
-                  <span v-if="errors.category" class="text-sm text-red-600">
-                    {{ errors.category }}
                   </span>
                 </div>
 
@@ -236,7 +234,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { usePage } from '@inertiajs/vue3'
 import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild } from '@headlessui/vue'
 
@@ -251,7 +249,7 @@ const props = defineProps({
   },
   serviceSlug: {
     type: String,
-    required: true,
+    default: '',
   },
 })
 
@@ -272,18 +270,45 @@ const form = ref({
   contact_phone: '',
 })
 
-const whatsappNumber = '6283128848371'
+const selectedServiceSlug = ref('')
+const servicesList = [
+  { slug: 'pemerintahan', name: 'Pemerintahan' },
+  { slug: 'pendidikan', name: 'Pendidikan' },
+  { slug: 'kesehatan', name: 'Kesehatan' },
+  { slug: 'perindagkop-ukm', name: 'Perindagkop UKM' },
+  { slug: 'hukum', name: 'Hukum' },
+  { slug: 'sosial', name: 'Sosial' },
+  { slug: 'kependudukan', name: 'Kependudukan' },
+  { slug: 'kepegawaian', name: 'Kepegawaian' },
+  { slug: 'lingkungan', name: 'Lingkungan' },
+  { slug: 'geografis', name: 'Geografis' },
+  { slug: 'pariwisata', name: 'Pariwisata' },
+  { slug: 'data-sektoral', name: 'Data Sektoral' },
+]
+
+// Auto-fill user details if logged in when modal is opened
+watch(() => props.isOpen, (newVal) => {
+  if (newVal) {
+    if (page.props.auth?.user) {
+      form.value.contact_person_name = page.props.auth.user.name || ''
+      form.value.contact_email = page.props.auth.user.email || ''
+    }
+  }
+})
+
+const whatsappNumber = page.props.whatsapp?.complaint_phone ?? '6283128848371'
 
 const buildWhatsAppUrl = () => {
+  const activeServiceName = props.serviceSlug
+    ? props.serviceName
+    : (servicesList.find(s => s.slug === selectedServiceSlug.value)?.name || 'Layanan')
+
   const message = [
     '*PENGADUAN BARU*',
     '',
-    `*Layanan:* ${props.serviceName}`,
+    `*Layanan:* ${activeServiceName}`,
     `*Judul:* ${form.value.title}`,
-    `*Kategori:* ${form.value.category}`,
     `*Nama:* ${form.value.contact_person_name}`,
-    `*Email:* ${form.value.contact_email}`,
-    `*Telepon:* ${form.value.contact_phone}`,
     '*Deskripsi:*',
     form.value.description,
   ].join('\n')
@@ -305,6 +330,7 @@ const resetForm = ({ keepSuccess = false } = {}) => {
     contact_email: '',
     contact_phone: '',
   }
+  selectedServiceSlug.value = ''
   errors.value = {}
   if (!keepSuccess) isSuccess.value = false
 }
@@ -322,7 +348,7 @@ const submitComplaint = async () => {
         'X-CSRF-TOKEN': page.props.csrf_token ?? document.querySelector('meta[name="csrf-token"]')?.content ?? '',
       },
       body: JSON.stringify({
-        service_slug: props.serviceSlug,
+        service_slug: props.serviceSlug || selectedServiceSlug.value,
         ...form.value,
       }),
     })
