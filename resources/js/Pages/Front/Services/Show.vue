@@ -532,7 +532,7 @@ const getPasarBarPercent = (val) => {
                             <span>{{ serviceIcon }}</span>
                             <span>Data & Informasi</span>
                         </div>
-                        <h1 class="mt-3 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl dark:text-white">
+                        <h1 class="mt-3 text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl dark:text-white">
                             {{ title }}
                         </h1>
                         <p class="mt-1.5 max-w-2xl text-sm leading-6 text-slate-500 dark:text-slate-400">
@@ -586,7 +586,7 @@ const getPasarBarPercent = (val) => {
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                         <div>
                             <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Visualisasi</p>
-                            <h2 class="mt-0.5 text-lg font-semibold text-slate-900 dark:text-white">
+                            <h2 class="mt-0.5 text-lg font-extrabold text-slate-900 dark:text-white">
                                 {{ isPerindagkop ? 'Grafik Perbandingan Harga' : 'Tren Data' }}
                             </h2>
                         </div>
@@ -658,7 +658,7 @@ const getPasarBarPercent = (val) => {
                                 </div>
                                 <div v-else class="space-y-6 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
                                     <div class="flex items-center justify-between text-xs font-semibold text-slate-500 border-b border-slate-200/40 pb-2 dark:text-slate-400 dark:border-slate-800/60">
-                                        <span>Komoditas Pokok</span>
+                                        <span class="font-bold text-slate-700 dark:text-slate-300">Komoditas Pokok</span>
                                         <div class="flex gap-4">
                                             <span class="flex items-center gap-1.5">
                                                 <span class="h-2.5 w-2.5 rounded bg-slate-400"></span>
@@ -743,7 +743,7 @@ const getPasarBarPercent = (val) => {
                                 </div>
                                 <div v-else class="space-y-6">
                                     <div class="flex items-center justify-between text-xs font-semibold text-slate-500 border-b border-slate-200/40 pb-2 dark:text-slate-400 dark:border-slate-800/60">
-                                        <span>Barang Penting</span>
+                                        <span class="font-bold text-slate-700 dark:text-slate-300">Barang Penting</span>
                                         <div class="flex gap-4">
                                             <span class="flex items-center gap-1.5">
                                                 <span class="h-2.5 w-2.5 rounded bg-slate-400"></span>
@@ -862,7 +862,7 @@ const getPasarBarPercent = (val) => {
                     <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 space-y-4 dark:border-slate-800 dark:bg-slate-900">
                         <div>
                             <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Tabel Data</p>
-                            <h3 class="mt-0.5 text-base font-semibold text-slate-900 dark:text-white">Perbandingan Harga Barang Kebutuhan Pokok</h3>
+                            <h3 class="mt-0.5 text-base font-extrabold text-slate-900 dark:text-white">Perbandingan Harga Barang Kebutuhan Pokok</h3>
                         </div>
                         
                         <div v-if="!hasBasicPriceTrends" class="rounded-xl border border-dashed border-slate-200 bg-slate-50/60 p-6 text-center text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-900/50">
@@ -907,7 +907,7 @@ const getPasarBarPercent = (val) => {
                     <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 space-y-4 dark:border-slate-800 dark:bg-slate-900">
                         <div>
                             <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Tabel Data</p>
-                            <h3 class="mt-0.5 text-base font-semibold text-slate-900 dark:text-white">Perbandingan Harga Barang Penting</h3>
+                            <h3 class="mt-0.5 text-base font-extrabold text-slate-900 dark:text-white">Perbandingan Harga Barang Penting</h3>
                         </div>
                         
                         <div v-if="!hasImportantPriceTrends" class="rounded-xl border border-dashed border-slate-200 bg-slate-50/60 p-6 text-center text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-900/50">
@@ -956,7 +956,7 @@ const getPasarBarPercent = (val) => {
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between border-b border-slate-200/60 pb-5 dark:border-slate-800/80">
                         <div>
                             <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Data & Informasi</p>
-                            <h2 class="mt-0.5 text-lg font-semibold text-slate-900 dark:text-white">Stok Barang Kebutuhan Pokok</h2>
+                            <h2 class="mt-0.5 text-lg font-extrabold text-slate-900 dark:text-white">Stok Barang Kebutuhan Pokok</h2>
                         </div>
                         <div class="flex flex-wrap items-center gap-4">
                             <div class="flex flex-col gap-1.5">
@@ -1062,7 +1062,7 @@ const getPasarBarPercent = (val) => {
                 <aside v-if="isPerindagkop && activeTab === 'stok'" :key="'table-stok-' + activeTab + '-' + stokDate + '-' + stokCompDate" class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900 space-y-4 animate-fade-in-up [animation-delay:300ms]">
                     <div>
                         <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Tabel Data</p>
-                        <h3 class="mt-0.5 text-base font-semibold text-slate-900 dark:text-white">Daftar Stok & Selisih</h3>
+                        <h3 class="mt-0.5 text-base font-extrabold text-slate-900 dark:text-white">Daftar Stok & Selisih</h3>
                     </div>
                     
                     <div class="overflow-hidden rounded-xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900">
@@ -1106,7 +1106,7 @@ const getPasarBarPercent = (val) => {
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between border-b border-slate-200/60 pb-5 dark:border-slate-800/80">
                         <div>
                             <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Data & Informasi</p>
-                            <h2 class="mt-0.5 text-lg font-semibold text-slate-900 dark:text-white">Harga Komoditi per Pasar</h2>
+                            <h2 class="mt-0.5 text-lg font-extrabold text-slate-900 dark:text-white">Harga Komoditi per Pasar</h2>
                         </div>
                         <div class="flex flex-wrap items-center gap-4">
                             <div class="flex flex-col gap-1.5">
@@ -1194,7 +1194,7 @@ const getPasarBarPercent = (val) => {
                 <aside v-if="isPerindagkop && activeTab === 'pasar'" :key="'table-pasar-' + activeTab + '-' + pasarSelectedCommodity + '-' + pasarSelectedDate" class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900 space-y-4 animate-fade-in-up [animation-delay:300ms]">
                     <div>
                         <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Tabel Data</p>
-                        <h3 class="mt-0.5 text-base font-semibold text-slate-900 dark:text-white">Rincian Harga</h3>
+                        <h3 class="mt-0.5 text-base font-extrabold text-slate-900 dark:text-white">Rincian Harga</h3>
                     </div>
                     
                     <div class="overflow-hidden rounded-xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900">

@@ -87,7 +87,7 @@ const center = [-2.45, 106.15]
                 <!-- List Card -->
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5">
                     <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-lg font-semibold text-slate-900">Daftar CCTV</h2>
+                        <h2 class="text-lg font-bold text-slate-900">Daftar CCTV</h2>
                         <span class="text-sm text-slate-400 bg-slate-100 px-3 py-0.5 rounded-full">
                             {{ cctvs?.length ?? 0 }}
                         </span>
