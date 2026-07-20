@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { Head, Link, router } from '@inertiajs/vue3'
 import FrontLayout from '@/Layouts/FrontLayout.vue'
 
@@ -238,8 +238,8 @@ const resetFilters = () => {
     applyFilters()
 }
 
-// --- Perindagkop Extension: Tabs, Stok Bapok, & Harga Per Pasar ---
-const activeTab = ref('harga')
+const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
+const activeTab = ref(urlParams ? (urlParams.get('tab') || 'harga') : 'harga')
 
 const todayStr = '2026-07-20' // Set based on the user's current date metadata to ensure consistency
 
@@ -330,15 +330,42 @@ const handleStokCompDateChange = () => {
 }
 
 // Tab 3 (Harga Per Pasar) Refs & Logic
-const pasarSelectedCommodity = ref('Cabai Merah')
-const pasarSelectedDate = ref(todayStr)
+const pasarSelectedCommodity = ref(props.dashboard?.pasar_commodity || 'Daging Sapi')
+const pasarSelectedDate = ref(props.dashboard?.pasar_date || todayStr)
+
+watch(() => props.dashboard?.pasar_commodity, (newVal) => {
+    if (newVal) pasarSelectedCommodity.value = newVal
+})
+watch(() => props.dashboard?.pasar_date, (newVal) => {
+    if (newVal) pasarSelectedDate.value = newVal
+})
+
+const applyPasarFilters = () => {
+    router.get(`/layanan/${props.service.slug}`, {
+        start_date: selectedStartDate.value || undefined,
+        end_date: selectedEndDate.value || undefined,
+        pasar_id: selectedPasar.value || undefined,
+        pasar_date: pasarSelectedDate.value || undefined,
+        pasar_commodity: pasarSelectedCommodity.value || undefined,
+        tab: 'pasar'
+    }, {
+        preserveState: true,
+        preserveScroll: true,
+    })
+}
 
 const handlePasarDateChange = () => {
     if (!pasarSelectedDate.value) return
-    if (pasarSelectedDate.value > todayStr) {
-        alert('Tanggal tidak boleh melebihi tanggal hari ini!')
-        pasarSelectedDate.value = todayStr
+    if (pasarSelectedDate.value > latestDateLimit.value) {
+        alert(`Tanggal tidak boleh melebihi tanggal terkini (${latestDateLimit.value})!`)
+        pasarSelectedDate.value = latestDateLimit.value
+        return
     }
+    applyPasarFilters()
+}
+
+const handlePasarCommodityChange = () => {
+    applyPasarFilters()
 }
 
 // Deterministic seed helper
@@ -404,11 +431,11 @@ const stokCommodities = [
     'Bawang Merah', 'Daging Ayam'
 ]
 
-const pasarCommodities = [
-    'Cabai Merah', 'Minyak Goreng', 'Tepung Terigu', 'Telur Ayam', 
-    'Beras Premium', 'Daging Sapi', 'Gula Pasir', 'Bawang Merah', 
-    'Daging Ayam'
-]
+const pasarCommodities = computed(() => props.dashboard?.pasar_commodities || [
+    'Daging Sapi', 'Cabe Merah Besar', 'Cabe Rawit Merah', 'Bawang Merah', 'Bawang Putih', 
+    'Daging Ayam Ras', 'Telur Ayam Ras', 'Minyak Goreng Kemasan Premium', 'Gula Pasir', 
+    'Beras Premium', 'Beras Medium', 'Tepung Terigu'
+])
 
 const stokChartData = computed(() => {
     if (!stokDate.value || !stokCompDate.value) return []
@@ -437,17 +464,7 @@ const getStokBarWidth = (val) => {
     return Math.max(0, Math.min(100, Math.ceil((val / maxStokValue.value) * 100)))
 }
 
-const pasarChartData = computed(() => {
-    if (!pasarSelectedCommodity.value || !pasarSelectedDate.value) return []
-    return Object.entries(pasarMap).map(([id, name]) => {
-        const price = getMockPrice(pasarSelectedCommodity.value, id, pasarSelectedDate.value)
-        return {
-            id,
-            name,
-            price
-        }
-    })
-})
+const pasarChartData = computed(() => props.dashboard?.pasar_chart_data || [])
 
 const maxPasarPrice = computed(() => {
     let maxVal = 1
@@ -679,6 +696,10 @@ const getPasarBarPercent = (val) => {
                                                             <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900/95 dark:border-t-slate-800/95"></div>
                                                         </div>
                                                     </div>
+                                                    <!-- Price Label on the right -->
+                                                    <span class="w-24 text-right text-xs font-semibold text-slate-700 dark:text-slate-300">
+                                                        {{ basicChartData.series_i[idx] > 0 ? 'Rp ' + formatNumber(basicChartData.series_i[idx]) : '-' }}
+                                                    </span>
                                                 </div>
                                                 <!-- Bar Price II -->
                                                 <div class="flex items-center gap-3">
@@ -699,6 +720,10 @@ const getPasarBarPercent = (val) => {
                                                             <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900/95 dark:border-t-slate-800/95"></div>
                                                         </div>
                                                     </div>
+                                                    <!-- Price Label on the right -->
+                                                    <span class="w-24 text-right text-xs font-semibold text-slate-700 dark:text-slate-300">
+                                                        {{ basicChartData.series_ii[idx] > 0 ? 'Rp ' + formatNumber(basicChartData.series_ii[idx]) : '-' }}
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
@@ -754,6 +779,10 @@ const getPasarBarPercent = (val) => {
                                                             <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900/95 dark:border-t-slate-800/95"></div>
                                                         </div>
                                                     </div>
+                                                    <!-- Price Label on the right -->
+                                                    <span class="w-24 text-right text-xs font-semibold text-slate-700 dark:text-slate-300">
+                                                        {{ importantChartData.series_i[idx] > 0 ? 'Rp ' + formatNumber(importantChartData.series_i[idx]) : '-' }}
+                                                    </span>
                                                 </div>
                                                 <!-- Bar Price II -->
                                                 <div class="flex items-center gap-3">
@@ -774,6 +803,10 @@ const getPasarBarPercent = (val) => {
                                                             <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900/95 dark:border-t-slate-800/95"></div>
                                                         </div>
                                                     </div>
+                                                    <!-- Price Label on the right -->
+                                                    <span class="w-24 text-right text-xs font-semibold text-slate-700 dark:text-slate-300">
+                                                        {{ importantChartData.series_ii[idx] > 0 ? 'Rp ' + formatNumber(importantChartData.series_ii[idx]) : '-' }}
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
@@ -1074,6 +1107,7 @@ const getPasarBarPercent = (val) => {
                                 <div class="relative">
                                     <select
                                         v-model="pasarSelectedCommodity"
+                                        @change="handlePasarCommodityChange"
                                         class="h-9 w-48 appearance-none rounded-lg border border-slate-200 bg-slate-50 px-3 pr-8 text-sm text-slate-700 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
                                     >
                                         <option v-for="c in pasarCommodities" :key="c" :value="c">{{ c }}</option>
@@ -1137,7 +1171,7 @@ const getPasarBarPercent = (val) => {
                                     </div>
                                     <!-- Vertical Label (no transform rotation, uses vertical-rl mode for perfect fit without scroll) -->
                                     <div 
-                                        class="absolute top-[102%] left-1/2 transform -translate-x-1/2 text-[10px] font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap text-left pt-2"
+                                        class="absolute top-[102%] left-1/2 transform -translate-x-1/2 text-xs font-semibold text-slate-600 dark:text-slate-300 whitespace-nowrap text-left pt-2"
                                         style="writing-mode: vertical-rl; text-orientation: mixed;"
                                     >
                                         {{ item.name }}
@@ -1168,7 +1202,7 @@ const getPasarBarPercent = (val) => {
                                     <tr v-for="item in pasarChartData" :key="item.id" class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition">
                                         <td class="px-3 py-3 text-slate-700 dark:text-slate-300 font-semibold text-xs">{{ item.name }}</td>
                                         <td class="px-3 py-3 text-right font-bold text-slate-900 dark:text-white text-xs whitespace-nowrap">
-                                            {{ item.price > 0 ? 'Rp ' + formatNumber(item.price) : 'Tidak Tersedia' }}
+                                            {{ item.price > 0 ? 'Rp ' + formatNumber(item.price) : 'data tidak tersedia' }}
                                         </td>
                                     </tr>
                                 </tbody>
