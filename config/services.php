@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'whatsapp' => [
+        // Format internasional tanpa tanda +, misalnya 628123456789.
+        'complaint_phone' => env('WHATSAPP_COMPLAINT_PHONE', '6283128848371'),
+    ],
+
 ];
