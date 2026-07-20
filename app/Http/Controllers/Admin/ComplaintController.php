@@ -203,6 +203,6 @@ class ComplaintController extends Controller
 
     private function whatsAppUrl(Complaint $complaint, string $whatsappPhone): string
     {
-        return "https://wa.me/{+6283128848371}?text=".rawurlencode($this->formatWhatsAppMessage($complaint));
+        return "https://wa.me/{$whatsappPhone}?text=".rawurlencode($this->formatWhatsAppMessage($complaint));
     }
 }

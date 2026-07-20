@@ -105,7 +105,7 @@ defineProps({
         </Link>
 
         <Link
-            href="/admin/cctv"
+            href="admin/cctv"
             class="px-6 py-3 rounded-xl bg-gray-800 text-white hover:bg-black">
 
             CCTV
