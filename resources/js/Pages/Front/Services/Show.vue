@@ -237,6 +237,243 @@ const resetFilters = () => {
     selectedPasar.value = ''
     applyFilters()
 }
+
+// --- Perindagkop Extension: Tabs, Stok Bapok, & Harga Per Pasar ---
+const activeTab = ref('harga')
+
+const todayStr = '2026-07-20' // Set based on the user's current date metadata to ensure consistency
+
+// Helper to check if a date is Monday
+const isMonday = (dateStr) => {
+    if (!dateStr) return false
+    const date = new Date(dateStr)
+    return date.getDay() === 1
+}
+
+// Helper to get nearest Monday (backward or forward)
+const getNearestMonday = (dateStr) => {
+    if (!dateStr) return ''
+    const date = new Date(dateStr)
+    const day = date.getDay()
+    if (day === 1) return dateStr
+    
+    const diff = 1 - day
+    // Adjust to nearest Monday
+    let adjustDays = diff
+    if (day === 0) adjustDays = -6 // Sunday to previous Monday
+    else if (day > 1) adjustDays = 1 - day // Tue-Sat to previous Monday
+    
+    date.setDate(date.getDate() + adjustDays)
+    
+    // Check if the result is in the future
+    if (date > new Date(todayStr)) {
+        date.setDate(date.getDate() - 7)
+    }
+    
+    return date.toISOString().split('T')[0]
+}
+
+// Tab 2 (Stok Bapok) Refs & Logic
+const stokDate = ref(getNearestMonday(todayStr))
+const stokCompDate = ref('')
+
+// Set default comparison date to the Monday before stokDate
+const initStokCompDate = () => {
+    if (stokDate.value) {
+        const date = new Date(stokDate.value)
+        date.setDate(date.getDate() - 7)
+        stokCompDate.value = date.toISOString().split('T')[0]
+    }
+}
+initStokCompDate()
+
+const handleStokDateChange = () => {
+    if (!stokDate.value) return
+    
+    if (stokDate.value > todayStr) {
+        alert('Tanggal Stok tidak boleh melebihi tanggal hari ini!')
+        stokDate.value = getNearestMonday(todayStr)
+        return
+    }
+    
+    if (!isMonday(stokDate.value)) {
+        const adjusted = getNearestMonday(stokDate.value)
+        alert(`Tanggal Stok hanya boleh hari Senin. Tanggal disesuaikan ke hari Senin terdekat: ${formatDateDMY(adjusted)}.`);
+        stokDate.value = adjusted
+    }
+    
+    if (stokDate.value === stokCompDate.value) {
+        alert('Tanggal Pembanding tidak boleh sama dengan Tanggal Stok!');
+        initStokCompDate()
+    }
+}
+
+const handleStokCompDateChange = () => {
+    if (!stokCompDate.value) return
+    
+    if (stokCompDate.value > todayStr) {
+        alert('Tanggal Pembanding tidak boleh melebihi tanggal hari ini!')
+        initStokCompDate()
+        return
+    }
+    
+    if (stokCompDate.value === stokDate.value) {
+        alert('Tanggal Pembanding tidak boleh sama dengan Tanggal Stok!');
+        initStokCompDate()
+    }
+}
+
+// Tab 3 (Harga Per Pasar) Refs & Logic
+const pasarSelectedCommodity = ref('Cabai Merah')
+const pasarSelectedDate = ref(todayStr)
+
+const handlePasarDateChange = () => {
+    if (!pasarSelectedDate.value) return
+    if (pasarSelectedDate.value > todayStr) {
+        alert('Tanggal tidak boleh melebihi tanggal hari ini!')
+        pasarSelectedDate.value = todayStr
+    }
+}
+
+// Deterministic seed helper
+const seedRandom = (str) => {
+    let hash = 0
+    for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash)
+    }
+    return Math.abs(hash)
+}
+
+// Mock Bapok Stock Generator
+const getMockStock = (commodity, dateStr) => {
+    const seed = seedRandom(commodity + dateStr)
+    const baseStocks = {
+        'Beras Premium': 150,
+        'Beras Medium': 200,
+        'Gula Pasir': 80,
+        'Minyak Goreng': 120,
+        'Tepung Terigu': 60,
+        'Cabai Merah': 25,
+        'Daging Sapi': 15,
+        'Telur Ayam': 40,
+        'Bawang Merah': 30,
+        'Daging Ayam': 35
+    }
+    const base = baseStocks[commodity] ?? 50
+    const variation = ((seed % 30) - 15) / 100
+    return Math.round(base * (1 + variation))
+}
+
+// Mock Harga Per Pasar Generator
+const getMockPrice = (commodity, pasarId, dateStr) => {
+    const seed = seedRandom(commodity + pasarId + dateStr)
+    const basePrices = {
+        'Cabai Merah': 45000,
+        'Minyak Goreng': 17500,
+        'Tepung Terigu': 12500,
+        'Telur Ayam': 28000,
+        'Beras Premium': 14500,
+        'Beras Medium': 12500,
+        'Daging Sapi': 130000,
+        'Gula Pasir': 16000,
+        'Bawang Merah': 38000,
+        'Daging Ayam': 34000
+    }
+    const base = basePrices[commodity] ?? 20000
+    const marketSeed = seedRandom(commodity + pasarId)
+    const dateSeed = seedRandom(commodity + dateStr)
+    const mVar = ((marketSeed % 20) - 10) / 100 // market difference
+    const dVar = ((dateSeed % 10) - 5) / 100  // daily price fluctuation
+    
+    // Simulate ~15% chance of missing data for realistic look
+    const isReporting = (seed % 100) >= 15
+    if (!isReporting) return 0
+    
+    return Math.round((base * (1 + mVar + dVar)) / 100) * 100
+}
+
+const stokCommodities = [
+    'Beras Premium', 'Beras Medium', 'Gula Pasir', 'Minyak Goreng', 
+    'Tepung Terigu', 'Cabai Merah', 'Daging Sapi', 'Telur Ayam', 
+    'Bawang Merah', 'Daging Ayam'
+]
+
+const pasarCommodities = [
+    'Cabai Merah', 'Minyak Goreng', 'Tepung Terigu', 'Telur Ayam', 
+    'Beras Premium', 'Daging Sapi', 'Gula Pasir', 'Bawang Merah', 
+    'Daging Ayam'
+]
+
+const stokChartData = computed(() => {
+    if (!stokDate.value || !stokCompDate.value) return []
+    return stokCommodities.map(name => {
+        const qtyStok = getMockStock(name, stokDate.value)
+        const qtyComp = getMockStock(name, stokCompDate.value)
+        return {
+            name,
+            qtyStok,
+            qtyComp,
+            diff: qtyStok - qtyComp
+        }
+    })
+})
+
+const maxStokValue = computed(() => {
+    let maxVal = 1
+    stokChartData.value.forEach(item => {
+        if (item.qtyStok > maxVal) maxVal = item.qtyStok
+        if (item.qtyComp > maxVal) maxVal = item.qtyComp
+    })
+    return maxVal
+})
+
+const getStokBarWidth = (val) => {
+    return Math.max(0, Math.min(100, Math.ceil((val / maxStokValue.value) * 100)))
+}
+
+const pasarChartData = computed(() => {
+    if (!pasarSelectedCommodity.value || !pasarSelectedDate.value) return []
+    return Object.entries(pasarMap).map(([id, name]) => {
+        const price = getMockPrice(pasarSelectedCommodity.value, id, pasarSelectedDate.value)
+        return {
+            id,
+            name,
+            price
+        }
+    })
+})
+
+const maxPasarPrice = computed(() => {
+    let maxVal = 1
+    pasarChartData.value.forEach(item => {
+        if (item.price > maxVal) maxVal = item.price
+    })
+    return maxVal
+})
+
+const yAxisTicks = computed(() => {
+    const maxVal = maxPasarPrice.value
+    return [
+        maxVal,
+        Math.round(maxVal * 0.8),
+        Math.round(maxVal * 0.6),
+        Math.round(maxVal * 0.4),
+        Math.round(maxVal * 0.2),
+        0
+    ]
+})
+
+const getPasarBarWidth = (val) => {
+    return Math.max(0, Math.min(100, Math.ceil((val / maxPasarPrice.value) * 100)))
+}
+
+const getStokBarPercent = (val) => {
+    return Math.max(1, Math.min(100, Math.ceil((val / maxStokValue.value) * 100)))
+}
+
+const getPasarBarPercent = (val) => {
+    return Math.max(1, Math.min(100, Math.ceil((val / maxPasarPrice.value) * 100)))
+}
 </script>
 
 <template>
@@ -283,11 +520,45 @@ const resetFilters = () => {
                 </div>
             </div>
 
+            <!-- Menu Bar Section (only for Perindagkop) -->
+            <div v-if="isPerindagkop" class="mt-6 flex flex-wrap gap-2 rounded-xl bg-slate-100 p-1.5 dark:bg-slate-800/60 w-full">
+                <button
+                    @click="activeTab = 'harga'"
+                    type="button"
+                    class="flex-1 rounded-lg px-4 py-2 text-center text-sm font-semibold transition-all duration-200 select-none cursor-pointer"
+                    :class="activeTab === 'harga' 
+                        ? 'bg-white text-cyan-600 shadow-sm dark:bg-slate-700 dark:text-cyan-400' 
+                        : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200'"
+                >
+                    Perbandingan Harga Barang
+                </button>
+                <button
+                    @click="activeTab = 'stok'"
+                    type="button"
+                    class="flex-1 rounded-lg px-4 py-2 text-center text-sm font-semibold transition-all duration-200 select-none cursor-pointer"
+                    :class="activeTab === 'stok' 
+                        ? 'bg-white text-cyan-600 shadow-sm dark:bg-slate-700 dark:text-cyan-400' 
+                        : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200'"
+                >
+                    Stok Bapok
+                </button>
+                <button
+                    @click="activeTab = 'pasar'"
+                    type="button"
+                    class="flex-1 rounded-lg px-4 py-2 text-center text-sm font-semibold transition-all duration-200 select-none cursor-pointer"
+                    :class="activeTab === 'pasar' 
+                        ? 'bg-white text-cyan-600 shadow-sm dark:bg-slate-700 dark:text-cyan-400' 
+                        : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200'"
+                >
+                    Harga Per Pasar
+                </button>
+            </div>
+
             <!-- Main Grid -->
             <div class="mt-6 grid gap-6" :class="isPerindagkop ? 'lg:grid-cols-[2fr_1fr]' : 'grid-cols-1'">
 
-                <!-- Chart Section -->
-                <section class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900">
+                <!-- Chart Section (Tab 1 / Non-Perindagkop) -->
+                <section v-if="!isPerindagkop || activeTab === 'harga'" class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900">
                     <!-- Filter Controls -->
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                         <div>
@@ -541,7 +812,7 @@ const resetFilters = () => {
                 </section>
 
                 <!-- Sidebar -->
-                <aside v-if="isPerindagkop" class="space-y-6">
+                <aside v-if="isPerindagkop && activeTab === 'harga'" class="space-y-6">
 
                     <!-- 1. Perbandingan Harga Barang Kebutuhan Pokok -->
                     <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 space-y-4 dark:border-slate-800 dark:bg-slate-900">
@@ -633,6 +904,272 @@ const resetFilters = () => {
                         </div>
                     </div>
 
+                </aside>
+
+                <!-- Stok Bapok Chart Section (Left Column) -->
+                <section v-if="isPerindagkop && activeTab === 'stok'" class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900 space-y-6">
+                    <!-- Filters -->
+                    <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between border-b border-slate-200/60 pb-5 dark:border-slate-800/80">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Data & Informasi</p>
+                            <h2 class="mt-0.5 text-lg font-semibold text-slate-900 dark:text-white">Stok Barang Kebutuhan Pokok</h2>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-4">
+                            <div class="flex flex-col gap-1.5">
+                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Tanggal Stok (Senin)</span>
+                                <input
+                                    type="date"
+                                    v-model="stokDate"
+                                    :max="todayStr"
+                                    @change="handleStokDateChange"
+                                    class="h-9 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-700 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                                />
+                            </div>
+                            <div class="flex flex-col gap-1.5">
+                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Tanggal Pembanding</span>
+                                <input
+                                    type="date"
+                                    v-model="stokCompDate"
+                                    :max="todayStr"
+                                    @change="handleStokCompDateChange"
+                                    class="h-9 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-700 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Double Horizontal Bar Chart -->
+                    <div class="animate-fade-in space-y-4">
+                        <!-- Legend -->
+                        <div class="flex items-center justify-between text-xs font-semibold text-slate-500 border-b border-slate-200/40 pb-3 dark:text-slate-400 dark:border-slate-800/60 mb-6">
+                            <span>Komoditas Pokok</span>
+                            <div class="flex gap-4">
+                                <span class="flex items-center gap-1.5">
+                                    <span class="h-2.5 w-2.5 rounded bg-cyan-600"></span>
+                                    Stok ({{ formatDateDMY(stokDate) }})
+                                </span>
+                                <span class="flex items-center gap-1.5">
+                                    <span class="h-2.5 w-2.5 rounded bg-slate-400"></span>
+                                    Pembanding ({{ formatDateDMY(stokCompDate) }})
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- List of Commodities (Stretches Horizontal) -->
+                        <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                            <div v-for="item in stokChartData" :key="item.name" class="space-y-1.5">
+                                <div class="flex justify-between text-sm font-semibold text-slate-800 dark:text-slate-200">
+                                    <span>{{ item.name }}</span>
+                                </div>
+                                <div class="grid grid-cols-1 gap-2 bg-slate-50/50 dark:bg-slate-900/40 p-2.5 rounded-lg border border-slate-200/40 dark:border-slate-800">
+                                    <!-- Stok Bar -->
+                                    <div class="flex items-center gap-3">
+                                        <span class="w-24 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider text-left">{{ formatDateDMY(stokDate) }}</span>
+                                        <div class="flex-1 relative group py-0.5 focus:outline-none" tabindex="0">
+                                            <div class="bg-slate-200/50 dark:bg-slate-800 h-4 rounded-md overflow-hidden cursor-help">
+                                                <div 
+                                                    class="bg-cyan-600 h-full rounded-r transition-all duration-700 ease-out" 
+                                                    :style="{ width: `${getStokBarWidth(item.qtyStok)}%` }"
+                                                ></div>
+                                            </div>
+                                            <!-- Tooltip Centered on horizontal bar -->
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none transition-all duration-200 ease-out z-30 scale-95 group-hover:scale-100">
+                                                <div class="bg-slate-900/95 dark:bg-slate-800/95 text-white text-[10px] font-semibold px-2 py-1 rounded shadow-md whitespace-nowrap">
+                                                    Jumlah: {{ item.qtyStok }} Ton
+                                                </div>
+                                                <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900/95 dark:border-t-slate-800/95"></div>
+                                            </div>
+                                        </div>
+                                        <span class="w-16 text-right text-xs font-semibold text-slate-700 dark:text-slate-300">{{ item.qtyStok }} Ton</span>
+                                    </div>
+                                    <!-- Comp Bar -->
+                                    <div class="flex items-center gap-3">
+                                        <span class="w-24 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider text-left">{{ formatDateDMY(stokCompDate) }}</span>
+                                        <div class="flex-1 relative group py-0.5 focus:outline-none" tabindex="0">
+                                            <div class="bg-slate-200/50 dark:bg-slate-800 h-4 rounded-md overflow-hidden cursor-help">
+                                                <div 
+                                                    class="bg-slate-400 h-full rounded-r transition-all duration-700 ease-out" 
+                                                    :style="{ width: `${getStokBarWidth(item.qtyComp)}%` }"
+                                                ></div>
+                                            </div>
+                                            <!-- Tooltip Centered on horizontal bar -->
+                                            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none transition-all duration-200 ease-out z-30 scale-95 group-hover:scale-100">
+                                                <div class="bg-slate-900/95 dark:bg-slate-800/95 text-white text-[10px] font-semibold px-2 py-1 rounded shadow-md whitespace-nowrap">
+                                                    Jumlah: {{ item.qtyComp }} Ton
+                                                </div>
+                                                <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900/95 dark:border-t-slate-800/95"></div>
+                                            </div>
+                                        </div>
+                                        <span class="w-16 text-right text-xs font-semibold text-slate-700 dark:text-slate-300">{{ item.qtyComp }} Ton</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Stok Bapok Table Section (Right Column) -->
+                <aside v-if="isPerindagkop && activeTab === 'stok'" class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900 space-y-4">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Tabel Data</p>
+                        <h3 class="mt-0.5 text-base font-semibold text-slate-900 dark:text-white">Daftar Stok & Selisih</h3>
+                    </div>
+                    
+                    <div class="overflow-hidden rounded-xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900">
+                        <div class="overflow-x-auto max-h-[500px] overflow-y-auto custom-scrollbar">
+                            <table class="min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-800">
+                                <thead class="bg-slate-50 sticky top-0 z-10 dark:bg-slate-800">
+                                    <tr>
+                                        <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Komoditas</th>
+                                        <th class="px-3 py-2 text-right font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Selisih</th>
+                                        <th class="px-3 py-2 text-center font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-200 bg-white dark:divide-slate-800 dark:bg-slate-900">
+                                    <tr v-for="item in stokChartData" :key="item.name" class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition">
+                                        <td class="px-3 py-2.5 font-semibold text-slate-800 dark:text-slate-200">
+                                            <div>{{ item.name }}</div>
+                                            <div class="text-[10px] font-normal text-slate-400">
+                                                Stok: {{ item.qtyStok }}T | Pmb: {{ item.qtyComp }}T
+                                            </div>
+                                        </td>
+                                        <td class="px-3 py-2.5 text-right font-semibold whitespace-nowrap text-xs" :class="item.diff > 0 ? 'text-emerald-600' : (item.diff < 0 ? 'text-rose-600' : 'text-slate-500')">
+                                            {{ item.diff > 0 ? '+' : '' }}{{ item.diff }} T
+                                        </td>
+                                        <td class="px-3 py-2.5 text-center">
+                                            <span 
+                                                class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold"
+                                                :class="item.diff > 0 
+                                                    ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400' 
+                                                    : (item.diff < 0 
+                                                        ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-400' 
+                                                        : 'bg-slate-50 text-slate-700 dark:bg-slate-800/50 dark:text-slate-400')"
+                                            >
+                                                {{ item.diff > 0 ? 'Naik' : (item.diff < 0 ? 'Turun' : 'Tetap') }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Harga Per Pasar Chart Section (Left Column) -->
+                <section v-if="isPerindagkop && activeTab === 'pasar'" class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900 space-y-6">
+                    <!-- Filters -->
+                    <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between border-b border-slate-200/60 pb-5 dark:border-slate-800/80">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Data & Informasi</p>
+                            <h2 class="mt-0.5 text-lg font-semibold text-slate-900 dark:text-white">Harga Komoditi per Pasar</h2>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-4">
+                            <div class="flex flex-col gap-1.5">
+                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Komoditas</span>
+                                <div class="relative">
+                                    <select
+                                        v-model="pasarSelectedCommodity"
+                                        class="h-9 w-48 appearance-none rounded-lg border border-slate-200 bg-slate-50 px-3 pr-8 text-sm text-slate-700 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                                    >
+                                        <option v-for="c in pasarCommodities" :key="c" :value="c">{{ c }}</option>
+                                    </select>
+                                    <svg class="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-1.5">
+                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Tanggal</span>
+                                <input
+                                    type="date"
+                                    v-model="pasarSelectedDate"
+                                    :max="todayStr"
+                                    @change="handlePasarDateChange"
+                                    class="h-9 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-700 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vertical Single Bar Chart (Harga Per Pasar) -->
+                    <div class="relative bg-slate-50/50 dark:bg-slate-900/40 p-4 rounded-xl border border-slate-200/50 dark:border-slate-800/80 animate-fade-in">
+                        <div class="text-xs font-bold uppercase tracking-[0.16em] text-slate-500 border-b border-slate-200/40 pb-3 dark:text-slate-400 dark:border-slate-800/60 mb-6">
+                            Grafik Harga {{ pasarSelectedCommodity }} Per Pasar ({{ formatDateDMY(pasarSelectedDate) }})
+                        </div>
+                        
+                        <!-- Chart container with Y-axis on the left -->
+                        <div class="flex gap-4">
+                            <!-- Y-axis scale -->
+                            <div class="h-96 flex flex-col justify-between text-right text-[10px] font-semibold text-slate-400 dark:text-slate-500 pb-36 pt-4 pr-1 w-16 select-none relative">
+                                <div v-for="(tick, idx) in yAxisTicks" :key="idx" class="h-0 flex items-center justify-end relative">
+                                    <span class="absolute right-0">Rp {{ formatNumber(tick) }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Chart Box - full width, high bottom padding for vertical labels, no horizontal scroll -->
+                            <div class="flex-1 h-96 flex items-end justify-between border-b border-slate-200 dark:border-slate-800 pb-36 pt-4 gap-2 relative">
+                                <!-- Horizontal Gridlines -->
+                                <div class="absolute inset-0 pb-36 pt-4 flex flex-col justify-between pointer-events-none">
+                                    <div v-for="n in 5" :key="n" class="w-full border-t border-slate-100 dark:border-slate-800/40 h-0"></div>
+                                </div>
+
+                                <div v-for="item in pasarChartData" :key="item.id" class="flex-1 flex flex-col items-center h-full justify-end relative group z-10">
+                                    <!-- Bar -->
+                                    <div class="flex items-end justify-center w-full h-full relative">
+                                        <div 
+                                            v-if="item.price > 0"
+                                            class="w-full max-w-[28px] bg-gradient-to-t from-cyan-600 to-cyan-500 rounded-t-sm hover:from-cyan-500 hover:to-cyan-400 transition-all duration-300 relative group cursor-help"
+                                            :style="{ height: `${getPasarBarPercent(item.price)}%` }"
+                                        >
+                                            <!-- Centered Tooltip inside the bar, preventing top boundary clip -->
+                                            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 ease-out z-30 scale-95 group-hover:scale-100">
+                                                <div class="bg-slate-900/95 dark:bg-slate-800/95 text-white text-[10px] font-semibold px-2.5 py-1 rounded shadow-md border border-slate-700/30 whitespace-nowrap">
+                                                    Rp {{ formatNumber(item.price) }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <span v-else class="text-[10px] text-slate-400 font-semibold mb-2">T/D</span>
+                                    </div>
+                                    <!-- Vertical Label (no transform rotation, uses vertical-rl mode for perfect fit without scroll) -->
+                                    <div 
+                                        class="absolute top-[102%] left-1/2 transform -translate-x-1/2 text-[10px] font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap text-left pt-2"
+                                        style="writing-mode: vertical-rl; text-orientation: mixed;"
+                                    >
+                                        {{ item.name }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Harga Per Pasar Table Section (Right Column) -->
+                <aside v-if="isPerindagkop && activeTab === 'pasar'" class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900 space-y-4">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Tabel Data</p>
+                        <h3 class="mt-0.5 text-base font-semibold text-slate-900 dark:text-white">Rincian Harga</h3>
+                    </div>
+                    
+                    <div class="overflow-hidden rounded-xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900">
+                        <div class="overflow-x-auto max-h-[500px] overflow-y-auto custom-scrollbar">
+                            <table class="min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-800">
+                                <thead class="bg-slate-50 sticky top-0 z-10 dark:bg-slate-800">
+                                    <tr>
+                                        <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Nama Pasar</th>
+                                        <th class="px-3 py-2 text-right font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Harga</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-200 bg-white dark:divide-slate-800 dark:bg-slate-900">
+                                    <tr v-for="item in pasarChartData" :key="item.id" class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition">
+                                        <td class="px-3 py-3 text-slate-700 dark:text-slate-300 font-semibold text-xs">{{ item.name }}</td>
+                                        <td class="px-3 py-3 text-right font-bold text-slate-900 dark:text-white text-xs whitespace-nowrap">
+                                            {{ item.price > 0 ? 'Rp ' + formatNumber(item.price) : 'Tidak Tersedia' }}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </aside>
             </div>
         </div>
