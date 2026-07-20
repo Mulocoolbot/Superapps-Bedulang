@@ -524,7 +524,7 @@ const getPasarBarPercent = (val) => {
             </Link>
 
             <!-- Header -->
-            <div class="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm sm:p-8 dark:border-slate-800 dark:bg-slate-900">
+            <div class="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm sm:p-8 dark:border-slate-800 dark:bg-slate-900 animate-fade-in-up">
                 <div class="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-cyan-50/60 blur-2xl dark:bg-cyan-950/20" />
                 <div class="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
                     <div>
@@ -544,7 +544,7 @@ const getPasarBarPercent = (val) => {
             </div>
 
             <!-- Menu Bar Section (only for Perindagkop) -->
-            <div v-if="isPerindagkop" class="mt-6 flex flex-wrap gap-2 rounded-xl bg-slate-100 p-1.5 dark:bg-slate-800/60 w-full">
+            <div v-if="isPerindagkop" class="mt-6 flex flex-wrap gap-2 rounded-xl bg-slate-100 p-1.5 dark:bg-slate-800/60 w-full animate-fade-in-up [animation-delay:100ms]">
                 <button
                     @click="activeTab = 'harga'"
                     type="button"
@@ -581,7 +581,7 @@ const getPasarBarPercent = (val) => {
             <div class="mt-6 grid gap-6" :class="isPerindagkop ? 'lg:grid-cols-[2fr_1fr]' : 'grid-cols-1'">
 
                 <!-- Chart Section (Tab 1 / Non-Perindagkop) -->
-                <section v-if="!isPerindagkop || activeTab === 'harga'" class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900">
+                <section v-if="!isPerindagkop || activeTab === 'harga'" :key="activeTab + '-' + selectedStartDate + '-' + selectedEndDate + '-' + selectedType" class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900 animate-fade-in-up [animation-delay:200ms]">
                     <!-- Filter Controls -->
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                         <div>
@@ -684,7 +684,8 @@ const getPasarBarPercent = (val) => {
                                                         <!-- Track -->
                                                         <div class="bg-slate-200/50 dark:bg-slate-800 h-5 rounded-md overflow-hidden cursor-help">
                                                             <div 
-                                                                class="bg-slate-400 h-full rounded-r transition-all duration-700 ease-out" 
+                                                                :key="'basic-i-' + idx + '-' + basicChartData.series_i[idx]"
+                                                                class="bg-slate-400 h-full rounded-r transition-all duration-700 ease-out animate-grow-width" 
                                                                 :style="{ width: `${getBarWidth(basicChartData.series_i[idx])}%` }"
                                                             ></div>
                                                         </div>
@@ -708,7 +709,8 @@ const getPasarBarPercent = (val) => {
                                                         <!-- Track -->
                                                         <div class="bg-slate-200/50 dark:bg-slate-800 h-5 rounded-md overflow-hidden cursor-help">
                                                             <div 
-                                                                class="bg-blue-600 dark:bg-blue-500 h-full rounded-r transition-all duration-700 ease-out" 
+                                                                :key="'basic-ii-' + idx + '-' + basicChartData.series_ii[idx]"
+                                                                class="bg-blue-600 dark:bg-blue-500 h-full rounded-r transition-all duration-700 ease-out animate-grow-width" 
                                                                 :style="{ width: `${getBarWidth(basicChartData.series_ii[idx])}%` }"
                                                             ></div>
                                                         </div>
@@ -767,7 +769,8 @@ const getPasarBarPercent = (val) => {
                                                         <!-- Track -->
                                                         <div class="bg-slate-200/50 dark:bg-slate-800 h-5 rounded-md overflow-hidden cursor-help">
                                                             <div 
-                                                                class="bg-slate-400 h-full rounded-r transition-all duration-700 ease-out" 
+                                                                :key="'important-i-' + idx + '-' + importantChartData.series_i[idx]"
+                                                                class="bg-slate-400 h-full rounded-r transition-all duration-700 ease-out animate-grow-width" 
                                                                 :style="{ width: `${getBarWidth(importantChartData.series_i[idx])}%` }"
                                                             ></div>
                                                         </div>
@@ -791,7 +794,8 @@ const getPasarBarPercent = (val) => {
                                                         <!-- Track -->
                                                         <div class="bg-slate-200/50 dark:bg-slate-800 h-5 rounded-md overflow-hidden cursor-help">
                                                             <div 
-                                                                class="bg-blue-600 dark:bg-blue-500 h-full rounded-r transition-all duration-700 ease-out" 
+                                                                :key="'important-ii-' + idx + '-' + importantChartData.series_ii[idx]"
+                                                                class="bg-blue-600 dark:bg-blue-500 h-full rounded-r transition-all duration-700 ease-out animate-grow-width" 
                                                                 :style="{ width: `${getBarWidth(importantChartData.series_ii[idx])}%` }"
                                                             ></div>
                                                         </div>
@@ -830,7 +834,8 @@ const getPasarBarPercent = (val) => {
                                             <!-- Track -->
                                             <div class="bg-slate-200/50 dark:bg-slate-800 h-6 rounded-md overflow-hidden cursor-help">
                                                 <div 
-                                                    class="bg-cyan-600 dark:bg-cyan-500 h-full rounded-r transition-all duration-700 ease-out" 
+                                                    :key="'generic-' + index + '-' + value"
+                                                    class="bg-cyan-600 dark:bg-cyan-500 h-full rounded-r transition-all duration-700 ease-out animate-grow-width" 
                                                     :style="{ width: `${Math.max(0, Math.min(100, Math.ceil((value / maxChartValue) * 100)))}%` }"
                                                 ></div>
                                             </div>
@@ -851,7 +856,7 @@ const getPasarBarPercent = (val) => {
                 </section>
 
                 <!-- Sidebar -->
-                <aside v-if="isPerindagkop && activeTab === 'harga'" class="space-y-6">
+                <aside v-if="isPerindagkop && activeTab === 'harga'" :key="'sidebar-harga-' + activeTab + '-' + selectedStartDate + '-' + selectedEndDate" class="space-y-6 animate-fade-in-up [animation-delay:300ms]">
 
                     <!-- 1. Perbandingan Harga Barang Kebutuhan Pokok -->
                     <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 space-y-4 dark:border-slate-800 dark:bg-slate-900">
@@ -946,7 +951,7 @@ const getPasarBarPercent = (val) => {
                 </aside>
 
                 <!-- Stok Bapok Chart Section (Left Column) -->
-                <section v-if="isPerindagkop && activeTab === 'stok'" class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900 space-y-6">
+                <section v-if="isPerindagkop && activeTab === 'stok'" :key="'chart-stok-' + activeTab + '-' + stokDate + '-' + stokCompDate" class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900 space-y-6 animate-fade-in-up [animation-delay:200ms]">
                     <!-- Filters -->
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between border-b border-slate-200/60 pb-5 dark:border-slate-800/80">
                         <div>
@@ -1011,7 +1016,8 @@ const getPasarBarPercent = (val) => {
                                         <div class="flex-1 relative group py-0.5 focus:outline-none" tabindex="0">
                                             <div class="bg-slate-200/50 dark:bg-slate-800 h-4 rounded-md overflow-hidden cursor-help">
                                                 <div 
-                                                    class="bg-cyan-600 h-full rounded-r transition-all duration-700 ease-out" 
+                                                    :key="'stok-qty-' + item.name + '-' + item.qtyStok"
+                                                    class="bg-cyan-600 h-full rounded-r transition-all duration-700 ease-out animate-grow-width" 
                                                     :style="{ width: `${getStokBarWidth(item.qtyStok)}%` }"
                                                 ></div>
                                             </div>
@@ -1031,7 +1037,8 @@ const getPasarBarPercent = (val) => {
                                         <div class="flex-1 relative group py-0.5 focus:outline-none" tabindex="0">
                                             <div class="bg-slate-200/50 dark:bg-slate-800 h-4 rounded-md overflow-hidden cursor-help">
                                                 <div 
-                                                    class="bg-slate-400 h-full rounded-r transition-all duration-700 ease-out" 
+                                                    :key="'stok-comp-' + item.name + '-' + item.qtyComp"
+                                                    class="bg-slate-400 h-full rounded-r transition-all duration-700 ease-out animate-grow-width" 
                                                     :style="{ width: `${getStokBarWidth(item.qtyComp)}%` }"
                                                 ></div>
                                             </div>
@@ -1052,7 +1059,7 @@ const getPasarBarPercent = (val) => {
                 </section>
 
                 <!-- Stok Bapok Table Section (Right Column) -->
-                <aside v-if="isPerindagkop && activeTab === 'stok'" class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900 space-y-4">
+                <aside v-if="isPerindagkop && activeTab === 'stok'" :key="'table-stok-' + activeTab + '-' + stokDate + '-' + stokCompDate" class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900 space-y-4 animate-fade-in-up [animation-delay:300ms]">
                     <div>
                         <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Tabel Data</p>
                         <h3 class="mt-0.5 text-base font-semibold text-slate-900 dark:text-white">Daftar Stok & Selisih</h3>
@@ -1094,7 +1101,7 @@ const getPasarBarPercent = (val) => {
                 </aside>
 
                 <!-- Harga Per Pasar Chart Section (Left Column) -->
-                <section v-if="isPerindagkop && activeTab === 'pasar'" class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900 space-y-6">
+                <section v-if="isPerindagkop && activeTab === 'pasar'" :key="'chart-pasar-' + activeTab + '-' + pasarSelectedCommodity + '-' + pasarSelectedDate" class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900 space-y-6 animate-fade-in-up [animation-delay:200ms]">
                     <!-- Filters -->
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between border-b border-slate-200/60 pb-5 dark:border-slate-800/80">
                         <div>
@@ -1157,7 +1164,8 @@ const getPasarBarPercent = (val) => {
                                     <div class="flex items-end justify-center w-full h-full relative">
                                         <div 
                                             v-if="item.price > 0"
-                                            class="w-full max-w-[28px] bg-gradient-to-t from-cyan-600 to-cyan-500 rounded-t-sm hover:from-cyan-500 hover:to-cyan-400 transition-all duration-300 relative group cursor-help"
+                                            :key="'pasar-' + item.id + '-' + item.price"
+                                            class="w-full max-w-[28px] bg-gradient-to-t from-cyan-600 to-cyan-500 rounded-t-sm hover:from-cyan-500 hover:to-cyan-400 transition-all duration-300 relative group cursor-help animate-grow-height"
                                             :style="{ height: `${getPasarBarPercent(item.price)}%` }"
                                         >
                                             <!-- Centered Tooltip inside the bar, preventing top boundary clip -->
@@ -1183,7 +1191,7 @@ const getPasarBarPercent = (val) => {
                 </section>
 
                 <!-- Harga Per Pasar Table Section (Right Column) -->
-                <aside v-if="isPerindagkop && activeTab === 'pasar'" class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900 space-y-4">
+                <aside v-if="isPerindagkop && activeTab === 'pasar'" :key="'table-pasar-' + activeTab + '-' + pasarSelectedCommodity + '-' + pasarSelectedDate" class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900 space-y-4 animate-fade-in-up [animation-delay:300ms]">
                     <div>
                         <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Tabel Data</p>
                         <h3 class="mt-0.5 text-base font-semibold text-slate-900 dark:text-white">Rincian Harga</h3>
@@ -1214,3 +1222,40 @@ const getPasarBarPercent = (val) => {
         </div>
     </FrontLayout>
 </template>
+
+<style scoped>
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes growWidth {
+    from {
+        width: 0%;
+    }
+}
+
+@keyframes growHeight {
+    from {
+        height: 0%;
+    }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-grow-width {
+    animation: growWidth 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-grow-height {
+    animation: growHeight 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+</style>
