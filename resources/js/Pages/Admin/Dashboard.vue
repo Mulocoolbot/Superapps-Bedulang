@@ -90,7 +90,7 @@ defineProps({
 
 <div class="mt-10">
 
-    <h2 class="text-xl font-semibold mb-4">
+    <h2 class="text-xl font-bold mb-4">
         Akses Cepat
     </h2>
 

@@ -1,5 +1,4 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
-// Placeholder API routes file. Add API routes here if needed.
+// API routes are intentionally empty. Complaint submissions use the web
+// middleware group so authenticated browser sessions and CSRF protection apply.

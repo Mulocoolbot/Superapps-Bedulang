@@ -228,7 +228,7 @@ onUnmounted(() => {
                             <a
                                 href="#layanan"
                                 @click.prevent="goToServicesSection('info')"
-                                class="px-7 py-3 rounded-xl border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 dark:hover:bg-gray-700 transition"
+                                class="px-7 py-3 rounded-xl border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 transition"
                             >
                                 Lihat Informasi
                             </a>
