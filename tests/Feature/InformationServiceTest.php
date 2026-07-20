@@ -87,10 +87,8 @@ class InformationServiceTest extends TestCase
             'pasar_id' => '1',
         ]);
 
-        $controller = new \App\Http\Controllers\InformationServiceController;
-        $method = new \ReflectionMethod($controller, 'buildPriceTrends');
-        $method->setAccessible(true);
-        $trends = $method->invoke($controller, $request, 'perindagkop-ukm');
+        $service = new \App\Services\PerindagService;
+        $trends = $service->buildPriceTrends($request, 'perindagkop-ukm');
 
         $this->assertNotEmpty($trends);
         $this->assertSame('Beras', $trends[0]['commodity']);
