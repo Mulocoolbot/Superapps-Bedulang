@@ -36,9 +36,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::middleware(['auth'])->prefix('admin')->group(function () {
         // ... route lain
 
-        Route::get('/cctv',
-        [CCTVController::class,'index'])
+    Route::get('/cctv', [CCTVController::class, 'index'])
         ->name('admin.cctv');
+});
+
 
         // Complaint routes
         Route::get('/complaints', [ComplaintController::class, 'index'])
@@ -72,9 +73,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
         Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])
             ->name('admin.users.destroy');
-    });
-
 });
+
 /*
 |--------------------------------------------------------------------------
 | Profile

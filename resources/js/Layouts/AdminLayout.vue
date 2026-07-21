@@ -41,12 +41,11 @@ const toggleDropdown = () => {
                 </Link>
 
                 <Link
-                    href="admin/cctv"
-                    class="block px-4 py-3 rounded-lg hover:bg-blue-50">
+                href="Admin/CCTV"
+            class="px-6 py-3 rounded-xl bg-gray-800 text-white hover:bg-black">
 
-                    CCTV
-
-                </Link>
+            CCTV
+            </Link>
 
                 <Link
                     href="/admin/complaints"
