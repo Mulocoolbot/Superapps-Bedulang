@@ -47,12 +47,12 @@ const infoServices = [
 ]
 
 const regionalApps = [
-    { name: 'SIPELAWAN', id: 'sipelawan' },
-    { name: 'SIDOLPIN', id: 'sidolpin' },
-    { name: 'SILAKSO', id: 'silakso' },
-    { name: 'SIKOK DATA', id: 'sikok-data' },
-    { name: 'LAPOR PPID', id: 'lapor-ppid' },
-    { name: 'SIMENTARI', id: 'simentari' },
+    { name: 'SIPELAWAN', id: 'sipelawan', url: 'https://dashboard-sipelawan.bangkatengahkab.go.id/dashboard/' },
+    { name: 'SIDOLPIN', id: 'sidolpin', url: 'https://sidolpin.bangkatengahkab.go.id/' },
+    { name: 'SILAKSO', id: 'silakso', url: 'https://silakso.bangkatengahkab.go.id/' },
+    { name: 'SIKOK DATA', id: 'sikok-data', url: 'https://sikokdata.bangkatengahkab.go.id/' },
+    { name: 'LAPOR PPID', id: 'lapor-ppid', url: 'https://www.lapor.go.id/instansi/pemerintah-kabupaten-bangka-tengah' },
+    { name: 'SIMENTARI', id: 'simentari', url: 'https://inspektorat.bangkatengahkab.go.id' },
 ]
 
 const publicServices = [
@@ -299,14 +299,23 @@ const toggleDarkMode = () => {
                     
                     <!-- App Dropdown -->
                     <div class="absolute left-0 top-full hidden group-hover:block w-64 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl py-2 z-50">
-                        <Link 
-                            v-for="app in regionalApps" 
-                            :key="app.name" 
-                            href="/login"
-                            class="block px-5 py-3 hover:bg-blue-50 dark:hover:bg-gray-700 font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
-                        >
-                            {{ app.name }}
-                        </Link>
+                        <template v-for="app in regionalApps" :key="app.name">
+                            <a 
+                                v-if="app.url"
+                                :href="app.url"
+                                target="_blank"
+                                class="block px-5 py-3 hover:bg-blue-50 dark:hover:bg-gray-700 font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
+                            >
+                                {{ app.name }}
+                            </a>
+                            <Link 
+                                v-else
+                                href="/login"
+                                class="block px-5 py-3 hover:bg-blue-50 dark:hover:bg-gray-700 font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
+                            >
+                                {{ app.name }}
+                            </Link>
+                        </template>
                     </div>
                 </div>
 
