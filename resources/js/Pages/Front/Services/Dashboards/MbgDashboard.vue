@@ -23,6 +23,12 @@ const serviceTypes = computed(() =>
 
 const selectedType = ref(serviceTypes.value[0]?.value ?? 'all')
 
+const maxStudentCount = computed(() => {
+    const list = dashboardData.value.tables?.[selectedType.value] || []
+    if (list.length === 0) return 1
+    return Math.max(...list.map(r => (r.jumlah_perempuan || 0) + (r.jumlah_laki || 0)), 1)
+})
+
 const formatNumber = (val) => {
     return new Intl.NumberFormat('id-ID').format(val || 0)
 }
@@ -146,7 +152,7 @@ const formatNumber = (val) => {
                                 <div 
                                     class="bg-blue-600 dark:bg-blue-500 h-full rounded-full transition-all duration-700 ease-out animate-grow-width" 
                                     :style="{ 
-                                        width: `${Math.max(5, Math.min(100, Math.ceil(((row.jumlah_perempuan + row.jumlah_laki) / 1000) * 100)))}%` 
+                                        width: `${Math.max(5, Math.min(100, Math.ceil(((row.jumlah_perempuan + row.jumlah_laki) / maxStudentCount) * 100)))}%` 
                                     }"
                                 ></div>
                             </div>
