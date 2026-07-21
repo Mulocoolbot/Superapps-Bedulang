@@ -35,7 +35,7 @@
 
                 <div>
 
-                    <h4 class="font-semibold text-lg mb-5">
+                    <h4 class="font-bold text-lg mb-5">
                         Kontak
                     </h4>
 
@@ -55,7 +55,7 @@
 
                 <div>
 
-                    <h4 class="font-semibold text-lg mb-5">
+                    <h4 class="font-bold text-lg mb-5">
                         Alamat
                     </h4>
 
@@ -74,7 +74,7 @@
 
                 <div>
 
-                    <h4 class="font-semibold text-lg mb-5">
+                    <h4 class="font-bold text-lg mb-5">
                         Menu
                     </h4>
 

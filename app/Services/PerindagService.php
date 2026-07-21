@@ -76,10 +76,23 @@ class PerindagService implements InformationServiceInterface
             }
         }
 
-        // Generate cache key based on query params
-        $cacheKey = "perindagkop_api_{$startDate}_{$endDate}_" . ($pasarId ?? 'all');
+        $pasarDate = $request->input('pasar_date');
+        $pasarCommodity = $request->input('pasar_commodity');
 
-        return Cache::remember($cacheKey, 600, function () use ($startDate, $endDate, $pasarId, $latestDate) {
+        if (!$pasarDate) {
+            $pasarDate = $latestDate;
+        }
+        if ($pasarDate > $latestDate) {
+            $pasarDate = $latestDate;
+        }
+        if (!$pasarCommodity) {
+            $pasarCommodity = 'Daging Sapi';
+        }
+
+        // Generate cache key based on query params
+        $cacheKey = "perindagkop_api_{$startDate}_{$endDate}_" . ($pasarId ?? 'all') . "_{$pasarDate}_{$pasarCommodity}";
+
+        return Cache::remember($cacheKey, 600, function () use ($startDate, $endDate, $pasarId, $latestDate, $pasarDate, $pasarCommodity) {
             $rawItems = [];
 
             if ($pasarId) {
@@ -205,6 +218,72 @@ class PerindagService implements InformationServiceInterface
                 $chartSeriesII[] = $c['raw_price_ii'];
             }
 
+            // --- Harga Per Pasar Real API Aggregation ---
+            $pasarChartDataResult = [];
+            $pasarCommoditiesList = [];
+
+            $activePasars = [
+                1 => 'Pasar Modern Koba',
+                2 => 'Pasar Namang',
+                3 => 'Pasar Air Mesu',
+                4 => 'Pasar Sungaiselan',
+                5 => 'Pasar Kayu Besi',
+                6 => 'Pasar Simpang Katis',
+                7 => 'Pasar Lubuk Besar',
+            ];
+
+            foreach ($activePasars as $id => $name) {
+                $marketCacheKey = "pasar_prices_{$pasarDate}_{$id}";
+                $marketData = Cache::remember($marketCacheKey, 86400, function () use ($pasarDate, $id) {
+                    try {
+                        $response = Http::withOptions(['verify' => false])
+                            ->timeout(10)
+                            ->get("https://disperindagkop-ukm.bangkatengahkab.go.id/api/updateharga/{$pasarDate}/{$pasarDate}/{$id}");
+                        if ($response->successful()) {
+                            $res = $response->json();
+                            return $res['data'] ?? [];
+                        }
+                    } catch (\Throwable) {
+                        // Ignore
+                    }
+                    return [];
+                });
+
+                // Find price for $pasarCommodity in this market
+                $price = 0;
+                if (is_array($marketData)) {
+                    foreach ($marketData as $item) {
+                        // Collect unique commodities
+                        if (!empty($item['nama_barang'])) {
+                            $pasarCommoditiesList[] = $item['nama_barang'];
+                        }
+
+                        // Check if it's the requested commodity
+                        if (!empty($item['nama_barang']) && strcasecmp($item['nama_barang'], $pasarCommodity) === 0) {
+                            $price = $item['price_ii'] ?? $item['nominal'] ?? 0;
+                        }
+                    }
+                }
+
+                $pasarChartDataResult[] = [
+                    'id' => (string) $id,
+                    'name' => $name,
+                    'price' => (int) $price,
+                ];
+            }
+
+            // Clean up and sort commodities list
+            $pasarCommoditiesList = array_values(array_unique($pasarCommoditiesList));
+            if (empty($pasarCommoditiesList)) {
+                $pasarCommoditiesList = [
+                    'Daging Sapi', 'Cabe Merah Besar', 'Cabe Rawit Merah', 'Bawang Merah', 'Bawang Putih', 
+                    'Daging Ayam Ras', 'Telur Ayam Ras', 'Minyak Goreng Kemasan Premium', 'Gula Pasir', 
+                    'Beras Premium', 'Beras Medium', 'Tepung Terigu'
+                ];
+            } else {
+                sort($pasarCommoditiesList);
+            }
+
             $latestFormattedDate = date('d F Y', strtotime($endDate));
             $translatedMonths = [
                 'January' => 'Januari', 'February' => 'Februari', 'March' => 'Maret',
@@ -234,6 +313,10 @@ class PerindagService implements InformationServiceInterface
                     'series_ii' => $chartSeriesII,
                 ],
                 'price_trends' => $priceTrends,
+                'pasar_date' => $pasarDate,
+                'pasar_commodity' => $pasarCommodity,
+                'pasar_commodities' => $pasarCommoditiesList,
+                'pasar_chart_data' => $pasarChartDataResult,
             ];
         });
     }
