@@ -118,16 +118,7 @@ class InformationServiceRegistry
                 ['label' => 'Gender', 'value' => 'gender'],
             ],
         ],
-        'makanan-bergizi-gratis' => [
-            'name' => 'Makanan Bergizi Gratis',
-            'icon' => '🍱',
-            'description' => 'Dashboard informasi Makanan Bergizi Gratis Kabupaten Bangka Tengah.',
-            'filters' => [
-                ['label' => 'Distribusi', 'value' => 'distribusi'],
-                ['label' => 'Penerima', 'value' => 'penerima'],
-                ['label' => 'Anggaran', 'value' => 'anggaran'],
-            ],
-        ],
+        'makanan-bergizi-gratis' => MbgService::class,
     ];
 
     public function has(string $slug): bool
