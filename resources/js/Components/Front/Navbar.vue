@@ -139,6 +139,18 @@ const selectAboutSlide = (index) => {
     }
 }
 
+const selectServicesTab = (tabName) => {
+    if (isHomePage()) {
+        const layananSection = document.getElementById('layanan')
+        if (layananSection) {
+            layananSection.scrollIntoView({ behavior: 'smooth' })
+        }
+        window.dispatchEvent(new CustomEvent('select-services-tab', { detail: { tab: tabName } }))
+    } else {
+        window.location.href = `/?tab=${tabName}#layanan`
+    }
+}
+
 const toggleDarkMode = () => {
     darkMode.value = !darkMode.value
 
@@ -244,7 +256,10 @@ const toggleDarkMode = () => {
                     <div class="absolute left-0 top-full hidden group-hover:block w-72 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl py-3 z-50">
                         <!-- Layanan Informasi dan Data (Nested Dropdown) -->
                         <div class="relative group/nested">
-                            <button class="w-full text-left px-5 py-3 hover:bg-blue-50 dark:hover:bg-gray-700 flex justify-between items-center transition">
+                            <button 
+                                @click="selectServicesTab('info')"
+                                class="w-full text-left px-5 py-3 hover:bg-blue-50 dark:hover:bg-gray-700 flex justify-between items-center transition cursor-pointer"
+                            >
                                 <span>Layanan Informasi & Data</span>
                                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
@@ -266,7 +281,10 @@ const toggleDarkMode = () => {
 
                         <!-- Layanan Publik (Nested Dropdown) -->
                         <div class="relative group/nested2">
-                            <button class="w-full text-left px-5 py-3 hover:bg-blue-50 dark:hover:bg-gray-700 flex justify-between items-center transition">
+                            <button 
+                                @click="selectServicesTab('publik')"
+                                class="w-full text-left px-5 py-3 hover:bg-blue-50 dark:hover:bg-gray-700 flex justify-between items-center transition cursor-pointer"
+                            >
                                 <span>Layanan Publik</span>
                                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />

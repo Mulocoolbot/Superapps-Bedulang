@@ -107,6 +107,18 @@ const handleServicesTabSelect = (event) => {
 
 onMounted(() => {
     window.addEventListener('select-services-tab', handleServicesTabSelect)
+
+    const urlParams = new URLSearchParams(window.location.search)
+    const tabParam = urlParams.get('tab')
+    if (tabParam === 'info' || tabParam === 'publik') {
+        activeTab.value = tabParam
+        if (window.location.hash === '#layanan') {
+            setTimeout(() => {
+                const el = document.getElementById('layanan')
+                if (el) el.scrollIntoView({ behavior: 'smooth' })
+            }, 300)
+        }
+    }
 })
 
 onUnmounted(() => {
