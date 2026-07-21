@@ -277,18 +277,48 @@ const getNearestMonday = (dateStr) => {
 }
 
 // Tab 2 (Stok Bapok) Refs & Logic
-const stokDate = ref(getNearestMonday(todayStr))
-const stokCompDate = ref('')
+const stokDate = ref(props.dashboard?.metadata?.stok_end_date || getNearestMonday(todayStr))
+const stokCompDate = ref(props.dashboard?.metadata?.stok_start_date || '')
+const selectedPenyedia = ref(props.dashboard?.metadata?.penyedia || '1')
+
+watch(() => props.dashboard?.metadata?.stok_end_date, (newVal) => {
+    if (newVal) stokDate.value = newVal
+})
+watch(() => props.dashboard?.metadata?.stok_start_date, (newVal) => {
+    if (newVal) stokCompDate.value = newVal
+})
+watch(() => props.dashboard?.metadata?.penyedia, (newVal) => {
+    if (newVal) selectedPenyedia.value = String(newVal)
+})
 
 // Set default comparison date to the Monday before stokDate
 const initStokCompDate = () => {
-    if (stokDate.value) {
+    if (props.dashboard?.metadata?.stok_start_date) {
+        stokCompDate.value = props.dashboard.metadata.stok_start_date
+    } else if (stokDate.value) {
         const date = new Date(stokDate.value)
         date.setDate(date.getDate() - 7)
         stokCompDate.value = date.toISOString().split('T')[0]
     }
 }
 initStokCompDate()
+
+const applyStokFilters = () => {
+    router.get(`/layanan/${props.service.slug}`, {
+        start_date: selectedStartDate.value || undefined,
+        end_date: selectedEndDate.value || undefined,
+        pasar_id: selectedPasar.value || undefined,
+        pasar_date: pasarSelectedDate.value || undefined,
+        pasar_commodity: pasarSelectedCommodity.value || undefined,
+        stok_start_date: stokCompDate.value || undefined,
+        stok_end_date: stokDate.value || undefined,
+        penyedia: selectedPenyedia.value || undefined,
+        tab: 'stok'
+    }, {
+        preserveState: true,
+        preserveScroll: true,
+    })
+}
 
 const handleStokDateChange = () => {
     if (!stokDate.value) return
@@ -309,6 +339,8 @@ const handleStokDateChange = () => {
         alert('Tanggal Pembanding tidak boleh sama dengan Tanggal Stok!');
         initStokCompDate()
     }
+
+    applyStokFilters()
 }
 
 const handleStokCompDateChange = () => {
@@ -330,6 +362,8 @@ const handleStokCompDateChange = () => {
         alert('Tanggal Pembanding tidak boleh sama dengan Tanggal Stok!');
         initStokCompDate()
     }
+
+    applyStokFilters()
 }
 
 // Tab 3 (Harga Per Pasar) Refs & Logic
@@ -440,19 +474,7 @@ const pasarCommodities = computed(() => props.dashboard?.pasar_commodities || [
     'Beras Premium', 'Beras Medium', 'Tepung Terigu'
 ])
 
-const stokChartData = computed(() => {
-    if (!stokDate.value || !stokCompDate.value) return []
-    return stokCommodities.map(name => {
-        const qtyStok = getMockStock(name, stokDate.value)
-        const qtyComp = getMockStock(name, stokCompDate.value)
-        return {
-            name,
-            qtyStok,
-            qtyComp,
-            diff: qtyStok - qtyComp
-        }
-    })
-})
+const stokChartData = computed(() => props.dashboard?.stok_data ?? [])
 
 const maxStokValue = computed(() => {
     let maxVal = 1
@@ -973,7 +995,7 @@ const getPasarBarPercent = (val) => {
                 </aside>
 
                 <!-- Stok Bapok Chart Section (Left Column) -->
-                <section v-if="isPerindagkop && activeTab === 'stok'" :key="'chart-stok-' + activeTab + '-' + stokDate + '-' + stokCompDate" class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900 space-y-6 animate-fade-in-up [animation-delay:200ms]">
+                <section v-if="isPerindagkop && activeTab === 'stok'" :key="'chart-stok-' + activeTab + '-' + stokDate + '-' + stokCompDate + '-' + selectedPenyedia" class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900 space-y-6 animate-fade-in-up [animation-delay:200ms]">
                     <!-- Filters -->
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between border-b border-slate-200/60 pb-5 dark:border-slate-800/80">
                         <div>
@@ -981,6 +1003,22 @@ const getPasarBarPercent = (val) => {
                             <h2 class="mt-0.5 text-lg font-extrabold text-slate-900 dark:text-white">Stok Barang Kebutuhan Pokok</h2>
                         </div>
                         <div class="flex flex-wrap items-center gap-4">
+                            <div class="flex flex-col gap-1.5">
+                                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Sumber</span>
+                                <div class="relative">
+                                    <select
+                                        v-model="selectedPenyedia"
+                                        @change="applyStokFilters"
+                                        class="h-9 w-44 appearance-none rounded-lg border border-slate-200 bg-slate-50 px-3 pr-8 text-sm text-slate-700 outline-none transition focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                                    >
+                                        <option value="1">Distributor</option>
+                                        <option value="2">Toko Retail Modern</option>
+                                    </select>
+                                    <svg class="pointer-events-none absolute right-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                    </svg>
+                                </div>
+                            </div>
                             <div class="flex flex-col gap-1.5">
                                 <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Tanggal Stok (Senin)</span>
                                 <input
@@ -1011,7 +1049,7 @@ const getPasarBarPercent = (val) => {
                     <!-- Double Horizontal Bar Chart -->
                     <div class="animate-fade-in space-y-4">
                         <!-- Legend -->
-                        <div class="flex items-center justify-between text-xs font-semibold text-slate-500 border-b border-slate-200/40 pb-3 dark:text-slate-400 dark:border-slate-800/60 mb-6">
+                        <div v-if="stokChartData.length > 0" class="flex items-center justify-between text-xs font-semibold text-slate-500 border-b border-slate-200/40 pb-3 dark:text-slate-400 dark:border-slate-800/60 mb-6">
                             <span>Komoditas Pokok</span>
                             <div class="flex gap-4">
                                 <span class="flex items-center gap-1.5">
@@ -1025,8 +1063,15 @@ const getPasarBarPercent = (val) => {
                             </div>
                         </div>
                         
+                        <!-- Empty State -->
+                        <div v-if="stokChartData.length === 0" class="flex min-h-[300px] flex-col items-center justify-center rounded-xl border border-dashed border-slate-200 bg-white text-center p-6 dark:border-slate-800 dark:bg-slate-900">
+                            <span class="text-4xl mb-3">📦</span>
+                            <h3 class="text-sm font-bold text-slate-700 dark:text-slate-300">Data Stok Tidak Tersedia</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Tidak ada data stok barang kebutuhan pokok untuk rentang tanggal dan penyedia yang dipilih.</p>
+                        </div>
+
                         <!-- List of Commodities (Stretches Horizontal) -->
-                        <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                        <div v-else class="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
                             <div v-for="item in stokChartData" :key="item.name" class="space-y-1.5">
                                 <div class="flex justify-between text-sm font-semibold text-slate-800 dark:text-slate-200">
                                     <span>{{ item.name }}</span>
@@ -1046,12 +1091,12 @@ const getPasarBarPercent = (val) => {
                                             <!-- Tooltip Centered on horizontal bar -->
                                             <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none transition-all duration-200 ease-out z-30 scale-95 group-hover:scale-100">
                                                 <div class="bg-slate-900/95 dark:bg-slate-800/95 text-white text-[10px] font-semibold px-2 py-1 rounded shadow-md whitespace-nowrap">
-                                                    Jumlah: {{ item.qtyStok }} Ton
+                                                    Jumlah: {{ item.qtyStok }} {{ item.satuan || 'Ton' }}
                                                 </div>
                                                 <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900/95 dark:border-t-slate-800/95"></div>
                                             </div>
                                         </div>
-                                        <span class="w-16 text-right text-xs font-semibold text-slate-700 dark:text-slate-300">{{ item.qtyStok }} Ton</span>
+                                        <span class="w-16 text-right text-xs font-semibold text-slate-700 dark:text-slate-300">{{ item.qtyStok }} {{ item.satuan || 'Ton' }}</span>
                                     </div>
                                     <!-- Comp Bar -->
                                     <div class="flex items-center gap-3">
@@ -1067,12 +1112,12 @@ const getPasarBarPercent = (val) => {
                                             <!-- Tooltip Centered on horizontal bar -->
                                             <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 pointer-events-none transition-all duration-200 ease-out z-30 scale-95 group-hover:scale-100">
                                                 <div class="bg-slate-900/95 dark:bg-slate-800/95 text-white text-[10px] font-semibold px-2 py-1 rounded shadow-md whitespace-nowrap">
-                                                    Jumlah: {{ item.qtyComp }} Ton
+                                                    Jumlah: {{ item.qtyComp }} {{ item.satuan || 'Ton' }}
                                                 </div>
                                                 <div class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900/95 dark:border-t-slate-800/95"></div>
                                             </div>
                                         </div>
-                                        <span class="w-16 text-right text-xs font-semibold text-slate-700 dark:text-slate-300">{{ item.qtyComp }} Ton</span>
+                                        <span class="w-16 text-right text-xs font-semibold text-slate-700 dark:text-slate-300">{{ item.qtyComp }} {{ item.satuan || 'Ton' }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -1081,13 +1126,16 @@ const getPasarBarPercent = (val) => {
                 </section>
 
                 <!-- Stok Bapok Table Section (Right Column) -->
-                <aside v-if="isPerindagkop && activeTab === 'stok'" :key="'table-stok-' + activeTab + '-' + stokDate + '-' + stokCompDate" class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900 space-y-4 animate-fade-in-up [animation-delay:300ms]">
+                <aside v-if="isPerindagkop && activeTab === 'stok'" :key="'table-stok-' + activeTab + '-' + stokDate + '-' + stokCompDate + '-' + selectedPenyedia" class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900 space-y-4 animate-fade-in-up [animation-delay:300ms]">
                     <div>
                         <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Tabel Data</p>
                         <h3 class="mt-0.5 text-base font-extrabold text-slate-900 dark:text-white">Daftar Stok & Selisih</h3>
                     </div>
                     
-                    <div class="overflow-hidden rounded-xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900">
+                    <div v-if="stokChartData.length === 0" class="rounded-xl border border-dashed border-slate-200 bg-slate-50/60 p-6 text-center text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-900/50">
+                        Belum ada rincian data stok untuk filter saat ini.
+                    </div>
+                    <div v-else class="overflow-hidden rounded-xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900">
                         <div class="overflow-x-auto max-h-[500px] overflow-y-auto custom-scrollbar">
                             <table class="min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-800">
                                 <thead class="bg-slate-50 sticky top-0 z-10 dark:bg-slate-800">
@@ -1102,11 +1150,11 @@ const getPasarBarPercent = (val) => {
                                         <td class="px-3 py-2.5 font-semibold text-slate-800 dark:text-slate-200">
                                             <div>{{ item.name }}</div>
                                             <div class="text-[10px] font-normal text-slate-400">
-                                                Stok: {{ item.qtyStok }}T | Pmb: {{ item.qtyComp }}T
+                                                Stok: {{ item.qtyStok }}{{ item.satuan ? ' ' + item.satuan : 'T' }} | Pmb: {{ item.qtyComp }}{{ item.satuan ? ' ' + item.satuan : 'T' }}
                                             </div>
                                         </td>
                                         <td class="px-3 py-2.5 text-right font-semibold whitespace-nowrap text-xs" :class="item.diff > 0 ? 'text-emerald-600' : (item.diff < 0 ? 'text-rose-600' : 'text-slate-500')">
-                                            {{ item.diff > 0 ? '+' : '' }}{{ item.diff }} T
+                                            {{ item.diff > 0 ? '+' : '' }}{{ item.diff }} {{ item.satuan || 'T' }}
                                         </td>
                                         <td class="px-3 py-2.5 text-center">
                                             <span class="font-bold text-lg">

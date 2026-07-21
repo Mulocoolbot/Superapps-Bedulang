@@ -23,6 +23,7 @@ class InformationServiceTest extends TestCase
             'geografis',
             'pariwisata',
             'data-sektoral',
+            'makanan-bergizi-gratis',
         ];
 
         foreach ($slugs as $slug) {
@@ -95,5 +96,54 @@ class InformationServiceTest extends TestCase
         $this->assertSame('naik', $trends[0]['status']);
         $this->assertSame(12000.0, $trends[0]['price_ii']);
         $this->assertSame(10000.0, $trends[0]['price_i']);
+    }
+
+    public function test_perindagkop_stock_data_is_processed_from_api(): void
+    {
+        Http::fake([
+            'https://disperindagkop-ukm.bangkatengahkab.go.id/api/updateharga' => Http::response([
+                'data' => [
+                    [
+                        'tanggal' => '2026-07-17',
+                        'nama_barang' => 'Daging Sapi',
+                        'price_ii' => 130000,
+                    ]
+                ]
+            ], 200),
+            'https://disperindagkop-ukm.bangkatengahkab.go.id/api/getstok/*' => Http::response([
+                'success' => true,
+                'penyedia' => 'Distributor',
+                'tanggal_awal' => '2026-07-13',
+                'tanggal_akhir' => '2026-07-20',
+                'data' => [
+                    [
+                        'komoditi_id' => 2,
+                        'nama_komoditi' => 'Beras Premium',
+                        'satuan' => 'Ton',
+                        'stok_awal' => 55,
+                        'stok_akhir' => 40,
+                        'selisih' => -15,
+                        'status' => 'Turun',
+                    ]
+                ]
+            ], 200)
+        ]);
+
+        $request = Request::create('/layanan/perindagkop-ukm', 'GET', [
+            'stok_start_date' => '2026-07-13',
+            'stok_end_date' => '2026-07-20',
+            'penyedia' => '1',
+        ]);
+
+        $service = new \App\Services\PerindagService;
+        $dashboard = $service->getDashboardData($request);
+
+        $this->assertArrayHasKey('stok_data', $dashboard);
+        $this->assertNotEmpty($dashboard['stok_data']);
+        $this->assertSame('Beras Premium', $dashboard['stok_data'][0]['name']);
+        $this->assertSame(40.0, $dashboard['stok_data'][0]['qtyStok']);
+        $this->assertSame(55.0, $dashboard['stok_data'][0]['qtyComp']);
+        $this->assertSame(-15.0, $dashboard['stok_data'][0]['diff']);
+        $this->assertSame('turun', $dashboard['stok_data'][0]['status']);
     }
 }

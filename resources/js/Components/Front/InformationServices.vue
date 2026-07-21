@@ -65,6 +65,11 @@ const apps = [
         slug: 'data-sektoral',
         logo: '/services/voting.svg',
     },
+    {
+        name: 'MAKANAN BERGIZI GRATIS',
+        slug: 'makanan-bergizi-gratis',
+        logo: '/services/makanan-bergizi-gratis.svg',
+    },
 ]
 
 const publicServices = [

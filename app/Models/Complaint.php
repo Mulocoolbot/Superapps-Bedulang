@@ -57,6 +57,7 @@ class Complaint extends Model
             'geografis' => 'GEOGRAFIS',
             'pariwisata' => 'PARIWISATA',
             'data-sektoral' => 'DATA SEKTORAL',
+            'makanan-bergizi-gratis' => 'MAKANAN BERGIZI GRATIS',
         ];
 
         return $services[$this->service_slug] ?? ucfirst($this->service_slug);

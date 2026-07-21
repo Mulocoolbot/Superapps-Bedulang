@@ -14,7 +14,7 @@ const handleScroll = () => {
 
 const page = usePage()
 const authUser = computed(() => page.props.auth?.user)
-const isAdmin = computed(() => authUser.value && ['admin', 'super_admin'].includes(authUser.value.role))
+const isAdmin = computed(() => authUser.value && ['admin', 'super_admin', 'pimpinan'].includes(authUser.value.role))
 
 const isHomePage = () => {
     return !!document.getElementById('beranda')
@@ -43,6 +43,7 @@ const infoServices = [
     { name: 'Geografis', id: 'geografis' },
     { name: 'Pariwisata', id: 'pariwisata' },
     { name: 'Data Sektoral', id: 'data-sektoral' },
+    { name: 'Makanan Bergizi Gratis', id: 'makanan-bergizi-gratis' },
 ]
 
 const regionalApps = [
@@ -361,7 +362,7 @@ const toggleDarkMode = () => {
                         </div>
 
                         <Link
-                            :href="route('profile.edit')"
+                            href="/profile"
                             class="block w-full px-5 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700 transition"
                         >
                             Profile
@@ -371,14 +372,14 @@ const toggleDarkMode = () => {
                             <div class="border-t border-gray-100 dark:border-gray-700"></div>
                             
                             <Link
-                                :href="route('admin.cctv')"
+                                href="/admin/cctv"
                                 class="block w-full px-5 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700 font-medium transition"
                             >
                                 CCTV
                             </Link>
 
                             <Link
-                                :href="route('admin.users')"
+                                href="/admin/users"
                                 class="block w-full px-5 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700 font-medium transition"
                             >
                                 Kelola Admin
@@ -389,7 +390,7 @@ const toggleDarkMode = () => {
 
                         <Link
                             method="post"
-                            :href="route('logout')"
+                            href="/logout"
                             as="button"
                             class="block w-full px-5 py-3 text-left text-sm text-red-600 hover:bg-red-50/30 dark:hover:bg-red-950/20 font-semibold transition"
                         >
@@ -475,7 +476,7 @@ const toggleDarkMode = () => {
 
             <template v-if="authUser">
                 <Link
-                    :href="route('profile.edit')"
+                    href="/profile"
                     class="block text-center mt-2 px-4 py-2 bg-white text-gray-800 rounded-lg border border-gray-200 hover:bg-gray-50"
                 >
                     Profile
@@ -483,7 +484,7 @@ const toggleDarkMode = () => {
 
                 <Link
                     method="post"
-                    :href="route('logout')"
+                    href="/logout"
                     as="button"
                     class="block text-center mt-2 px-4 py-2 bg-red-600 text-white rounded-lg"
                 >
@@ -492,14 +493,14 @@ const toggleDarkMode = () => {
 
                 <template v-if="isAdmin">
                     <Link
-                        :href="route('admin.cctv')"
+                        href="/admin/cctv"
                         class="block text-center mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg"
                     >
                         CCTV
                     </Link>
 
                     <Link
-                        :href="route('admin.users')"
+                        href="/admin/users"
                         class="block text-center mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg"
                     >
                         Kelola Admin
