@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\CCTVController;
 use App\Http\Controllers\Admin\ComplaintController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\InformationServiceController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -34,7 +35,8 @@ Route::post('/complaints', [ComplaintController::class, 'store'])
 Route::middleware(['auth', 'admin'])->group(function () {
 
     Route::middleware(['auth'])->prefix('admin')->group(function () {
-        // ... route lain
+        Route::get('/', [DashboardController::class, 'index'])
+            ->name('admin.dashboard');
 
         Route::get('/cctv',
         [CCTVController::class,'index'])

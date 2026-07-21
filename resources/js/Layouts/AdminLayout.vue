@@ -65,6 +65,7 @@ const toggleDropdown = () => {
                 </Link>
 
                 <Link
+                    v-if="$page.props.auth.user && $page.props.auth.user.role === 'super_admin'"
                     href="/admin/users"
                     class="block px-4 py-3 rounded-lg hover:bg-blue-50">
 
