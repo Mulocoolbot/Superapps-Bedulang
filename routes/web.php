@@ -8,6 +8,14 @@ use App\Http\Controllers\InformationServiceController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\KubernetesController;
+/*
+|--------------------------------------------------------------------------
+| Kubernetes
+|--------------------------------------------------------------------------
+*/
+Route::get('/healthz', [KubernetesController::class, 'sehat']);
+Route::get('/readiness', [KubernetesController::class, 'siap']);
 
 /*
 |--------------------------------------------------------------------------
