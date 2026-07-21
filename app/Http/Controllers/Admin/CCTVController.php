@@ -14,7 +14,7 @@ class CCTVController extends Controller
     [
         'id'=>1,
         'name'=>'CCTV 1',
-        'ip'=>'157.10.109.243',
+        'ip'=>'157.10.109.241:8000',
         'stream'=>'http://157.10.109.243',
         'lat'=>-2.123,
         'lng'=>106.123,
