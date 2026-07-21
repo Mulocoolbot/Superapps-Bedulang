@@ -211,3 +211,5 @@ const applyFilters = () => {
         </section>
     </div>
 </template>
+
+

@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { Head, Link } from '@inertiajs/vue3'
 import FrontLayout from '@/Layouts/FrontLayout.vue'
 import ComplaintModal from '@/Components/ComplaintModal.vue'
+import Footer from '@/Components/Front/Footer.vue'
 
 // Import Segmented Dashboard components
 import PerindagkopDashboard from './Dashboards/PerindagkopDashboard.vue'
@@ -37,6 +38,28 @@ const dashboardComponent = computed(() => {
 const title = computed(() => `Dashboard ${props.service?.name ?? ''}`)
 const subtitle = computed(() => props.service?.description ?? '')
 const serviceIcon = computed(() => props.service?.icon ?? '📊')
+
+const serviceSourceUrl = computed(() => {
+    switch (props.service?.slug) {
+        case 'perindagkop-ukm':
+            return 'https://disperindagkop-ukm.bangkatengahkab.go.id/'
+        case 'makanan-bergizi-gratis':
+            return 'https://mbg.pdm.kemendikdasmen.go.id/portal'
+        default:
+            return props.dashboard?.metadata?.source_url || ''
+    }
+})
+
+const serviceSourceLabel = computed(() => {
+    switch (props.service?.slug) {
+        case 'perindagkop-ukm':
+            return 'disperindagkop-ukm.bangkatengahkab.go.id'
+        case 'makanan-bergizi-gratis':
+            return 'mbg.pdm.kemendikdasmen.go.id/portal'
+        default:
+            return props.dashboard?.metadata?.source || 'Portal Satu Data Bangka Tengah'
+    }
+})
 </script>
 
 <template>
@@ -109,7 +132,35 @@ const serviceIcon = computed(() => props.service?.icon ?? '📊')
                 :dashboard="dashboard" 
             />
 
+            <!-- Sumber Data Section (Footer data note inside page margin) -->
+            <div class="mt-12 pt-6 border-t border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                <div class="flex items-center gap-1.5">
+                    <span>Sumber Data:</span>
+                    <a 
+                        v-if="serviceSourceUrl"
+                        :href="serviceSourceUrl"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="font-semibold text-cyan-600 hover:text-cyan-700 dark:text-cyan-400 dark:hover:text-cyan-300 underline"
+                    >
+                        {{ serviceSourceLabel }}
+                    </a>
+                    <span v-else-if="dashboard.metadata?.source" class="font-semibold text-slate-600 dark:text-slate-300">
+                        {{ dashboard.metadata.source }}
+                    </span>
+                    <span v-else class="font-semibold text-slate-600 dark:text-slate-300">
+                        Portal Satu Data Bangka Tengah
+                    </span>
+                </div>
+                <div class="mt-2 sm:mt-0" v-if="dashboard.metadata?.updated_at">
+                    Terakhir diperbarui: {{ dashboard.metadata.updated_at }}
+                </div>
+            </div>
+
         </div>
+
+        <!-- Footer component from main page -->
+        <Footer />
 
         <!-- Complaint Modal -->
         <ComplaintModal
@@ -121,7 +172,7 @@ const serviceIcon = computed(() => props.service?.icon ?? '📊')
     </FrontLayout>
 </template>
 
-<style scoped>
+<style>
 @keyframes fadeInUp {
     from {
         opacity: 0;
@@ -133,7 +184,27 @@ const serviceIcon = computed(() => props.service?.icon ?? '📊')
     }
 }
 
+@keyframes growWidth {
+    from {
+        width: 0%;
+    }
+}
+
+@keyframes growHeight {
+    from {
+        height: 0%;
+    }
+}
+
 .animate-fade-in-up {
     animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-grow-width {
+    animation: growWidth 1s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-grow-height {
+    animation: growHeight 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 </style>

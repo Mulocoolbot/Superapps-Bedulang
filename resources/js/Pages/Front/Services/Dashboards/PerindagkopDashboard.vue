@@ -874,7 +874,7 @@ const getPasarBarPercent = (val) => {
                                     <div class="flex-1 relative group py-1 focus:outline-none" tabindex="0">
                                         <div class="bg-slate-200/50 dark:bg-slate-800 h-5 rounded-md overflow-hidden cursor-help">
                                             <div 
-                                                class="bg-slate-400 h-full rounded-r transition-all duration-700 ease-out" 
+                                                class="bg-slate-400 h-full rounded-r transition-all duration-700 ease-out animate-grow-width" 
                                                 :style="{ width: `${getStokBarWidth(item.qtyComp)}%` }"
                                             ></div>
                                         </div>
@@ -894,7 +894,7 @@ const getPasarBarPercent = (val) => {
                                     <div class="flex-1 relative group py-1 focus:outline-none" tabindex="0">
                                         <div class="bg-slate-200/50 dark:bg-slate-800 h-5 rounded-md overflow-hidden cursor-help">
                                             <div 
-                                                class="bg-cyan-600 dark:bg-cyan-500 h-full rounded-r transition-all duration-700 ease-out" 
+                                                class="bg-cyan-600 dark:bg-cyan-500 h-full rounded-r transition-all duration-700 ease-out animate-grow-width" 
                                                 :style="{ width: `${getStokBarWidth(item.qtyStok)}%` }"
                                             ></div>
                                         </div>
@@ -982,28 +982,51 @@ const getPasarBarPercent = (val) => {
             </div>
 
             <!-- Visual Bar Chart for Pasar -->
-            <div class="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
+            <div class="rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 transition shadow-sm dark:border-slate-800 dark:bg-slate-900/50">
                 <div v-if="pasarChartData.length === 0" class="flex min-h-[180px] items-center justify-center rounded-xl border border-dashed border-slate-200 bg-white text-center text-sm text-slate-400 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-500">
                     Belum ada data harga per pasar untuk ditampilkan
                 </div>
                 <div v-else class="space-y-6">
-                    <h4 class="text-xs font-bold uppercase tracking-[0.16em] text-slate-700 mb-3 border-b border-slate-200/60 pb-2 dark:text-slate-300 dark:border-slate-800/80">
-                        KOMODITAS: {{ pasarSelectedCommodity.toUpperCase() }} TANGGAL {{ formatDateDMY(pasarSelectedDate) }}
-                    </h4>
-                    <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                        <div v-for="item in pasarChartData" :key="item.id" class="space-y-2">
-                            <div class="flex justify-between text-sm font-semibold text-slate-800 dark:text-slate-200">
-                                <span>{{ item.name }}</span>
-                                <span class="font-bold text-cyan-600 dark:text-cyan-400">
-                                    {{ item.price > 0 ? 'Rp ' + formatNumber(item.price) : 'tidak tersedia' }}
-                                </span>
+                    <!-- Chart container with Y-axis on the left -->
+                    <div class="flex gap-4">
+                        <!-- Y-axis scale -->
+                        <div class="h-96 flex flex-col justify-between text-right text-[10px] font-semibold text-slate-400 dark:text-slate-500 pb-36 pt-4 pr-1 w-16 select-none relative">
+                            <div v-for="(tick, idx) in yAxisTicks" :key="idx" class="h-0 flex items-center justify-end relative">
+                                <span class="absolute right-0">Rp {{ formatNumber(tick) }}</span>
                             </div>
-                            <div class="relative group py-1 focus:outline-none" tabindex="0" v-if="item.price > 0">
-                                <div class="bg-slate-200/50 dark:bg-slate-800 h-6 rounded-md overflow-hidden cursor-help">
+                        </div>
+
+                        <!-- Chart Box -->
+                        <div class="flex-1 h-96 flex items-end justify-between border-b border-slate-200 dark:border-slate-800 pb-36 pt-4 gap-2 relative">
+                            <!-- Horizontal Gridlines -->
+                            <div class="absolute inset-0 pb-36 pt-4 flex flex-col justify-between pointer-events-none">
+                                <div v-for="n in 5" :key="n" class="w-full border-t border-slate-100 dark:border-slate-800/40 h-0"></div>
+                            </div>
+
+                            <div v-for="item in pasarChartData" :key="item.id" class="flex-1 flex flex-col items-center h-full justify-end relative group z-10">
+                                <!-- Bar -->
+                                <div class="flex items-end justify-center w-full h-full relative">
                                     <div 
-                                        class="bg-cyan-600 dark:bg-cyan-500 h-full rounded-r transition-all duration-700 ease-out" 
-                                        :style="{ width: `${getPasarBarWidth(item.price)}%` }"
-                                    ></div>
+                                        v-if="item.price > 0"
+                                        :key="'pasar-' + item.id + '-' + item.price"
+                                        class="w-full max-w-[28px] bg-gradient-to-t from-cyan-600 to-cyan-500 rounded-t-sm hover:from-cyan-500 hover:to-cyan-400 transition-all duration-300 relative group cursor-help animate-grow-height"
+                                        :style="{ height: `${getPasarBarPercent(item.price)}%` }"
+                                    >
+                                        <!-- Centered Tooltip inside the bar -->
+                                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 ease-out z-30 scale-95 group-hover:scale-100">
+                                            <div class="bg-slate-900/95 dark:bg-slate-800/95 text-white text-[10px] font-semibold px-2.5 py-1 rounded shadow-md border border-slate-700/30 whitespace-nowrap">
+                                                Rp {{ formatNumber(item.price) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span v-else class="text-[10px] text-slate-400 font-semibold mb-2">T/D</span>
+                                </div>
+                                <!-- Vertical Label -->
+                                <div 
+                                    class="absolute top-[102%] left-1/2 transform -translate-x-1/2 text-xs font-semibold text-slate-600 dark:text-slate-300 whitespace-nowrap text-left pt-2"
+                                    style="writing-mode: vertical-rl; text-orientation: mixed;"
+                                >
+                                    {{ item.name }}
                                 </div>
                             </div>
                         </div>
@@ -1042,6 +1065,7 @@ const getPasarBarPercent = (val) => {
                 </div>
             </div>
         </aside>
-
     </div>
 </template>
+
+

@@ -1,5 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue'
+import AnimatedNumber from '@/Components/Front/AnimatedNumber.vue'
 
 const props = defineProps({
     service: {
@@ -66,7 +67,7 @@ const formatNumber = (val) => {
                     {{ card.title }}
                 </span>
                 <p class="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-                    {{ card.value }}
+                    <AnimatedNumber :value="card.value" />
                 </p>
                 <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">{{ card.meta }}</p>
             </div>
@@ -132,18 +133,18 @@ const formatNumber = (val) => {
                 <div class="space-y-4">
                     <div 
                         v-for="(row, index) in (dashboardData.tables?.[selectedType] || [])" 
-                        :key="'chart-' + row.kode_kecamatan" 
+                        :key="'chart-' + selectedType + '-' + row.kode_kecamatan" 
                         class="space-y-1.5"
                     >
                         <div class="flex justify-between text-xs font-semibold text-slate-700 dark:text-slate-200">
                             <span>{{ row.kecamatan }}</span>
-                            <span class="font-bold">{{ formatNumber(row.jumlah_perempuan + row.jumlah_laki) }} siswa</span>
+                            <span class="font-bold"><AnimatedNumber :value="row.jumlah_perempuan + row.jumlah_laki" /> siswa</span>
                         </div>
                         <div class="relative group py-0.5 focus:outline-none" tabindex="0">
                             <!-- Track -->
                             <div class="bg-slate-100 dark:bg-slate-800 h-4 rounded-full overflow-hidden">
                                 <div 
-                                    class="bg-blue-600 dark:bg-blue-500 h-full rounded-full transition-all duration-700 ease-out" 
+                                    class="bg-blue-600 dark:bg-blue-500 h-full rounded-full transition-all duration-700 ease-out animate-grow-width" 
                                     :style="{ 
                                         width: `${Math.max(5, Math.min(100, Math.ceil(((row.jumlah_perempuan + row.jumlah_laki) / 1000) * 100)))}%` 
                                     }"
@@ -165,19 +166,19 @@ const formatNumber = (val) => {
                     <div class="rounded-xl bg-amber-50/50 p-3 border border-amber-100/50 dark:bg-amber-950/10 dark:border-amber-900/20">
                         <span class="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Alergi</span>
                         <p class="mt-1 text-xl font-extrabold text-amber-700 dark:text-amber-300">
-                            {{ formatNumber((dashboardData.tables?.[selectedType] || []).reduce((sum, r) => sum + r.jumlah_alergi, 0)) }}
+                            <AnimatedNumber :value="(dashboardData.tables?.[selectedType] || []).reduce((sum, r) => sum + r.jumlah_alergi, 0)" />
                         </p>
                     </div>
                     <div class="rounded-xl bg-rose-50/50 p-3 border border-rose-100/50 dark:bg-rose-950/10 dark:border-rose-900/20">
                         <span class="text-[10px] font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wider">Fobia</span>
                         <p class="mt-1 text-xl font-extrabold text-rose-700 dark:text-rose-300">
-                            {{ formatNumber((dashboardData.tables?.[selectedType] || []).reduce((sum, r) => sum + r.jumlah_fobia, 0)) }}
+                            <AnimatedNumber :value="(dashboardData.tables?.[selectedType] || []).reduce((sum, r) => sum + r.jumlah_fobia, 0)" />
                         </p>
                     </div>
                     <div class="rounded-xl bg-indigo-50/50 p-3 border border-indigo-100/50 dark:bg-indigo-950/10 dark:border-indigo-900/20">
                         <span class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Intoleran</span>
                         <p class="mt-1 text-xl font-extrabold text-indigo-700 dark:text-indigo-300">
-                            {{ formatNumber((dashboardData.tables?.[selectedType] || []).reduce((sum, r) => sum + r.jumlah_intoleransi, 0)) }}
+                            <AnimatedNumber :value="(dashboardData.tables?.[selectedType] || []).reduce((sum, r) => sum + r.jumlah_intoleransi, 0)" />
                         </p>
                     </div>
                 </div>
@@ -185,3 +186,5 @@ const formatNumber = (val) => {
         </aside>
     </div>
 </template>
+
+
