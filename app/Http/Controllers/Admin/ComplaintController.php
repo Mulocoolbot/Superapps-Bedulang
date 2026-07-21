@@ -64,7 +64,7 @@ class ComplaintController extends Controller
             'service_slug' => ['required', 'string', Rule::in([
                 'pemerintahan', 'pendidikan', 'kesehatan', 'perindagkop-ukm',
                 'hukum', 'sosial', 'kependudukan', 'kepegawaian', 'lingkungan',
-                'geografis', 'pariwisata', 'data-sektoral',
+                'geografis', 'pariwisata', 'data-sektoral', 'makanan-bergizi-gratis',
             ])],
             'title' => 'required|string|max:255',
             'description' => 'required|string',

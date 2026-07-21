@@ -284,6 +284,7 @@ const servicesList = [
   { slug: 'geografis', name: 'Geografis' },
   { slug: 'pariwisata', name: 'Pariwisata' },
   { slug: 'data-sektoral', name: 'Data Sektoral' },
+  { slug: 'makanan-bergizi-gratis', name: 'Makanan Bergizi Gratis' },
 ]
 
 // Auto-fill user details if logged in when modal is opened

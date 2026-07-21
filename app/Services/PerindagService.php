@@ -89,10 +89,51 @@ class PerindagService implements InformationServiceInterface
             $pasarCommodity = 'Daging Sapi';
         }
 
-        // Generate cache key based on query params
-        $cacheKey = "perindagkop_api_{$startDate}_{$endDate}_" . ($pasarId ?? 'all') . "_{$pasarDate}_{$pasarCommodity}";
+        $stokStartDate = $request->input('stok_start_date');
+        $stokEndDate = $request->input('stok_end_date');
+        $penyedia = (int) $request->input('penyedia', 1);
 
-        return Cache::remember($cacheKey, 600, function () use ($startDate, $endDate, $pasarId, $latestDate, $pasarDate, $pasarCommodity) {
+        if (!in_array($penyedia, [1, 2])) {
+            $penyedia = 1;
+        }
+
+        // Helper to adjust any date to the nearest Monday (backward)
+        $getNearestMonday = function (string $dateStr): string {
+            $time = strtotime($dateStr);
+            $dayOfWeek = (int) date('N', $time);
+            if ($dayOfWeek === 1) {
+                return $dateStr;
+            }
+            return date('Y-m-d', strtotime($dateStr . ' - ' . ($dayOfWeek - 1) . ' days'));
+        };
+
+        $today = date('Y-m-d');
+        // Monday of current week
+        $defaultStokEndDate = $getNearestMonday($today);
+        // Monday of last week
+        $defaultStokStartDate = date('Y-m-d', strtotime($defaultStokEndDate . ' - 7 days'));
+
+        if (!$stokStartDate) {
+            $stokStartDate = $defaultStokStartDate;
+        } else {
+            $stokStartDate = $getNearestMonday($stokStartDate);
+        }
+
+        if (!$stokEndDate) {
+            $stokEndDate = $defaultStokEndDate;
+        } else {
+            $stokEndDate = $getNearestMonday($stokEndDate);
+        }
+
+        // Ensure stok_start_date is before stok_end_date
+        if ($stokStartDate >= $stokEndDate) {
+            $stokStartDate = date('Y-m-d', strtotime($stokEndDate . ' - 7 days'));
+        }
+
+        // Generate cache key based on query params
+        $cacheKey = "perindagkop_api_{$startDate}_{$endDate}_" . ($pasarId ?? 'all') . "_{$pasarDate}_{$pasarCommodity}_{$stokStartDate}_{$stokEndDate}_{$penyedia}";
+
+        return Cache::remember($cacheKey, 600, function () use ($startDate, $endDate, $pasarId, $latestDate, $pasarDate, $pasarCommodity, $stokStartDate, $stokEndDate, $penyedia) {
             $rawItems = [];
 
             if ($pasarId) {
@@ -284,6 +325,31 @@ class PerindagService implements InformationServiceInterface
                 sort($pasarCommoditiesList);
             }
 
+            // Fetch stock data from external API
+            $stokData = [];
+            try {
+                $stokResponse = Http::withOptions(['verify' => false])
+                    ->timeout(15)
+                    ->get("https://disperindagkop-ukm.bangkatengahkab.go.id/api/getstok/{$stokStartDate}/{$stokEndDate}/{$penyedia}");
+                if ($stokResponse->successful()) {
+                    $res = $stokResponse->json();
+                    if (!empty($res['data']) && is_array($res['data'])) {
+                        foreach ($res['data'] as $item) {
+                            $stokData[] = [
+                                'name' => $item['nama_komoditi'] ?? 'Tidak Diketahui',
+                                'qtyStok' => (float) ($item['stok_akhir'] ?? 0),
+                                'qtyComp' => (float) ($item['stok_awal'] ?? 0),
+                                'diff' => (float) ($item['selisih'] ?? 0),
+                                'satuan' => $item['satuan'] ?? 'Ton',
+                                'status' => strtolower($item['status'] ?? 'Tetap'),
+                            ];
+                        }
+                    }
+                }
+            } catch (\Throwable) {
+                $stokData = [];
+            }
+
             $latestFormattedDate = date('d F Y', strtotime($endDate));
             $translatedMonths = [
                 'January' => 'Januari', 'February' => 'Februari', 'March' => 'Maret',
@@ -302,6 +368,9 @@ class PerindagService implements InformationServiceInterface
                     'end_date' => $endDate,
                     'pasar_id' => $pasarId,
                     'source' => 'Disperindagkop-UKM Bangka Tengah',
+                    'stok_start_date' => $stokStartDate,
+                    'stok_end_date' => $stokEndDate,
+                    'penyedia' => $penyedia,
                 ],
                 'info' => [
                     'title' => 'Sinkronisasi Harga Pasar',
@@ -317,6 +386,7 @@ class PerindagService implements InformationServiceInterface
                 'pasar_commodity' => $pasarCommodity,
                 'pasar_commodities' => $pasarCommoditiesList,
                 'pasar_chart_data' => $pasarChartDataResult,
+                'stok_data' => $stokData,
             ];
         });
     }

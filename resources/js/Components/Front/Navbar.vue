@@ -43,6 +43,7 @@ const infoServices = [
     { name: 'Geografis', id: 'geografis' },
     { name: 'Pariwisata', id: 'pariwisata' },
     { name: 'Data Sektoral', id: 'data-sektoral' },
+    { name: 'Makanan Bergizi Gratis', id: 'makanan-bergizi-gratis' },
 ]
 
 const regionalApps = [
