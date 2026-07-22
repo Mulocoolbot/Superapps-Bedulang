@@ -73,15 +73,14 @@ onUnmounted(() => {
         <!-- Sidebar -->
         <aside class="w-64 bg-white shadow-lg flex flex-col justify-between shrink-0">
             <div>
-                <div class="p-6 border-b">
-                    <img
-                        src="/services/logobateng3.png"
-                        class="w-14 mx-auto"
-                        alt="Logo BEDULANG"
-                    >
-                    <h2 class="mt-3 text-center font-bold text-blue-700">
-                        BEDULANG
-                    </h2>
+                <div class="p-6 border-b flex justify-center items-center">
+                    <Link href="/">
+                        <img
+                            src="/services/logobateng3.png"
+                            class="w-24 h-auto mx-auto object-contain transition-transform hover:scale-105"
+                            alt="Logo Bangka Tengah"
+                        >
+                    </Link>
                 </div>
 
                 <nav class="p-4 space-y-2">
