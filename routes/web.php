@@ -40,54 +40,50 @@ Route::post('/complaints', [ComplaintController::class, 'store'])
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth', 'admin'])->group(function () {
-
-    Route::middleware(['auth'])->prefix('admin')->group(function () {
-        Route::get('/', [DashboardController::class, 'index'])
-            ->name('admin.dashboard');
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+    Route::get('/', [DashboardController::class, 'index'])
+        ->name('admin.dashboard');
 
     Route::get('/cctv', [CCTVController::class, 'index'])
         ->name('admin.cctv');
+
+    // Complaint routes
+    Route::get('/complaints', [ComplaintController::class, 'index'])
+        ->name('admin.complaints.index');
+
+    Route::get('/complaints/{complaint}', [ComplaintController::class, 'show'])
+        ->name('admin.complaints.show');
+
+    Route::put('/complaints/{complaint}', [ComplaintController::class, 'update'])
+        ->name('admin.complaints.update');
+
+    Route::delete('/complaints/{complaint}', [ComplaintController::class, 'destroy'])
+        ->name('admin.complaints.destroy');
 });
 
+Route::middleware(['auth', 'super_admin'])->prefix('admin')->group(function () {
+    Route::get('/users', [UserController::class, 'index'])
+        ->name('admin.users');
 
-        // Complaint routes
-        Route::get('/complaints', [ComplaintController::class, 'index'])
-            ->name('admin.complaints.index');
+    Route::get('/users/create', [UserController::class, 'create'])
+        ->name('admin.users.create');
 
-        Route::get('/complaints/{complaint}', [ComplaintController::class, 'show'])
-            ->name('admin.complaints.show');
+    Route::post('/users', [UserController::class, 'store'])
+        ->name('admin.users.store');
 
-        Route::put('/complaints/{complaint}', [ComplaintController::class, 'update'])
-            ->name('admin.complaints.update');
+    Route::get('/users/{user}/edit', [UserController::class, 'edit'])
+        ->name('admin.users.edit');
 
-        Route::delete('/complaints/{complaint}', [ComplaintController::class, 'destroy'])
-            ->name('admin.complaints.destroy');
-    });
+    Route::put('/users/{user}', [UserController::class, 'update'])
+        ->name('admin.users.update');
 
-    Route::middleware(['super_admin'])->group(function () {
-        Route::get('/admin/users', [UserController::class, 'index'])
-            ->name('admin.users');
-
-        Route::get('/admin/users/create', [UserController::class, 'create'])
-            ->name('admin.users.create');
-
-        Route::post('/admin/users', [UserController::class, 'store'])
-            ->name('admin.users.store');
-
-        Route::get('/admin/users/{user}/edit', [UserController::class, 'edit'])
-            ->name('admin.users.edit');
-
-        Route::put('/admin/users/{user}', [UserController::class, 'update'])
-            ->name('admin.users.update');
-
-        Route::delete('/admin/users/{user}', [UserController::class, 'destroy'])
-            ->name('admin.users.destroy');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])
+        ->name('admin.users.destroy');
 });
 
 /*
 |--------------------------------------------------------------------------
-| Profile
+| Profile & User Complaints
 |--------------------------------------------------------------------------
 */
 
@@ -96,6 +92,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
+
+    Route::get('/my-complaints', [\App\Http\Controllers\UserComplaintController::class, 'index'])
+        ->name('user.complaints.index');
+
+    Route::patch('/my-complaints/{complaint}/cancel', [\App\Http\Controllers\UserComplaintController::class, 'cancel'])
+        ->name('user.complaints.cancel');
+
+    Route::post('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])
+        ->name('notifications.read');
+
+    Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])
+        ->name('notifications.read-all');
 
     Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile.edit');

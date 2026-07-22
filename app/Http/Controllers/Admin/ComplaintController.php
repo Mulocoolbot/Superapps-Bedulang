@@ -5,8 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Complaint;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+
+use App\Notifications\ComplaintStatusUpdatedNotification;
+use App\Notifications\NewComplaintNotification;
+use App\Models\User;
 
 class ComplaintController extends Controller
 {
@@ -15,22 +20,41 @@ class ComplaintController extends Controller
      */
     public function index(Request $request)
     {
-        $this->authorize('viewAny', Complaint::class);
+        Gate::authorize('viewAny', Complaint::class);
 
-        $query = Complaint::query();
+        $user = $request->user();
+
+        // Base scoped query for user domain
+        $baseQuery = Complaint::query();
+        if (!$user->isSuperAdmin() && !empty($user->service_slug)) {
+            $baseQuery->where('service_slug', $user->service_slug);
+        }
+
+        // Calculate summary statistics
+        $stats = [
+            'total' => (clone $baseQuery)->count(),
+            'pending' => (clone $baseQuery)->where('status', 'pending')->count(),
+            'processing' => (clone $baseQuery)->where('status', 'processing')->count(),
+            'resolved' => (clone $baseQuery)->where('status', 'resolved')->count(),
+            'rejected' => (clone $baseQuery)->where('status', 'rejected')->count(),
+            'cancelled' => (clone $baseQuery)->where('status', 'cancelled')->count(),
+        ];
+
+        // Filtered query for pagination list
+        $query = clone $baseQuery;
 
         // Filter by status
-        if ($request->has('status') && $request->status !== 'all') {
+        if ($request->has('status') && $request->status !== 'all' && !empty($request->status)) {
             $query->where('status', $request->status);
         }
 
         // Filter by service
-        if ($request->has('service') && $request->service) {
+        if ($request->has('service') && !empty($request->service)) {
             $query->where('service_slug', $request->service);
         }
 
         // Search
-        if ($request->has('search') && $request->search) {
+        if ($request->has('search') && !empty($request->search)) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
@@ -45,13 +69,33 @@ class ComplaintController extends Controller
             ->paginate(15)
             ->withQueryString();
 
+        $servicesList = [
+            ['slug' => 'pemerintahan', 'name' => 'PEMERINTAHAN'],
+            ['slug' => 'pendidikan', 'name' => 'PENDIDIKAN'],
+            ['slug' => 'kesehatan', 'name' => 'KESEHATAN'],
+            ['slug' => 'perindagkop-ukm', 'name' => 'PERINDAGKOP-UKM'],
+            ['slug' => 'hukum', 'name' => 'HUKUM'],
+            ['slug' => 'sosial', 'name' => 'SOSIAL'],
+            ['slug' => 'kependudukan', 'name' => 'KEPENDUDUKAN'],
+            ['slug' => 'kepegawaian', 'name' => 'KEPEGAWAIAN'],
+            ['slug' => 'lingkungan', 'name' => 'LINGKUNGAN'],
+            ['slug' => 'geografis', 'name' => 'GEOGRAFIS'],
+            ['slug' => 'pariwisata', 'name' => 'PARIWISATA'],
+            ['slug' => 'data-sektoral', 'name' => 'DATA SEKTORAL'],
+            ['slug' => 'makanan-bergizi-gratis', 'name' => 'MAKANAN BERGIZI GRATIS'],
+        ];
+
         return Inertia::render('Admin/Complaints/Index', [
             'complaints' => $complaints,
+            'stats' => $stats,
+            'services' => $servicesList,
             'filters' => [
                 'status' => $request->status ?? 'all',
                 'service' => $request->service ?? '',
                 'search' => $request->search ?? '',
             ],
+            'userDomain' => $user->service_slug,
+            'isSuperAdmin' => $user->isSuperAdmin() || empty($user->service_slug),
         ]);
     }
 
@@ -68,10 +112,10 @@ class ComplaintController extends Controller
             ])],
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'category' => 'required|string|max:50',
+            'category' => 'nullable|string|max:50',
             'contact_person_name' => 'required|string|max:255',
-            'contact_email' => 'required|email|max:255',
-            'contact_phone' => 'required|string|max:20',
+            'contact_email' => 'nullable|email|max:255',
+            'contact_phone' => 'nullable|string|max:20',
         ]);
 
         $whatsappPhone = preg_replace('/\D+/', '', config('services.whatsapp.complaint_phone'));
@@ -81,13 +125,29 @@ class ComplaintController extends Controller
             'service_slug' => $validated['service_slug'],
             'title' => $validated['title'],
             'description' => $validated['description'],
-            'category' => $validated['category'],
+            'category' => $validated['category'] ?? 'layanan',
             'contact_person_name' => $validated['contact_person_name'],
-            'contact_email' => $validated['contact_email'],
-            'contact_phone' => $validated['contact_phone'],
+            'contact_email' => $validated['contact_email'] ?? null,
+            'contact_phone' => $validated['contact_phone'] ?? null,
             'whatsapp_phone' => $whatsappPhone,
             'status' => 'pending',
         ]);
+
+        $complaint->progressLogs()->create([
+            'user_id' => auth()->id(),
+            'status' => 'pending',
+            'notes' => 'Pengaduan diajukan melalui WhatsApp',
+        ]);
+
+        // Notify domain admins assigned to this service_slug (Exclude SuperAdmins)
+        $domainAdmins = User::query()
+            ->where('role', 'admin')
+            ->where('service_slug', $validated['service_slug'])
+            ->get();
+
+        foreach ($domainAdmins as $admin) {
+            $admin->notify(new NewComplaintNotification($complaint));
+        }
 
         return response()->json([
             'success' => true,
@@ -102,10 +162,10 @@ class ComplaintController extends Controller
      */
     public function show(Complaint $complaint)
     {
-        $this->authorize('view', $complaint);
+        Gate::authorize('view', $complaint);
 
         return Inertia::render('Admin/Complaints/Show', [
-            'complaint' => $complaint->load('user'),
+            'complaint' => $complaint->load(['user', 'progressLogs.user']),
         ]);
     }
 
@@ -114,14 +174,59 @@ class ComplaintController extends Controller
      */
     public function update(Request $request, Complaint $complaint)
     {
-        $this->authorize('update', $complaint);
+        Gate::authorize('update', $complaint);
 
         $validated = $request->validate([
-            'status' => 'required|in:pending,processing,resolved,rejected',
+            'status' => 'required|in:pending,processing,resolved,rejected,cancelled',
             'notes' => 'nullable|string',
         ]);
 
+        $currentStatus = $complaint->status;
+        $newStatus = $validated['status'];
+
+        // Locked final states: rejected, resolved, cancelled
+        if (in_array($currentStatus, ['rejected', 'resolved', 'cancelled'])) {
+            $statusLabel = [
+                'rejected' => 'Ditolak',
+                'resolved' => 'Selesai',
+                'cancelled' => 'Dibatalkan',
+            ][$currentStatus] ?? $currentStatus;
+
+            return redirect()->back()->withErrors([
+                'status' => "Pengaduan berstatus '{$statusLabel}' sudah bersifat final dan tidak dapat diubah lagi.",
+            ]);
+        }
+
+        // Rule 1: From pending -> processing or rejected
+        if ($currentStatus === 'pending' && !in_array($newStatus, ['processing', 'rejected'])) {
+            return redirect()->back()->withErrors([
+                'status' => "Pengaduan berstatus 'Menunggu' hanya dapat diubah menjadi 'Diproses' atau 'Ditolak'.",
+            ]);
+        }
+
+        // Rule 3: From processing -> resolved or rejected (cannot revert to pending)
+        if ($currentStatus === 'processing' && !in_array($newStatus, ['resolved', 'rejected'])) {
+            return redirect()->back()->withErrors([
+                'status' => "Pengaduan yang sedang 'Diproses' tidak dapat dikembalikan ke 'Menunggu', hanya dapat diubah ke 'Selesai' atau 'Ditolak'.",
+            ]);
+        }
+
         $complaint->update($validated);
+
+        $complaint->progressLogs()->create([
+            'user_id' => auth()->id(),
+            'status' => $validated['status'],
+            'notes' => $validated['notes'] ?? null,
+        ]);
+
+        // Notify user about complaint status update
+        if ($complaint->user) {
+            $complaint->user->notify(new ComplaintStatusUpdatedNotification(
+                $complaint,
+                $validated['status'],
+                $validated['notes'] ?? null
+            ));
+        }
 
         if ($request->header('X-Inertia')) {
             return redirect()->back()->with('success', 'Pengaduan berhasil diperbarui.');
@@ -137,9 +242,9 @@ class ComplaintController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Complaint $complaint)
+    public function destroy(Request $request, Complaint $complaint)
     {
-        $this->authorize('delete', $complaint);
+        Gate::authorize('delete', $complaint);
 
         $complaint->delete();
 
@@ -190,15 +295,10 @@ class ComplaintController extends Controller
      */
     private function formatWhatsAppMessage(Complaint $complaint): string
     {
-        return "🔔 *PENGADUAN BARU*\n\n".
-            "*Layanan:* {$complaint->service_name}\n".
-            "*Judul:* {$complaint->title}\n".
-            "*Kategori:* {$complaint->category}\n".
-            "*Nama:* {$complaint->contact_person_name}\n".
-            "*Email:* {$complaint->contact_email}\n".
-            "*Telepon:* {$complaint->contact_phone}\n".
-            "*Deskripsi:*\n{$complaint->description}\n\n".
-            'Link: '.url("/admin/complaints/{$complaint->id}");
+        return "*Pengaduan Layanan \"{$complaint->service_name}\"*\n\n".
+            "nama : {$complaint->contact_person_name}\n".
+            "judul : {$complaint->title}\n".
+            "deskripsi : {$complaint->description}";
     }
 
     private function whatsAppUrl(Complaint $complaint, string $whatsappPhone): string

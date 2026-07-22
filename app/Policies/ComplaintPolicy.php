@@ -20,7 +20,7 @@ class ComplaintPolicy
      */
     public function view(User $user, Complaint $complaint): bool
     {
-        return in_array($user->role, ['admin', 'super_admin'], true);
+        return in_array($user->role, ['admin', 'super_admin'], true) && $user->canAccessService($complaint->service_slug);
     }
 
     /**
@@ -36,7 +36,7 @@ class ComplaintPolicy
      */
     public function update(User $user, Complaint $complaint): bool
     {
-        return in_array($user->role, ['admin', 'super_admin'], true);
+        return in_array($user->role, ['admin', 'super_admin'], true) && $user->canAccessService($complaint->service_slug);
     }
 
     /**
@@ -44,7 +44,7 @@ class ComplaintPolicy
      */
     public function delete(User $user, Complaint $complaint): bool
     {
-        return $user->role === 'super_admin';
+        return $user->isSuperAdmin() || ($user->isAdmin() && $user->canAccessService($complaint->service_slug));
     }
 
     /**

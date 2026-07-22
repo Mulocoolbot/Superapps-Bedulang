@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,28 +16,52 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->create([
-            'name' => 'Super Admin',
-            'email' => 'superadmin@example.com',
-            'role' => 'super_admin',
-        ]);
+        User::updateOrCreate(
+            ['email' => 'superadmin@example.com'],
+            [
+                'name' => 'Super Admin',
+                'password' => Hash::make('password'),
+                'role' => 'super_admin',
+                'service_slug' => null,
+            ]
+        );
 
-        User::factory()->create([
-            'name' => 'Admin',
-            'email' => 'admin@example.com',
-            'role' => 'admin',
-        ]);
+        User::updateOrCreate(
+            ['email' => 'admin.perindag@example.com'],
+            [
+                'name' => 'Admin Perindag',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+                'service_slug' => 'perindagkop-ukm',
+            ]
+        );
 
-        User::factory()->create([
-            'name' => 'Pimpinan',
-            'email' => 'pimpinan@example.com',
-            'role' => 'pimpinan',
-        ]);
+        User::updateOrCreate(
+            ['email' => 'admin.kesehatan@example.com'],
+            [
+                'name' => 'Admin Kesehatan',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+                'service_slug' => 'kesehatan',
+            ]
+        );
 
-        User::factory()->create([
-            'name' => 'User Publik',
-            'email' => 'user@example.com',
-            'role' => 'publik',
-        ]);
+        User::updateOrCreate(
+            ['email' => 'pimpinan@example.com'],
+            [
+                'name' => 'Pimpinan',
+                'password' => Hash::make('password'),
+                'role' => 'pimpinan',
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'user@example.com'],
+            [
+                'name' => 'User Publik Test',
+                'password' => Hash::make('password'),
+                'role' => 'publik',
+            ]
+        );
     }
 }

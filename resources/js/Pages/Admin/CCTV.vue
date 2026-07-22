@@ -33,12 +33,20 @@ const props = defineProps({
 
 
 const selectedCCTV = ref(null)
+<<<<<<< HEAD
 const video = ref(null)
 let hls = null
 
 const zoom = 13
 const center = [-2.45,106.15]
 const openCCTV = async(cctv)=>{
+=======
+const zoom = 12
+const center = [-2.123, 106.123]
+
+const openCCTV = async (cctv)=>{
+
+>>>>>>> 7d4312814a88068581d58eab0b3b8c5c7a88a617
     selectedCCTV.value = cctv
     await nextTick()
     if(hls){
@@ -92,6 +100,7 @@ class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibo
 CCTV Monitoring
 </h1>
 
+<<<<<<< HEAD
 <p class="text-sm text-slate-500">
 Live monitoring kamera CCTV administrator
 </p>
@@ -106,6 +115,53 @@ Live monitoring kamera CCTV administrator
 </div>
 </div>
 </div>
+=======
+            <!-- GRID FOR MAP & LIST -->
+            <div class="grid lg:grid-cols-[3fr_1fr] gap-6">
+                <!-- MAP CARD -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden h-[550px] min-h-[550px]">
+                    <LMap :zoom="zoom" :center="center" class="h-full w-full z-0">
+                        <LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                        <template v-for="cctv in cctvs" :key="cctv.id">
+                            <LMarker :lat-lng="[cctv.lat, cctv.lng]" @click="openCCTV(cctv)">
+                                <LPopup>
+                                    <div class="font-bold text-slate-800">{{ cctv.name }}</div>
+                                    <div class="text-sm text-slate-500">IP: {{ cctv.ip }}</div>
+                                    <button @click="openCCTV(cctv)" class="mt-2 bg-cyan-600 hover:bg-cyan-700 text-white px-3 py-1 rounded text-sm transition">
+                                        Lihat CCTV
+                                    </button>
+                                </LPopup>
+                            </LMarker>
+                        </template>
+                    </LMap>
+                </div>
+
+                <!-- LIST CARD -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-5 flex flex-col justify-between h-[550px]">
+                    <div>
+                        <h2 class="font-bold text-lg text-slate-900 mb-4 flex items-center justify-between">
+                            <span>Daftar CCTV</span>
+                            <span class="text-xs font-normal text-slate-500">({{ cctvs?.length || 0 }} Lokasi)</span>
+                        </h2>
+                        <div class="space-y-3 max-h-[460px] overflow-y-auto pr-1">
+                            <div
+                                v-for="cctv in cctvs"
+                                :key="cctv.id"
+                                @click="openCCTV(cctv)"
+                                class="cursor-pointer border border-slate-200 rounded-xl p-4 transition hover:bg-slate-50 hover:border-cyan-200 hover:shadow-sm"
+                                :class="selectedCCTV?.id === cctv.id ? 'border-cyan-500 bg-cyan-50/40 ring-1 ring-cyan-500' : ''"
+                            >
+                                <div class="font-semibold text-slate-800">{{ cctv.name }}</div>
+                                <div class="text-sm text-slate-500">{{ cctv.ip }}</div>
+                                <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700 mt-2">
+                                    Online
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+>>>>>>> 7d4312814a88068581d58eab0b3b8c5c7a88a617
 
 <!-- MAP + LIST -->
 <div class="grid xl:grid-cols-[2fr_1fr] gap-6">
@@ -236,9 +292,17 @@ Hikvision RTSP Stream
 </AdminLayout>
 </template>
 <style scoped>
+<<<<<<< HEAD
 .leaflet-container{
 height:100%;
 width:100%;
+=======
+:deep(.leaflet-container) {
+    height: 550px !important;
+    min-height: 550px !important;
+    width: 100% !important;
+    z-index: 0;
+>>>>>>> 7d4312814a88068581d58eab0b3b8c5c7a88a617
 }
 
 </style>

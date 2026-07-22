@@ -140,6 +140,7 @@
                 </div>
 
                 <!-- Contact Name -->
+                <!-- Contact Name -->
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-2">
                     Nama Lengkap *
@@ -161,31 +162,24 @@
                   <button
                     type="button"
                     @click="closeModal"
-                    class="flex-1 px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 font-medium transition"
+                    class="flex-1 px-4 py-2.5 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 font-medium transition text-sm"
                   >
                     Batal
                   </button>
                   <button
                     type="submit"
                     :disabled="isSubmitting"
-                    class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 font-medium transition flex items-center justify-center gap-2"
+                    class="flex-1 px-4 py-2.5 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:bg-gray-400 font-semibold transition text-sm flex items-center justify-center gap-2 shadow-sm"
                   >
                     <svg
                       v-if="!isSubmitting"
-                      class="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
+                      class="w-5 h-5 fill-current"
                       viewBox="0 0 24 24"
                     >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                      />
+                      <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l.999 1.587-1.036 3.784 3.78-1.002 1.503.958z"/>
                     </svg>
-                    <span v-if="isSubmitting">Mengirim...</span>
-                    <span v-else>Kirim Pengaduan</span>
+                    <span v-if="isSubmitting">Mengirim & Merekam...</span>
+                    <span v-else>Kirim lewat WhatsApp</span>
                   </button>
                 </div>
               </form>
@@ -264,7 +258,7 @@ const errors = ref({})
 const form = ref({
   title: '',
   description: '',
-  category: '',
+  category: 'layanan',
   contact_person_name: '',
   contact_email: '',
   contact_phone: '',
@@ -305,13 +299,11 @@ const buildWhatsAppUrl = () => {
     : (servicesList.find(s => s.slug === selectedServiceSlug.value)?.name || 'Layanan')
 
   const message = [
-    '*PENGADUAN BARU*',
+    `*Pengaduan Layanan "${activeServiceName}"*`,
     '',
-    `*Layanan:* ${activeServiceName}`,
-    `*Judul:* ${form.value.title}`,
-    `*Nama:* ${form.value.contact_person_name}`,
-    '*Deskripsi:*',
-    form.value.description,
+    `nama : ${form.value.contact_person_name}`,
+    `judul : ${form.value.title}`,
+    `deskripsi : ${form.value.description}`,
   ].join('\n')
 
   return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`
@@ -326,7 +318,7 @@ const resetForm = ({ keepSuccess = false } = {}) => {
   form.value = {
     title: '',
     description: '',
-    category: '',
+    category: 'layanan',
     contact_person_name: '',
     contact_email: '',
     contact_phone: '',
@@ -376,13 +368,11 @@ const submitComplaint = async () => {
       isSuccess.value = true
       successMessage.value = data.message || 'Pengaduan berhasil dikirim'
 
+      // Buka WhatsApp di tab baru saat pengguna menekan tombol Kirim lewat WhatsApp
+      window.open(whatsappUrl, '_blank')
+
       // Reset form
       resetForm({ keepSuccess: true })
-
-      // Pengaduan sudah tersimpan; buka WhatsApp dengan pesan yang telah disiapkan.
-      setTimeout(() => {
-        window.location.assign(whatsappUrl)
-      }, 500)
     }
   } catch (error) {
     errors.value.general = error.message

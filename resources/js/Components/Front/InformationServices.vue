@@ -46,7 +46,7 @@ const apps = [
         logo: '/services/work.svg',
     },
     {
-        name: 'LINGKUNGAN',
+        name: 'Pertanian dan Ketahanan Pangan',
         slug: 'lingkungan',
         logo: '/services/environment.svg',
     },
@@ -66,7 +66,7 @@ const apps = [
         logo: '/services/voting.svg',
     },
     {
-        name: 'MAKANAN BERGIZI GRATIS',
+        name: 'Makanan Bergizi Gratis',
         slug: 'makanan-bergizi-gratis',
         logo: '/services/makanan-bergizi-gratis.svg',
     },
