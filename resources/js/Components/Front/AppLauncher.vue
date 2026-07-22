@@ -3,32 +3,32 @@ const services = [
     {
         name: 'SIPELAWAN',
         logo: '/services/sipelawan.png',
-        url: '/login'
+        url: 'https://dashboard-sipelawan.bangkatengahkab.go.id/dashboard/'
     },
     {
         name: 'SIDOLPIN',
-        logo: '/services/sidolpin.png',
-        url: '/login'
+        logo: '/services/sidolpin.svg',
+        url: 'https://sidolpin.bangkatengahkab.go.id/'
     },
     {
         name: 'SILAKSO',
-        logo: '/services/silakso.png',
-        url: '/login'
+        logo: '/services/silakso.svg',
+        url: 'https://silakso.bangkatengahkab.go.id/'
     },
     {
         name: 'SIKOK DATA',
-        logo: '/services/people.svg',
-        url: '/login'
+        logo: '/services/sikok-data.svg',
+        url: 'https://sikokdata.bangkatengahkab.go.id/'
     },
     {
         name: 'LAPOR PPID',
         logo: '/services/lapor.png',
-        url: '/login'
+        url: 'https://www.lapor.go.id/instansi/pemerintah-kabupaten-bangka-tengah'
     },
     {
         name: 'SIMENTARI',
         logo: '/services/seperadik.png',
-        url: '/login'
+        url: 'https://inspektorat.bangkatengahkab.go.id'
     },
 ]
 </script>
@@ -82,12 +82,17 @@ const services = [
                     <!-- Logo -->
 
                     <div
-                        class="flex h-16 w-16 items-center justify-center rounded-xl bg-gray-50 dark:bg-gray-900">
+                        class="flex h-16 w-16 items-center justify-center rounded-xl transition-colors duration-300"
+                        :class="service.name === 'SIKOK DATA' 
+                            ? 'bg-slate-950 dark:bg-transparent' 
+                            : 'bg-gray-50 dark:bg-gray-900'"
+                    >
 
                         <img
                             :src="service.logo"
                             :alt="service.name"
-                            class="h-12 w-12 object-contain transition duration-300 group-hover:scale-105">
+                            class="h-12 w-12 object-contain transition duration-300 group-hover:scale-105"
+                        >
 
                     </div>
 
