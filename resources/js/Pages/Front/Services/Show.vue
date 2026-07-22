@@ -8,6 +8,7 @@ import Footer from '@/Components/Front/Footer.vue'
 // Import Segmented Dashboard components
 import PerindagkopDashboard from './Dashboards/PerindagkopDashboard.vue'
 import MbgDashboard from './Dashboards/MbgDashboard.vue'
+import DkpDashboard from './Dashboards/DkpDashboard.vue'
 import DefaultDashboard from './Dashboards/DefaultDashboard.vue'
 
 const isComplaintModalOpen = ref(false)
@@ -30,6 +31,8 @@ const dashboardComponent = computed(() => {
             return PerindagkopDashboard
         case 'makanan-bergizi-gratis':
             return MbgDashboard
+        case 'lingkungan':
+            return DkpDashboard
         default:
             return DefaultDashboard
     }

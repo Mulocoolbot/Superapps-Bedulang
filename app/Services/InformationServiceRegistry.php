@@ -79,14 +79,10 @@ class InformationServiceRegistry
             ],
         ],
         'lingkungan' => [
-            'name' => 'Lingkungan',
-            'icon' => '🌿',
-            'description' => 'Dashboard informasi Lingkungan Kabupaten Bangka Tengah.',
-            'filters' => [
-                ['label' => 'Kematian', 'value' => 'kematian'],
-                ['label' => 'Kelahiran', 'value' => 'kelahiran'],
-                ['label' => 'Harga Cabe', 'value' => 'harga-cabe'],
-            ],
+            'name' => 'DPKP',
+            'icon' => '🌾',
+            'description' => 'Dashboard informasi Dinas Pertanian & Ketahanan Pangan Kabupaten Bangka Tengah.',
+            'filters' => [],
         ],
         'geografis' => [
             'name' => 'Geografis',
