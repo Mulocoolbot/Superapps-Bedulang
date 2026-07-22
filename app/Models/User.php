@@ -23,6 +23,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'service_slug',
     ];
 
     /**
@@ -71,5 +72,14 @@ class User extends Authenticatable
     public function hasRole(string $role): bool
     {
         return $this->role === $role;
+    }
+
+    public function canAccessService(?string $serviceSlug): bool
+    {
+        if ($this->isSuperAdmin() || empty($this->service_slug)) {
+            return true;
+        }
+
+        return $this->service_slug === $serviceSlug;
     }
 }

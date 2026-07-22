@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Complaint extends Model
 {
@@ -18,6 +19,8 @@ class Complaint extends Model
         'description',
         'category',
         'contact_person_name',
+        'contact_email',
+        'contact_phone',
         'status',
         'whatsapp_phone',
         'whatsapp_sent_at',
@@ -37,6 +40,14 @@ class Complaint extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the progress history logs for this complaint
+     */
+    public function progressLogs(): HasMany
+    {
+        return $this->hasMany(ComplaintProgressLog::class, 'complaint_id')->orderBy('created_at', 'desc');
     }
 
     /**
