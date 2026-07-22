@@ -33,20 +33,12 @@ const props = defineProps({
 
 
 const selectedCCTV = ref(null)
-<<<<<<< HEAD
 const video = ref(null)
 let hls = null
 
 const zoom = 13
 const center = [-2.45,106.15]
 const openCCTV = async(cctv)=>{
-=======
-const zoom = 12
-const center = [-2.123, 106.123]
-
-const openCCTV = async (cctv)=>{
-
->>>>>>> 7d4312814a88068581d58eab0b3b8c5c7a88a617
     selectedCCTV.value = cctv
     await nextTick()
     if(hls){
