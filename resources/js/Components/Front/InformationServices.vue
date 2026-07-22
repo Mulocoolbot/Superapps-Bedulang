@@ -66,7 +66,7 @@ const apps = [
         logo: '/services/voting.svg',
     },
     {
-        name: 'MBG',
+        name: 'Makanan Bergizi Gratis',
         slug: 'makanan-bergizi-gratis',
         logo: '/services/makanan-bergizi-gratis.svg',
     },

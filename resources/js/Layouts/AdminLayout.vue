@@ -30,6 +30,14 @@ import { NotificationService } from '@/Services/NotificationService'
 
 let pollTimer = null
 const seenIdsSet = new Set()
+const isBellRinging = ref(false)
+
+const triggerBellRing = () => {
+    isBellRinging.value = true
+    setTimeout(() => {
+        isBellRinging.value = false
+    }, 1000)
+}
 
 onMounted(() => {
     if (authUser.value) {
@@ -42,7 +50,10 @@ onMounted(() => {
                 preserveScroll: true,
                 preserveState: true,
                 onSuccess: () => {
-                    NotificationService.processNewNotifications(notifications.value, seenIdsSet)
+                    const hasNew = NotificationService.processNewNotifications(notifications.value, seenIdsSet)
+                    if (hasNew) {
+                        triggerBellRing()
+                    }
                 }
             })
         }, 10000)
@@ -163,7 +174,8 @@ onUnmounted(() => {
                 <div v-if="authUser" class="relative">
                     <button
                         @click="notificationsOpen = !notificationsOpen"
-                        class="relative inline-flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 p-2.5 transition"
+                        class="relative inline-flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 p-2.5 transition cursor-pointer"
+                        :class="{ 'animate-bell-ring text-rose-600': isBellRinging }"
                         aria-label="Notifikasi Admin"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
@@ -179,127 +191,136 @@ onUnmounted(() => {
                         </span>
                     </button>
 
-                    <!-- Notifications Dropdown Box -->
-                    <div
-                        v-show="notificationsOpen"
-                        class="absolute right-0 mt-3 w-80 sm:w-96 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl z-50 transition-all"
+                    <!-- Notifications Dropdown Box with Transition -->
+                    <Transition
+                        enter-active-class="transition duration-200 ease-out"
+                        enter-from-class="transform opacity-0 scale-95 -translate-y-2"
+                        enter-to-class="transform opacity-100 scale-100 translate-y-0"
+                        leave-active-class="transition duration-150 ease-in"
+                        leave-from-class="transform opacity-100 scale-100 translate-y-0"
+                        leave-to-class="transform opacity-0 scale-95 -translate-y-2"
                     >
-                        <div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gray-50/80">
-                            <div class="flex items-center gap-2">
-                                <h3 class="text-xs font-bold text-gray-800 uppercase tracking-wider">Notifikasi Panel</h3>
-                                <span v-if="unreadCount > 0" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700">
-                                    {{ unreadCount }} Baru
-                                </span>
+                        <div
+                            v-show="notificationsOpen"
+                            class="absolute right-0 mt-3 w-80 sm:w-96 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl z-50 transition-all"
+                        >
+                            <div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between bg-gray-50/80">
+                                <div class="flex items-center gap-2">
+                                    <h3 class="text-xs font-bold text-gray-800 uppercase tracking-wider">Notifikasi Panel</h3>
+                                    <span v-if="unreadCount > 0" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700">
+                                        {{ unreadCount }} Baru
+                                    </span>
+                                </div>
+
+                                <button
+                                    v-if="unreadCount > 0"
+                                    @click="markAllAsRead"
+                                    class="text-xs font-semibold text-blue-600 hover:text-blue-800 transition"
+                                >
+                                    Tandai Semua Dibaca
+                                </button>
                             </div>
 
-                            <button
-                                v-if="unreadCount > 0"
-                                @click="markAllAsRead"
-                                class="text-xs font-semibold text-blue-600 hover:text-blue-800 transition"
-                            >
-                                Tandai Semua Dibaca
-                            </button>
-                        </div>
-
-                        <!-- 2 Tabs Bar (Belum Dibaca | Sudah Dibaca) -->
-                        <div class="flex border-b border-gray-100 bg-gray-50/50">
-                            <button
-                                @click="activeNotificationTab = 'unread'"
-                                class="flex-1 py-2 px-3 text-center text-xs font-bold transition border-b-2 flex items-center justify-center gap-1.5"
-                                :class="activeNotificationTab === 'unread' ? 'border-blue-600 text-blue-600 bg-white' : 'border-transparent text-gray-500 hover:text-gray-700'"
-                            >
-                                <span>Belum Dibaca</span>
-                                <span v-if="unreadList.length > 0" class="px-1.5 py-0.2 rounded-full text-[10px] font-extrabold bg-rose-600 text-white">
-                                    {{ unreadList.length }}
-                                </span>
-                            </button>
-
-                            <button
-                                @click="activeNotificationTab = 'read'"
-                                class="flex-1 py-2 px-3 text-center text-xs font-bold transition border-b-2 flex items-center justify-center gap-1.5"
-                                :class="activeNotificationTab === 'read' ? 'border-blue-600 text-blue-600 bg-white' : 'border-transparent text-gray-500 hover:text-gray-700'"
-                            >
-                                <span>Sudah Dibaca</span>
-                                <span v-if="readList.length > 0" class="px-1.5 py-0.2 rounded-full text-[10px] font-semibold bg-gray-200 text-gray-700">
-                                    {{ readList.length }}
-                                </span>
-                            </button>
-                        </div>
-
-                        <!-- Notifications List (Filtered by active tab) -->
-                        <div class="max-h-80 overflow-y-auto divide-y divide-gray-100">
-                            <!-- Tab: Belum Dibaca -->
-                            <template v-if="activeNotificationTab === 'unread'">
-                                <div v-if="unreadList.length === 0" class="p-6 text-center text-xs text-gray-400">
-                                    Tidak ada notifikasi yang belum dibaca.
-                                </div>
-
-                                <div
-                                    v-for="item in unreadList"
-                                    :key="item.id"
-                                    @click="markAsRead(item)"
-                                    class="p-3.5 hover:bg-slate-50 cursor-pointer transition flex items-start gap-3 bg-blue-50/50"
+                            <!-- 2 Tabs Bar (Belum Dibaca | Sudah Dibaca) -->
+                            <div class="flex border-b border-gray-100 bg-gray-50/50">
+                                <button
+                                    @click="activeNotificationTab = 'unread'"
+                                    class="flex-1 py-2 px-3 text-center text-xs font-bold transition border-b-2 flex items-center justify-center gap-1.5"
+                                    :class="activeNotificationTab === 'unread' ? 'border-blue-600 text-blue-600 bg-white' : 'border-transparent text-gray-500 hover:text-gray-700'"
                                 >
-                                    <div class="p-2 rounded-xl shrink-0 mt-0.5 bg-blue-100 text-blue-600">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
-                                        </svg>
+                                    <span>Belum Dibaca</span>
+                                    <span v-if="unreadList.length > 0" class="px-1.5 py-0.2 rounded-full text-[10px] font-extrabold bg-rose-600 text-white">
+                                        {{ unreadList.length }}
+                                    </span>
+                                </button>
+
+                                <button
+                                    @click="activeNotificationTab = 'read'"
+                                    class="flex-1 py-2 px-3 text-center text-xs font-bold transition border-b-2 flex items-center justify-center gap-1.5"
+                                    :class="activeNotificationTab === 'read' ? 'border-blue-600 text-blue-600 bg-white' : 'border-transparent text-gray-500 hover:text-gray-700'"
+                                >
+                                    <span>Sudah Dibaca</span>
+                                    <span v-if="readList.length > 0" class="px-1.5 py-0.2 rounded-full text-[10px] font-semibold bg-gray-200 text-gray-700">
+                                        {{ readList.length }}
+                                    </span>
+                                </button>
+                            </div>
+
+                            <!-- Notifications List (Filtered by active tab) -->
+                            <div class="max-h-80 overflow-y-auto divide-y divide-gray-100">
+                                <!-- Tab: Belum Dibaca -->
+                                <template v-if="activeNotificationTab === 'unread'">
+                                    <div v-if="unreadList.length === 0" class="p-6 text-center text-xs text-gray-400">
+                                        Tidak ada notifikasi yang belum dibaca.
                                     </div>
 
-                                    <div class="space-y-1 min-w-0 flex-1">
-                                        <div class="flex items-center justify-between gap-1">
-                                            <h4 class="text-xs font-bold text-gray-900 truncate">
+                                    <div
+                                        v-for="item in unreadList"
+                                        :key="item.id"
+                                        @click="markAsRead(item)"
+                                        class="p-3.5 hover:bg-slate-50 cursor-pointer transition flex items-start gap-3 bg-blue-50/50"
+                                    >
+                                        <div class="p-2 rounded-xl shrink-0 mt-0.5 bg-blue-100 text-blue-600">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                                            </svg>
+                                        </div>
+
+                                        <div class="space-y-1 min-w-0 flex-1">
+                                            <div class="flex items-center justify-between gap-1">
+                                                <h4 class="text-xs font-bold text-gray-900 truncate">
+                                                    {{ item.data.title || 'Notifikasi Admin' }}
+                                                </h4>
+                                                <span class="w-2 h-2 rounded-full bg-blue-600 shrink-0"></span>
+                                            </div>
+                                            <p class="text-xs text-gray-600 leading-snug line-clamp-2">
+                                                {{ item.data.message }}
+                                            </p>
+                                            <p class="text-[10px] text-gray-400">
+                                                {{ new Date(item.created_at).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </template>
+
+                                <!-- Tab: Sudah Dibaca -->
+                                <template v-else>
+                                    <div v-if="readList.length === 0" class="p-6 text-center text-xs text-gray-400">
+                                        Belum ada riwayat notifikasi yang telah dibaca.
+                                    </div>
+
+                                    <div
+                                        v-for="item in readList"
+                                        :key="item.id"
+                                        @click="markAsRead(item)"
+                                        class="p-3.5 hover:bg-slate-50 cursor-pointer transition flex items-start gap-3 opacity-80"
+                                    >
+                                        <div class="p-2 rounded-xl shrink-0 mt-0.5 bg-gray-100 text-gray-400">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                            </svg>
+                                        </div>
+
+                                        <div class="space-y-1 min-w-0 flex-1">
+                                            <h4 class="text-xs font-bold text-gray-800 truncate">
                                                 {{ item.data.title || 'Notifikasi Admin' }}
                                             </h4>
-                                            <span class="w-2 h-2 rounded-full bg-blue-600 shrink-0"></span>
+                                            <p class="text-xs text-gray-500 leading-snug line-clamp-2">
+                                                {{ item.data.message }}
+                                            </p>
+                                            <p class="text-[10px] text-gray-400">
+                                                Dibaca: {{ new Date(item.read_at).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) }}
+                                            </p>
                                         </div>
-                                        <p class="text-xs text-gray-600 leading-snug line-clamp-2">
-                                            {{ item.data.message }}
-                                        </p>
-                                        <p class="text-[10px] text-gray-400">
-                                            {{ new Date(item.created_at).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) }}
-                                        </p>
                                     </div>
-                                </div>
-                            </template>
-
-                            <!-- Tab: Sudah Dibaca -->
-                            <template v-else>
-                                <div v-if="readList.length === 0" class="p-6 text-center text-xs text-gray-400">
-                                    Belum ada riwayat notifikasi yang telah dibaca.
-                                </div>
-
-                                <div
-                                    v-for="item in readList"
-                                    :key="item.id"
-                                    @click="markAsRead(item)"
-                                    class="p-3.5 hover:bg-slate-50 cursor-pointer transition flex items-start gap-3 opacity-80"
-                                >
-                                    <div class="p-2 rounded-xl shrink-0 mt-0.5 bg-gray-100 text-gray-400">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                        </svg>
-                                    </div>
-
-                                    <div class="space-y-1 min-w-0 flex-1">
-                                        <h4 class="text-xs font-bold text-gray-800 truncate">
-                                            {{ item.data.title || 'Notifikasi Admin' }}
-                                        </h4>
-                                        <p class="text-xs text-gray-500 leading-snug line-clamp-2">
-                                            {{ item.data.message }}
-                                        </p>
-                                        <p class="text-[10px] text-gray-400">
-                                            Dibaca: {{ new Date(item.read_at).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) }}
-                                        </p>
-                                    </div>
-                                </div>
-                            </template>
+                                </template>
+                            </div>
                         </div>
-                    </div>
+                    </Transition>
                 </div>
             </header>
 
-            <main class="p-8 flex-1">
+            <main class="p-8 flex-1 animate-fade-in-up">
                 <slot />
             </main>
         </div>
@@ -309,3 +330,20 @@ onUnmounted(() => {
     <Footer />
 </div>
 </template>
+
+<style>
+@keyframes bellRing {
+    0% { transform: rotate(0); }
+    15% { transform: rotate(18deg); }
+    30% { transform: rotate(-18deg); }
+    45% { transform: rotate(12deg); }
+    60% { transform: rotate(-12deg); }
+    75% { transform: rotate(6deg); }
+    85% { transform: rotate(-6deg); }
+    100% { transform: rotate(0); }
+}
+
+.animate-bell-ring {
+    animation: bellRing 0.8s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+</style>

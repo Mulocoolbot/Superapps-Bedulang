@@ -111,163 +111,166 @@ const pageLinks = computed(() => {
                     <span>{{ page.props.flash.success }}</span>
                 </div>
 
-                <div v-if="page.props.errors?.status" class="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-sm font-medium flex items-center gap-3">
+                <div v-if="page.props.errors?.status" class="p-4 mb-6 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-sm font-medium flex items-center gap-3">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-rose-600 shrink-0">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
                     </svg>
                     <span>{{ page.props.errors.status }}</span>
                 </div>
 
-                <!-- Empty State -->
-                <div v-if="!complaints.data || complaints.data.length === 0" class="rounded-3xl bg-white dark:bg-gray-800 p-12 text-center shadow-sm border border-slate-200/80 dark:border-gray-700/80 space-y-4">
-                    <div class="w-16 h-16 mx-auto rounded-2xl bg-blue-50 dark:bg-gray-700 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                        </svg>
-                    </div>
-                    <h3 class="text-lg font-bold text-slate-800 dark:text-slate-200">Belum Ada Pengaduan</h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto">
-                        Anda belum pernah mengirimkan pengaduan. Pilih bidang layanan di beranda untuk mulai menyampaikan laporan.
-                    </p>
-                    <Link
-                        href="/#layanan"
-                        class="inline-block px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-sm transition"
-                    >
-                        Lihat Bidang Layanan
-                    </Link>
-                </div>
-
-                <!-- Complaints List (Simple by default) -->
-                <div v-else class="space-y-4">
-                    <div
-                        v-for="item in complaints.data"
-                        :key="item.id"
-                        class="rounded-2xl bg-white dark:bg-gray-800 p-5 shadow-sm border border-slate-200/80 dark:border-gray-700/80 transition-all space-y-4"
-                    >
-                        <!-- Simple Default Card Header Row (Judul, Status, Tanggal Update Status & Detail Toggle) -->
-                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                            <div class="space-y-1.5 min-w-0 flex-1">
-                                <div class="flex items-center gap-2.5 flex-wrap">
-                                    <h2 class="text-lg font-bold text-slate-900 dark:text-white truncate">
-                                        {{ item.title }}
-                                    </h2>
-                                    <span class="px-3 py-0.5 rounded-full text-xs font-semibold border shrink-0" :class="statusClass(item.status)">
-                                        {{ statusLabel[item.status] }}
-                                    </span>
-                                </div>
-
-                                <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-400 shrink-0">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                    </svg>
-                                    <span>Update Status: <strong>{{ new Date(item.updated_at).toLocaleString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }} WIB</strong></span>
-                                </div>
-                            </div>
-
-                            <!-- Eye Icon Detail Button -->
-                            <button
-                                @click="toggleDetail(item.id)"
-                                class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition shrink-0"
-                                :class="expandedCards[item.id] ? 'bg-slate-800 dark:bg-gray-700 text-white' : 'bg-slate-100 dark:bg-gray-700/60 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-gray-700'"
-                            >
-                                <!-- Eye Open Icon (Default) -->
-                                <svg v-if="!expandedCards[item.id]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-blue-600 dark:text-blue-400">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                </svg>
-                                <!-- Eye Slash Icon (Expanded) -->
-                                <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-rose-400">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
-                                </svg>
-                                <span>{{ expandedCards[item.id] ? 'Sembunyikan Detail' : 'Lihat Detail' }}</span>
-                            </button>
+                <!-- Content Card Container -->
+                <div class="rounded-3xl bg-white dark:bg-gray-800 p-6 sm:p-8 shadow-sm border border-slate-200/80 dark:border-gray-700/80">
+                    <!-- Empty State -->
+                    <div v-if="!complaints.data || complaints.data.length === 0" class="py-12 text-center">
+                        <div class="mx-auto w-16 h-16 rounded-full bg-slate-100 dark:bg-gray-700 flex items-center justify-center text-slate-400 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                            </svg>
                         </div>
+                        <h3 class="text-base font-bold text-slate-800 dark:text-slate-200 mb-1">
+                            Belum Ada Pengaduan
+                        </h3>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-6">
+                            Anda belum pernah mengirimkan pengaduan. Pilih bidang layanan di beranda untuk mulai menyampaikan laporan.
+                        </p>
+                        <Link
+                            href="/#layanan"
+                            class="inline-block px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-sm transition"
+                        >
+                            Lihat Bidang Layanan
+                        </Link>
+                    </div>
 
-                        <!-- Collapsible Expanded Section -->
-                        <div v-if="expandedCards[item.id]" class="pt-4 border-t border-slate-100 dark:border-gray-700/60 space-y-4 animate-fadeIn">
-                            <!-- Service & Category metadata -->
-                            <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
-                                <div class="flex items-center gap-2">
-                                    <span class="font-semibold text-slate-400 uppercase">Bidang Layanan:</span>
-                                    <span class="px-2.5 py-0.5 rounded-md font-semibold bg-slate-100 dark:bg-gray-700 text-slate-800 dark:text-slate-200 border border-slate-200/80 dark:border-gray-600">
-                                        {{ item.service_name }}
-                                    </span>
-                                </div>
+                    <!-- Complaints List (Simple by default) -->
+                    <div v-else class="space-y-4">
+                        <div
+                            v-for="item in complaints.data"
+                            :key="item.id"
+                            class="rounded-2xl bg-white dark:bg-gray-800 p-5 shadow-sm border border-slate-200/80 dark:border-gray-700/80 transition-all duration-300 hover:shadow-md space-y-4"
+                        >
+                            <!-- Simple Default Card Header Row (Judul, Status, Tanggal Update Status & Detail Toggle) -->
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                                <div class="space-y-1.5 min-w-0 flex-1">
+                                    <div class="flex items-center gap-2.5 flex-wrap">
+                                        <h2 class="text-lg font-bold text-slate-900 dark:text-white truncate">
+                                            {{ item.title }}
+                                        </h2>
+                                        <span class="px-3 py-0.5 rounded-full text-xs font-semibold border shrink-0" :class="statusClass(item.status)">
+                                            {{ statusLabel[item.status] }}
+                                        </span>
+                                    </div>
 
-                                <div class="text-slate-400">
-                                    Diajukan pada: {{ new Date(item.created_at).toLocaleString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}
-                                </div>
-                            </div>
-
-                            <!-- Full Description -->
-                            <div class="space-y-1">
-                                <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Deskripsi Pengaduan:</h4>
-                                <div class="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-line bg-slate-50 dark:bg-gray-900/60 p-4 rounded-xl border border-slate-200/60 dark:border-gray-700/60 leading-relaxed">
-                                    {{ item.description }}
-                                </div>
-                            </div>
-
-                            <!-- Cancel Option (Only available when status is still pending) -->
-                            <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
-                                <template v-if="item.status === 'pending'">
-                                    <button
-                                        @click="openCancelModal(item.id)"
-                                        class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                    <div class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-400 shrink-0">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                         </svg>
-                                        <span>Batalkan Pengaduan Saya</span>
-                                    </button>
-                                </template>
+                                        <span>Update Status: <strong>{{ new Date(item.updated_at).toLocaleString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }} WIB</strong></span>
+                                    </div>
+                                </div>
 
-                                <template v-else-if="item.status === 'cancelled'">
-                                    <span class="text-xs font-semibold text-slate-500 italic">
-                                        Pengaduan telah Anda batalkan.
-                                    </span>
-                                </template>
-
-                                <template v-else-if="item.status === 'processing'">
-                                    <span class="text-xs font-semibold text-blue-600 italic">
-                                        Pengaduan sedang diproses dan tidak dapat dibatalkan lagi.
-                                    </span>
-                                </template>
-
-                                <template v-else>
-                                    <span class="text-xs font-semibold text-slate-500 italic">
-                                        Status pengaduan bersifat final.
-                                    </span>
-                                </template>
+                                <!-- Eye Icon Detail Button -->
+                                <button
+                                    @click="toggleDetail(item.id)"
+                                    class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition shrink-0 cursor-pointer"
+                                    :class="expandedCards[item.id] ? 'bg-slate-800 dark:bg-gray-700 text-white' : 'bg-slate-100 dark:bg-gray-700/60 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-gray-700'"
+                                >
+                                    <!-- Eye Open Icon (Default) -->
+                                    <svg v-if="!expandedCards[item.id]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-blue-600 dark:text-blue-400">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                    </svg>
+                                    <!-- Eye Slash Icon (Expanded) -->
+                                    <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-rose-400">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+                                    </svg>
+                                    <span>{{ expandedCards[item.id] ? 'Sembunyikan Detail' : 'Lihat Detail' }}</span>
+                                </button>
                             </div>
 
-                            <!-- Timeline / Progress Logs History -->
-                            <div v-if="item.progress_logs && item.progress_logs.length > 0" class="pt-3 border-t border-slate-100 dark:border-gray-700/60 space-y-3">
-                                <h4 class="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-emerald-600">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                    </svg>
-                                    <span>Riwayat Pembaruan Progres:</span>
-                                </h4>
+                            <!-- Collapsible Expanded Section with Transition -->
+                            <Transition
+                                enter-active-class="transition duration-300 ease-out"
+                                enter-from-class="transform opacity-0 -translate-y-2 scale-98"
+                                enter-to-class="transform opacity-100 translate-y-0 scale-100"
+                                leave-active-class="transition duration-200 ease-in"
+                                leave-from-class="transform opacity-100 translate-y-0 scale-100"
+                                leave-to-class="transform opacity-0 -translate-y-2 scale-98"
+                            >
+                                <div v-show="expandedCards[item.id]" class="pt-4 border-t border-slate-100 dark:border-gray-700/60 space-y-4">
+                                    <!-- Service & Category metadata -->
+                                    <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-semibold text-slate-400 uppercase">Bidang Layanan:</span>
+                                            <span class="px-2.5 py-0.5 rounded-md font-semibold bg-slate-100 dark:bg-gray-700 text-slate-800 dark:text-slate-200 border border-slate-200/80 dark:border-gray-600">
+                                                {{ item.service_name }}
+                                            </span>
+                                        </div>
 
-                                <div class="relative pl-6 space-y-3 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200 dark:before:bg-gray-700">
-                                    <div v-for="log in item.progress_logs" :key="log.id" class="relative group">
-                                        <div class="absolute -left-6 top-1.5 w-2.5 h-2.5 rounded-full bg-blue-500 ring-4 ring-white dark:ring-gray-800"></div>
-                                        <div class="text-xs space-y-1">
-                                            <div class="flex items-center gap-2">
-                                                <span class="font-semibold text-slate-800 dark:text-slate-200">
-                                                    Status diubah menjadi <strong class="uppercase text-blue-600 dark:text-blue-400">{{ statusLabel[log.status] }}</strong>
-                                                </span>
-                                                <span class="text-slate-400">
-                                                    • {{ new Date(log.created_at).toLocaleString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}
-                                                </span>
+                                        <div class="text-slate-400">
+                                            Diajukan pada: {{ new Date(item.created_at).toLocaleString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) }}
+                                        </div>
+                                    </div>
+
+                                    <!-- Full Description -->
+                                    <div class="space-y-1">
+                                        <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Deskripsi Pengaduan:</h4>
+                                        <div class="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-line bg-slate-50 dark:bg-gray-900/60 p-4 rounded-xl border border-slate-200/60 dark:border-gray-700/60 leading-relaxed">
+                                            {{ item.description }}
+                                        </div>
+                                    </div>
+
+                                    <!-- Cancel Option (Only available when status is still pending) -->
+                                    <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+                                        <template v-if="item.status === 'pending'">
+                                            <button
+                                                @click="openCancelModal(item.id)"
+                                                class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition cursor-pointer"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                                </svg>
+                                                <span>Batalkan Pengaduan Saya</span>
+                                            </button>
+                                        </template>
+
+                                        <template v-else-if="item.status === 'cancelled'">
+                                            <span class="text-xs italic text-slate-400">
+                                                Pengaduan ini telah Anda batalkan.
+                                            </span>
+                                        </template>
+
+                                        <template v-else>
+                                            <span class="text-xs italic text-slate-400">
+                                                Status pengaduan {{ statusLabel[item.status] }} (Tidak dapat dibatalkan).
+                                            </span>
+                                        </template>
+                                    </div>
+
+                                    <!-- Progress Logs Timeline -->
+                                    <div v-if="item.progress_logs && item.progress_logs.length > 0" class="space-y-2 pt-2">
+                                        <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Catatan Progres:</h4>
+                                        <div class="space-y-2">
+                                            <div
+                                                v-for="log in item.progress_logs"
+                                                :key="log.id"
+                                                class="p-3 rounded-xl bg-slate-50 dark:bg-gray-900/40 border border-slate-200/60 dark:border-gray-700/40 text-xs space-y-1"
+                                            >
+                                                <div class="flex items-center justify-between text-slate-500">
+                                                    <span class="font-bold text-slate-700 dark:text-slate-300">
+                                                        Status diubah ke {{ statusLabel[log.status] || log.status }}
+                                                    </span>
+                                                    <span>
+                                                        {{ new Date(log.created_at).toLocaleString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) }}
+                                                    </span>
+                                                </div>
+                                                <p v-if="log.notes" class="text-slate-600 dark:text-slate-400">
+                                                    {{ log.notes }}
+                                                </p>
                                             </div>
-                                            <p v-if="log.notes" class="text-slate-600 dark:text-slate-400 italic bg-slate-50 dark:bg-gray-900/40 p-2.5 rounded-lg border border-slate-100 dark:border-gray-700/40">
-                                                "{{ log.notes }}"
-                                            </p>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </Transition>
                         </div>
                     </div>
 

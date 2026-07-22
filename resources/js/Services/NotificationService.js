@@ -104,5 +104,7 @@ export class NotificationService {
         if (hasNewUnread) {
             this.playChime()
         }
+
+        return hasNewUnread
     }
 }
