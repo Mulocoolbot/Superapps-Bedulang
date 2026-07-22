@@ -24,6 +24,7 @@
         "@headlessui/vue": "^1.7.23",
         "@vue-leaflet/vue-leaflet": "^0.10.1",
         "aos": "^2.3.4",
+        "hls.js": "^1.6.16",
         "leaflet": "^1.9.4",
         "vue-leaflet": "^0.1.0"
     }

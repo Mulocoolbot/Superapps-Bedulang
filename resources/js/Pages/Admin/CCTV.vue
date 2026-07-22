@@ -2,6 +2,7 @@
 import { Head } from '@inertiajs/vue3'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import { ref } from 'vue'
+import Hls from 'hls.js'
 
 import 'leaflet/dist/leaflet.css'
 import {
@@ -32,8 +33,59 @@ const selectedCCTV = ref(null)
 const zoom = 13
 const center = [-2.45, 106.15]
 
-const openCCTV = (cctv) => {
+const openCCTV = async (cctv)=>{
+
     selectedCCTV.value = cctv
+
+    await nextTick()
+
+    const streamUrl = cctv.stream
+
+    if(hls){
+        hls.destroy()
+    }
+
+
+    if(Hls.isSupported()){
+
+        hls = new Hls()
+
+        hls.loadSource(streamUrl)
+
+        hls.attachMedia(video.value)
+
+
+        hls.on(Hls.Events.MANIFEST_PARSED, ()=>{
+
+            video.value.play()
+
+        })
+
+
+    }
+    else if(video.value.canPlayType('application/vnd.apple.mpegurl')){
+
+        video.value.src = streamUrl
+
+    }
+
+}
+
+const videoPlayer = ref(null)
+const loadStream = () => {
+
+    const url = 'http://localhost:8888/gerbang_koba/index.m3u8'
+
+    if (Hls.isSupported()) {
+
+        const hls = new Hls()
+
+        hls.loadSource(url)
+
+        hls.attachMedia(videoPlayer.value)
+
+    }
+
 }
 
 const goBack = () => {
@@ -125,12 +177,13 @@ const goBack = () => {
                     </button>
                 </div>
                 <div class="aspect-video bg-black rounded-xl overflow-hidden shadow-inner">
-                    <iframe
-                        :title="selectedCCTV.name"
-                        :src="`http://${selectedCCTV.ip}`"
-                        class="w-full h-full"
-                        frameborder="0"
-                    ></iframe>
+                    <video
+                    ref="video"
+                    controls
+                    autoplay
+                    muted
+                    class="w-full h-full"
+                    ></video>
                 </div>
                 <p class="text-xs text-slate-400">
                     Stream: <a :href="`http://${selectedCCTV.ip}`" target="_blank" class="text-blue-500 hover:underline">http://{{ selectedCCTV.ip }}</a>
