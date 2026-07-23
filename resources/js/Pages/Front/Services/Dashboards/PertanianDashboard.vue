@@ -23,7 +23,7 @@ const currentDateString = computed(() => {
     })
 })
 
-// Date display from DPKP metadata or fallback
+// Date display from metadata or fallback
 const displayDate = computed(() => {
     return props.dashboard?.metadata?.updated_at || currentDateString.value
 })
@@ -36,11 +36,11 @@ const downloadPdfUrl = computed(() => {
     return props.dashboard?.metadata?.download_pdf || 'https://dpkp.bangkatengahkab.go.id/harga-tbs/download-pdf'
 })
 
-// Active Tab state (1: Pabrik Kelapa Sawit, 2: Rerata Harga Perkebun Non Mitra)
+// Active Tab state (1: Pabrik Kelapa Sawit, 2: Rerata Harga Pekebun Non Mitra)
 const activeTab = ref(1)
 const searchQuery = ref('')
 
-// Factory prices from backend DPKP service or mock fallback
+// Factory prices from backend service or fallback
 const factoryPrices = computed(() => {
     if (props.dashboard?.factory_prices && Array.isArray(props.dashboard.factory_prices) && props.dashboard.factory_prices.length > 0) {
         return props.dashboard.factory_prices
@@ -53,7 +53,7 @@ const factoryPrices = computed(() => {
     ]
 })
 
-// District prices from backend DPKP service or mock fallback
+// District prices from backend service or fallback
 const districtPrices = computed(() => {
     if (props.dashboard?.district_prices && Array.isArray(props.dashboard.district_prices) && props.dashboard.district_prices.length > 0) {
         return props.dashboard.district_prices
@@ -71,7 +71,7 @@ const districtPrices = computed(() => {
 // Format Rupiah helper
 const formatRupiah = (val) => {
     if (val === undefined || val === null) return 'Rp 0'
-    return 'Rp ' + val.toLocaleString('id-ID')
+    return 'Rp ' + Number(val).toLocaleString('id-ID')
 }
 
 // Calculate difference (+/-)
@@ -98,163 +98,167 @@ const filteredDistrictPrices = computed(() => {
 
 // Tab 1 Stats summary
 const avgFactoryPrice = computed(() => {
-    if (!factoryPrices.value || factoryPrices.value.length === 0) return 0
-    const total = factoryPrices.value.reduce((acc, curr) => acc + curr.today, 0)
-    return Math.round(total / factoryPrices.value.length)
+    if (factoryPrices.value.length === 0) return 0
+    const sum = factoryPrices.value.reduce((acc, item) => acc + item.today, 0)
+    return Math.round(sum / factoryPrices.value.length)
 })
 
-const highestFactory = computed(() => {
-    if (!factoryPrices.value || factoryPrices.value.length === 0) return { name: '-', today: 0 }
-    return [...factoryPrices.value].sort((a, b) => b.today - a.today)[0]
+const maxFactoryPrice = computed(() => {
+    if (factoryPrices.value.length === 0) return 0
+    return Math.max(...factoryPrices.value.map(i => i.today))
 })
 
 // Tab 2 Stats summary
 const avgDistrictPrice = computed(() => {
-    if (!districtPrices.value || districtPrices.value.length === 0) return 0
-    const total = districtPrices.value.reduce((acc, curr) => acc + curr.today, 0)
-    return Math.round(total / districtPrices.value.length)
-})
-
-const highestDistrict = computed(() => {
-    if (!districtPrices.value || districtPrices.value.length === 0) return { district: '-', today: 0 }
-    return [...districtPrices.value].sort((a, b) => b.today - a.today)[0]
-})
-
-// Average price difference across active tab
-const avgDiff = computed(() => {
-    const list = activeTab.value === 1 ? factoryPrices.value : districtPrices.value
-    if (!list || list.length === 0) return 0
-    const sum = list.reduce((acc, curr) => acc + (curr.today - curr.yesterday), 0)
-    return Math.round(sum / list.length)
+    if (districtPrices.value.length === 0) return 0
+    const sum = districtPrices.value.reduce((acc, item) => acc + item.today, 0)
+    return Math.round(sum / districtPrices.value.length)
 })
 </script>
 
 <template>
-    <div class="mt-8 space-y-8 animate-fade-in-up">
-        
-        <!-- 1. MAIN HEADER CARD: TANGGAL TERKINI & UPDATE HARGA TBS -->
-        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-600 via-teal-700 to-emerald-900 p-6 sm:p-8 text-white shadow-2xl transition-all duration-300 hover:shadow-emerald-900/20">
-            <!-- Background Glow & Pattern Decor -->
-            <div class="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-emerald-400/20 blur-3xl" />
-            <div class="absolute -left-16 -bottom-16 h-64 w-64 rounded-full bg-teal-300/20 blur-3xl" />
+    <div class="space-y-8 mt-6">
 
-            <div class="relative flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                <div class="space-y-3">
-                    <!-- Tanggal Terkini -->
-                    <div class="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-md px-3.5 py-1 text-xs font-semibold tracking-wide text-emerald-200 border border-white/10">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-                        </svg>
+        <!-- TOP CARD: SINGLE UNIFIED HEADER CARD -->
+        <div class="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-gradient-to-r from-emerald-50 via-teal-50 to-green-50 p-6 shadow-sm dark:border-slate-800 dark:from-emerald-950/40 dark:via-teal-950/40 dark:to-green-950/40 animate-fade-in-up">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+
+                <!-- Title & Tanggal Badge -->
+                <div class="space-y-2">
+                    <div class="inline-flex items-center gap-2 rounded-full bg-emerald-100 dark:bg-emerald-900/60 px-3 py-1 text-xs font-bold text-emerald-800 dark:text-emerald-300">
                         <span>📅 {{ displayDate }}</span>
                     </div>
 
-                    <!-- Teks Utama Update Harga TBS -->
-                    <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight font-sans drop-shadow-sm text-white">
-                        Update Harga TBS Kelapa Sawit
+                    <h2 class="text-xl font-extrabold text-slate-900 dark:text-white">
+                        Informasi Harga Pertanian & Hasil Panen TBS
                     </h2>
-                    <p class="text-xs sm:text-sm text-emerald-100/90 max-w-xl font-medium leading-relaxed">
-                        Dinas Pertanian & Ketahanan Pangan Kabupaten Bangka Tengah — Pemantauan harga Tandan Buah Segar (TBS) Kelapa Sawit real-time di tingkat Pabrik & Pekebun Non Mitra.
+                    <p class="text-xs text-slate-600 dark:text-slate-400 max-w-xl leading-relaxed">
+                        Data pemantauan harga Tandan Buah Segar (TBS) Kelapa Sawit di tingkat pabrik dan rerata pekebun non-mitra di Kabupaten Bangka Tengah.
                     </p>
                 </div>
 
-                <!-- Live Price Highlight Pill -->
-                <div class="flex items-center gap-4 bg-white/10 backdrop-blur-md border border-white/15 p-4 rounded-2xl shrink-0 shadow-inner">
-                    <div class="p-3 bg-emerald-500/30 rounded-xl">
-                        <span class="text-2xl">🌴</span>
-                    </div>
-                    <div>
-                        <div class="text-xs font-medium text-emerald-200">Rata-rata Harga Hari Ini</div>
-                        <div class="text-xl sm:text-2xl font-extrabold tracking-tight font-sans">
-                            {{ activeTab === 1 ? formatRupiah(avgFactoryPrice) : formatRupiah(avgDistrictPrice) }} <span class="text-xs font-normal text-emerald-200">/ kg</span>
-                        </div>
-                    </div>
+                <!-- Action PDF Buttons -->
+                <div class="flex items-center gap-3 shrink-0">
+                    <a
+                        :href="previewPdfUrl"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-4 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/80 transition shadow-sm"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-emerald-600 dark:text-emerald-400">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+                        <span>Lihat PDF Report</span>
+                    </a>
+
+                    <a
+                        :href="downloadPdfUrl"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 px-4 py-2.5 text-xs font-semibold text-white transition shadow-sm"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                        </svg>
+                        <span>Unduh PDF</span>
+                    </a>
                 </div>
+
             </div>
         </div>
 
-        <!-- 2. SUMMARY STATS GRID (JUMLAH PABRIK / KECAMATAN DLL) -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 animate-fade-in-up [animation-delay:100ms]">
-            <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-1 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-emerald-300 dark:hover:border-emerald-800">
-                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Total Unit Terdata</span>
-                <div class="text-2xl font-extrabold text-slate-900 dark:text-white font-sans">
-                    {{ activeTab === 1 ? factoryPrices.length + ' Pabrik' : districtPrices.length + ' Kecamatan' }}
+        <!-- STATS METRIC BAR CARD -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+
+            <!-- Metric 1: Rerata Pabrik -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-sm space-y-1">
+                <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    Rerata Harga Pabrik
+                </span>
+                <div class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">
+                    {{ formatRupiah(avgFactoryPrice) }} / kg
                 </div>
+                <p class="text-[11px] text-slate-400 dark:text-slate-500">
+                    Daftar {{ factoryPrices.length }} Pabrik Kelapa Sawit
+                </p>
             </div>
 
-            <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-1 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-emerald-300 dark:hover:border-emerald-800">
-                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Harga Tertinggi Hari Ini</span>
-                <div class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 font-sans">
-                    {{ activeTab === 1 ? formatRupiah(highestFactory.today) : formatRupiah(highestDistrict.today) }}
+            <!-- Metric 2: Harga Pabrik Tertinggi -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-sm space-y-1">
+                <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    Harga Tertinggi Pabrik
+                </span>
+                <div class="text-2xl font-extrabold text-teal-600 dark:text-teal-400 font-mono">
+                    {{ formatRupiah(maxFactoryPrice) }} / kg
                 </div>
-                <div class="text-[11px] text-slate-400 truncate font-medium">
-                    {{ activeTab === 1 ? highestFactory.name : highestDistrict.district }}
-                </div>
+                <p class="text-[11px] text-slate-400 dark:text-slate-500">
+                    Penetapan PKS Terbaik
+                </p>
             </div>
 
-            <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-1 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-emerald-300 dark:hover:border-emerald-800">
-                <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Rata-rata Selisih Harga</span>
-                <div class="text-2xl font-extrabold font-sans" :class="avgDiff >= 0 ? 'text-teal-600 dark:text-teal-400' : 'text-rose-600 dark:text-rose-400'">
-                    {{ avgDiff >= 0 ? '+' : '' }}{{ formatRupiah(avgDiff) }} <span class="text-xs font-medium text-slate-400">/ kg</span>
+            <!-- Metric 3: Rerata Pekebun Non-Mitra -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-sm space-y-1">
+                <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    Rerata Pekebun (Kecamatan)
+                </span>
+                <div class="text-2xl font-extrabold text-green-600 dark:text-green-400 font-mono">
+                    {{ formatRupiah(avgDistrictPrice) }} / kg
                 </div>
-                <div class="text-[11px] font-semibold" :class="avgDiff > 0 ? 'text-emerald-600 dark:text-emerald-400' : avgDiff < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-slate-500'">
-                    <span v-if="avgDiff > 0">▲ Tren Kenaikan Positif</span>
-                    <span v-else-if="avgDiff < 0">▼ Tren Penurunan Harga</span>
-                    <span v-else>= Harga Stabil</span>
-                </div>
+                <p class="text-[11px] text-slate-400 dark:text-slate-500">
+                    Rerata 6 Kecamatan Bangka Tengah
+                </p>
             </div>
+
         </div>
 
-        <!-- 3. CARD MENU PILIHAN (DIPINDAHKAN KE BAWAH STAT CARDS - PANJANG KE SAMPING) -->
-        <div class="animate-fade-in-up [animation-delay:200ms]">
-            <div class="w-full p-2 rounded-2xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row gap-2">
-                <button
-                    @click="activeTab = 1"
-                    type="button"
-                    class="flex-1 py-3.5 px-6 rounded-xl text-xs sm:text-sm font-extrabold font-sans transition-all duration-300 flex items-center justify-center gap-2.5 cursor-pointer"
-                    :class="activeTab === 1 
-                        ? 'bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-md shadow-slate-200/60 dark:shadow-none ring-1 ring-emerald-500/20' 
-                        : 'text-slate-600 dark:text-slate-400 hover:bg-white/60 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-200'"
-                >
-                    <span class="p-1 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 text-xs">🏭</span>
-                    <span>Harga Di Pabrik Kelapa Sawit</span>
-                </button>
+        <!-- MAIN TABLE SECTION WITH 2 TABS AND DEDICATED SELISIH COLUMN -->
+        <div class="space-y-6">
 
-                <button
-                    @click="activeTab = 2"
-                    type="button"
-                    class="flex-1 py-3.5 px-6 rounded-xl text-xs sm:text-sm font-extrabold font-sans transition-all duration-300 flex items-center justify-center gap-2.5 cursor-pointer"
-                    :class="activeTab === 2 
-                        ? 'bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-md shadow-slate-200/60 dark:shadow-none ring-1 ring-emerald-500/20' 
-                        : 'text-slate-600 dark:text-slate-400 hover:bg-white/60 hover:text-slate-900 dark:hover:bg-slate-800 dark:hover:text-slate-200'"
-                >
-                    <span class="p-1 rounded-lg bg-teal-100 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 text-xs">📍</span>
-                    <span>Rerata Harga Perkebun Non Mitra</span>
-                </button>
+            <!-- Tab Buttons Container -->
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm">
+                <!-- 2 Main Tabs -->
+                <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-1.5 rounded-xl w-full sm:w-auto">
+                    <button
+                        @click="activeTab = 1"
+                        class="flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-bold transition cursor-pointer"
+                        :class="activeTab === 1
+                            ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm'
+                            : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
+                    >
+                        🏭 Pabrik Kelapa Sawit (PKS)
+                    </button>
+                    <button
+                        @click="activeTab = 2"
+                        class="flex-1 sm:flex-initial px-4 py-2 rounded-lg text-xs font-bold transition cursor-pointer"
+                        :class="activeTab === 2
+                            ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm'
+                            : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'"
+                    >
+                        👨‍🌾 Rerata Pekebun Non Mitra
+                    </button>
+                </div>
             </div>
-        </div>
 
-        <!-- 4. TABEL DATA HARGA TBS & CARI DATA -->
-        <div class="animate-fade-in-up [animation-delay:300ms]">
-            
-            <!-- TAB 1: HARGA DI PABRIK KELAPA SAWIT -->
+            <!-- TAB 1: PABRIK KELAPA SAWIT TABLE WITH DEDICATED SELISIH COLUMN -->
             <div v-if="activeTab === 1" class="overflow-hidden rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all duration-300 hover:shadow-md">
                 <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
                         <h3 class="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white font-sans">
-                            Harga Di Pabrik Kelapa Sawit
+                            Harga di Pabrik Kelapa Sawit
                         </h3>
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                            Tabel perbandingan harga beli Tandan Buah Segar (TBS) di Pabrik Kelapa Sawit Kabupaten Bangka Tengah.
+                            Tabel penetapan harga beli TBS di Pabrik Kelapa Sawit (PKS) Kabupaten Bangka Tengah.
                         </p>
                     </div>
 
                     <div class="flex items-center gap-3">
-                        <!-- Search input -->
+                        <!-- Live Search Input -->
                         <div class="relative w-full sm:w-64">
                             <input
                                 v-model="searchQuery"
                                 type="text"
-                                placeholder="Cari pabrik atau lokasi..."
+                                placeholder="Cari pabrik atau desa..."
                                 class="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:outline-none"
                             />
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 absolute left-3 top-2.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -263,7 +267,7 @@ const avgDiff = computed(() => {
                         </div>
 
                         <span class="px-3 py-1.5 rounded-xl text-xs font-extrabold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400 shrink-0 font-sans">
-                            Data Pabrik
+                            {{ factoryPrices.length }} Pabrik Active
                         </span>
                     </div>
                 </div>
@@ -272,9 +276,9 @@ const avgDiff = computed(() => {
                     <table class="w-full text-left text-xs sm:text-sm">
                         <thead class="bg-slate-50 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 font-bold uppercase text-[11px] tracking-wider border-b border-slate-200 dark:border-slate-800">
                             <tr>
-                                <th class="py-3.5 px-6">Pabrik Kelapa Sawit</th>
-                                <th class="py-3.5 px-6 text-right">Harga Kemarin</th>
+                                <th class="py-3.5 px-6">Nama Perusahaan / PKS</th>
                                 <th class="py-3.5 px-6 text-right">Harga Hari Ini</th>
+                                <th class="py-3.5 px-6 text-right">Harga Kemarin</th>
                                 <th class="py-3.5 px-6 text-right">Selisih</th>
                             </tr>
                         </thead>
@@ -286,20 +290,22 @@ const avgDiff = computed(() => {
                             >
                                 <td class="py-4 px-6 font-bold">
                                     <div class="flex items-center gap-2.5">
-                                        <span class="p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 shrink-0">
+                                        <span class="p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
                                             🏭
                                         </span>
                                         <div>
-                                            <div class="font-sans text-slate-900 dark:text-white">{{ item.name }}</div>
-                                            <div v-if="item.location" class="text-[11px] text-slate-400 font-normal font-sans">📍 {{ item.location }}</div>
+                                            <span class="font-sans text-slate-900 dark:text-white block">{{ item.name }}</span>
+                                            <span v-if="item.location" class="text-xs font-normal text-slate-400 dark:text-slate-500 block mt-0.5">
+                                                📍 {{ item.location }}
+                                            </span>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="py-4 px-6 text-right font-medium text-slate-500 dark:text-slate-400">
-                                    {{ formatRupiah(item.yesterday) }} <span class="text-xs text-slate-400 font-normal">/kg</span>
-                                </td>
                                 <td class="py-4 px-6 text-right font-extrabold text-slate-900 dark:text-white font-sans">
                                     {{ formatRupiah(item.today) }} <span class="text-xs text-slate-400 font-normal">/kg</span>
+                                </td>
+                                <td class="py-4 px-6 text-right font-medium text-slate-500 dark:text-slate-400">
+                                    {{ formatRupiah(item.yesterday) }} <span class="text-xs text-slate-400 font-normal">/kg</span>
                                 </td>
                                 <td class="py-4 px-6 text-right font-bold font-sans">
                                     <span 
@@ -318,7 +324,7 @@ const avgDiff = computed(() => {
                                         v-else
                                         class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
                                     >
-                                        — Rp 0
+                                        = Rp 0
                                     </span>
                                 </td>
                             </tr>
@@ -333,7 +339,7 @@ const avgDiff = computed(() => {
                 </div>
             </div>
 
-            <!-- TAB 2: RERATA HARGA PERKEBUN NON MITRA -->
+            <!-- TAB 2: RERATA HARGA PERKEBUN NON MITRA TABLE WITH DEDICATED SELISIH COLUMN -->
             <div v-else class="overflow-hidden rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-all duration-300 hover:shadow-md">
                 <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
@@ -346,7 +352,7 @@ const avgDiff = computed(() => {
                     </div>
 
                     <div class="flex items-center gap-3">
-                        <!-- Search input -->
+                        <!-- Live Search Input -->
                         <div class="relative w-full sm:w-64">
                             <input
                                 v-model="searchQuery"
@@ -370,8 +376,8 @@ const avgDiff = computed(() => {
                         <thead class="bg-slate-50 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 font-bold uppercase text-[11px] tracking-wider border-b border-slate-200 dark:border-slate-800">
                             <tr>
                                 <th class="py-3.5 px-6">Kecamatan</th>
-                                <th class="py-3.5 px-6 text-right">Harga Kemarin</th>
                                 <th class="py-3.5 px-6 text-right">Harga Hari Ini</th>
+                                <th class="py-3.5 px-6 text-right">Harga Kemarin</th>
                                 <th class="py-3.5 px-6 text-right">Selisih</th>
                             </tr>
                         </thead>
@@ -387,11 +393,11 @@ const avgDiff = computed(() => {
                                     </span>
                                     <span class="font-sans text-slate-900 dark:text-white">{{ item.district }}</span>
                                 </td>
-                                <td class="py-4 px-6 text-right font-medium text-slate-500 dark:text-slate-400">
-                                    {{ formatRupiah(item.yesterday) }} <span class="text-xs text-slate-400 font-normal">/kg</span>
-                                </td>
                                 <td class="py-4 px-6 text-right font-extrabold text-slate-900 dark:text-white font-sans">
                                     {{ formatRupiah(item.today) }} <span class="text-xs text-slate-400 font-normal">/kg</span>
+                                </td>
+                                <td class="py-4 px-6 text-right font-medium text-slate-500 dark:text-slate-400">
+                                    {{ formatRupiah(item.yesterday) }} <span class="text-xs text-slate-400 font-normal">/kg</span>
                                 </td>
                                 <td class="py-4 px-6 text-right font-bold font-sans">
                                     <span 
@@ -410,7 +416,7 @@ const avgDiff = computed(() => {
                                         v-else
                                         class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
                                     >
-                                        — Rp 0
+                                        = Rp 0
                                     </span>
                                 </td>
                             </tr>
@@ -429,3 +435,20 @@ const avgDiff = computed(() => {
 
     </div>
 </template>
+
+<style scoped>
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+</style>

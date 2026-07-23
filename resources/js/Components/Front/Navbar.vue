@@ -63,7 +63,7 @@ const infoServices = [
     { name: 'Sosial', id: 'sosial' },
     { name: 'Kependudukan', id: 'kependudukan' },
     { name: 'Kepegawaian', id: 'kepegawaian' },
-    { name: 'Pertanian & Ketahanan Pangan', id: 'lingkungan' },
+    { name: 'Pertanian', id: 'pertanian' },
     { name: 'Pariwisata', id: 'pariwisata' },
     { name: 'Data Sektoral', id: 'data-sektoral' },
     { name: 'Makanan Bergizi Gratis', id: 'makanan-bergizi-gratis' },

@@ -8,8 +8,8 @@ import Footer from '@/Components/Front/Footer.vue'
 // Import Segmented Dashboard components
 import PerindagkopDashboard from './Dashboards/PerindagkopDashboard.vue'
 import MbgDashboard from './Dashboards/MbgDashboard.vue'
-import DkpDashboard from './Dashboards/DkpDashboard.vue'
 import KepegawaianDashboard from './Dashboards/KepegawaianDashboard.vue'
+import PertanianDashboard from './Dashboards/PertanianDashboard.vue'
 import DefaultDashboard from './Dashboards/DefaultDashboard.vue'
 
 const isComplaintModalOpen = ref(false)
@@ -32,10 +32,10 @@ const dashboardComponent = computed(() => {
             return PerindagkopDashboard
         case 'makanan-bergizi-gratis':
             return MbgDashboard
-        case 'lingkungan':
-            return DkpDashboard
         case 'kepegawaian':
             return KepegawaianDashboard
+        case 'pertanian':
+            return PertanianDashboard
         default:
             return DefaultDashboard
     }
@@ -51,7 +51,7 @@ const serviceSourceUrl = computed(() => {
             return 'https://disperindagkop-ukm.bangkatengahkab.go.id/'
         case 'makanan-bergizi-gratis':
             return 'https://mbg.pdm.kemendikdasmen.go.id/portal'
-        case 'lingkungan':
+        case 'pertanian':
             return 'https://dpkp.bangkatengahkab.go.id/'
         case 'kepegawaian':
             return 'https://bkpsdmd.bangkatengahkab.go.id/'
@@ -66,7 +66,7 @@ const serviceSourceLabel = computed(() => {
             return 'disperindagkop-ukm.bangkatengahkab.go.id'
         case 'makanan-bergizi-gratis':
             return 'mbg.pdm.kemendikdasmen.go.id/portal'
-        case 'lingkungan':
+        case 'pertanian':
             return 'dpkp.bangkatengahkab.go.id'
         case 'kepegawaian':
             return 'bkpsdmd.bangkatengahkab.go.id'

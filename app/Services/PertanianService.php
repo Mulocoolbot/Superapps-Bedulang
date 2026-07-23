@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 
-class DkpService implements InformationServiceInterface
+class PertanianService implements InformationServiceInterface
 {
     /**
      * Get the service metadata.
@@ -16,11 +16,11 @@ class DkpService implements InformationServiceInterface
     public function getMetadata(): array
     {
         return [
-            'name' => 'DPKP',
+            'name' => 'Pertanian',
             'icon' => '🌾',
-            'description' => 'Dashboard informasi Dinas Pertanian & Ketahanan Pangan Kabupaten Bangka Tengah.',
+            'description' => 'Dashboard informasi Dinas Pertanian Kabupaten Bangka Tengah.',
             'filters' => [],
-            'source' => 'Dinas Pertanian & Ketahanan Pangan Kab. Bangka Tengah',
+            'source' => 'Dinas Pertanian Kab. Bangka Tengah',
             'source_url' => 'https://dpkp.bangkatengahkab.go.id/',
         ];
     }
@@ -33,8 +33,8 @@ class DkpService implements InformationServiceInterface
      */
     public function getDashboardData(Request $request): array
     {
-        return Cache::remember('dkp_tbs_prices', 1800, function () {
-            $parsedData = $this->fetchDataFromDpkp();
+        return Cache::remember('pertanian_tbs_prices', 1800, function () {
+            $parsedData = $this->fetchDataFromApi();
             if ($parsedData) {
                 return $parsedData;
             }
@@ -43,11 +43,11 @@ class DkpService implements InformationServiceInterface
     }
 
     /**
-     * Fetch and parse live data from DPKP official portal.
+     * Fetch and parse live data from the official Pertanian & Ketahanan Pangan portal.
      *
      * @return array|null
      */
-    public function fetchDataFromDpkp(): ?array
+    public function fetchDataFromApi(): ?array
     {
         try {
             $response = Http::withHeaders([
@@ -67,7 +67,7 @@ class DkpService implements InformationServiceInterface
             }
 
             // Extract date badge
-            $formattedDate = 'Rabu, 22 Juli 2026';
+            $formattedDate = 'Kamis, 23 Juli 2026';
             if (preg_match('/<div class="tbs-tanggal-badge">\s*📅\s*([^<]+)<\/div>/i', $html, $dateMatch)) {
                 $formattedDate = trim($dateMatch[1]);
             }
@@ -149,7 +149,7 @@ class DkpService implements InformationServiceInterface
     }
 
     /**
-     * Fallback data matching DPKP Bangka Tengah official entries.
+     * Fallback mock data matching official entries.
      *
      * @return array
      */
@@ -159,9 +159,9 @@ class DkpService implements InformationServiceInterface
             'metadata' => [
                 'source' => 'Dinas Pertanian & Ketahanan Pangan Kab. Bangka Tengah',
                 'source_url' => 'https://dpkp.bangkatengahkab.go.id/',
-                'updated_at' => 'Rabu, 22 Juli 2026',
-                'preview_pdf' => 'https://dpkp.bangkatengahkab.go.id/harga-tbs/preview-pdf?tanggal=2026-07-22',
-                'download_pdf' => 'https://dpkp.bangkatengahkab.go.id/harga-tbs/download-pdf?tanggal=2026-07-22',
+                'updated_at' => 'Kamis, 23 Juli 2026',
+                'preview_pdf' => 'https://dpkp.bangkatengahkab.go.id/harga-tbs/preview-pdf?tanggal=2026-07-23',
+                'download_pdf' => 'https://dpkp.bangkatengahkab.go.id/harga-tbs/download-pdf?tanggal=2026-07-23',
             ],
             'factory_prices' => [
                 ['id' => 1, 'name' => 'PT Putra Bangka Tani', 'location' => 'Desa Belilik', 'today' => 3100, 'yesterday' => 3100],

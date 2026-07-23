@@ -49,8 +49,8 @@ const apps = [
         logo: '/services/work.svg',
     },
     {
-        name: 'Pertanian dan Ketahanan Pangan',
-        slug: 'lingkungan',
+        name: 'Pertanian',
+        slug: 'pertanian',
         logo: '/services/environment.svg',
     },
     {

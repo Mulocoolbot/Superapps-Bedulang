@@ -69,7 +69,7 @@ class InformationServiceRegistry
             ],
         ],
         'kepegawaian' => KepegawaianService::class,
-        'lingkungan' => DkpService::class,
+        'pertanian' => PertanianService::class,
         'pariwisata' => [
             'name' => 'Pariwisata',
             'icon' => '🏖️',
