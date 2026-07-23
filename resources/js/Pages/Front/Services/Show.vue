@@ -9,6 +9,7 @@ import Footer from '@/Components/Front/Footer.vue'
 import PerindagkopDashboard from './Dashboards/PerindagkopDashboard.vue'
 import MbgDashboard from './Dashboards/MbgDashboard.vue'
 import DkpDashboard from './Dashboards/DkpDashboard.vue'
+import KepegawaianDashboard from './Dashboards/KepegawaianDashboard.vue'
 import DefaultDashboard from './Dashboards/DefaultDashboard.vue'
 
 const isComplaintModalOpen = ref(false)
@@ -33,6 +34,8 @@ const dashboardComponent = computed(() => {
             return MbgDashboard
         case 'lingkungan':
             return DkpDashboard
+        case 'kepegawaian':
+            return KepegawaianDashboard
         default:
             return DefaultDashboard
     }
@@ -50,6 +53,8 @@ const serviceSourceUrl = computed(() => {
             return 'https://mbg.pdm.kemendikdasmen.go.id/portal'
         case 'lingkungan':
             return 'https://dpkp.bangkatengahkab.go.id/'
+        case 'kepegawaian':
+            return 'https://bkpsdmd.bangkatengahkab.go.id/'
         default:
             return props.dashboard?.metadata?.source_url || ''
     }
@@ -63,6 +68,8 @@ const serviceSourceLabel = computed(() => {
             return 'mbg.pdm.kemendikdasmen.go.id/portal'
         case 'lingkungan':
             return 'dpkp.bangkatengahkab.go.id'
+        case 'kepegawaian':
+            return 'bkpsdmd.bangkatengahkab.go.id'
         default:
             return props.dashboard?.metadata?.source || 'Portal Satu Data Bangka Tengah'
     }

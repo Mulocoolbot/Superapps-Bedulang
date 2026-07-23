@@ -68,16 +68,7 @@ class InformationServiceRegistry
                 ['label' => 'Gender', 'value' => 'gender'],
             ],
         ],
-        'kepegawaian' => [
-            'name' => 'Kepegawaian',
-            'icon' => '👔',
-            'description' => 'Dashboard informasi Kepegawaian Kabupaten Bangka Tengah.',
-            'filters' => [
-                ['label' => 'Gender', 'value' => 'gender'],
-                ['label' => 'Kelahiran', 'value' => 'kelahiran'],
-                ['label' => 'Kematian', 'value' => 'kematian'],
-            ],
-        ],
+        'kepegawaian' => KepegawaianService::class,
         'lingkungan' => DkpService::class,
         'pariwisata' => [
             'name' => 'Pariwisata',
