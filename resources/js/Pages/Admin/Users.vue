@@ -11,7 +11,7 @@ defineProps({
 
 <template>
 
-<Head title="Kelola Admin"/>
+<Head title="Kelola Admin"></Head>
 
 <AdminLayout>
 

@@ -78,7 +78,7 @@ const serviceSourceLabel = computed(() => {
 
 <template>
     <FrontLayout>
-        <Head :title="title" />
+        <Head :title="title"></Head>
 
         <div class="mx-auto max-w-7xl px-4 pt-24 pb-6 sm:px-6 lg:px-8 lg:pt-28 lg:pb-10">
 
@@ -174,15 +174,14 @@ const serviceSourceLabel = computed(() => {
         </div>
 
         <!-- Footer component from main page -->
-        <Footer />
+        <Footer ></Footer>
 
         <!-- Complaint Modal -->
         <ComplaintModal
             :is-open="isComplaintModalOpen"
             :service-name="service.name"
             :service-slug="service.slug"
-            @close="isComplaintModalOpen = false"
-        />
+            @close="isComplaintModalOpen = false"></ComplaintModal>
     </FrontLayout>
 </template>
 

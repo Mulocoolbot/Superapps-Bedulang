@@ -116,7 +116,6 @@ const openComplaintModal = () => {
       :is-open="isModalOpen"
       :service-name="service?.name || 'Layanan'"
       :service-slug="service?.slug || ''"
-      @close="isModalOpen = false"
-    />
+      @close="isModalOpen = false"></ComplaintModal>
   </div>
 </template>

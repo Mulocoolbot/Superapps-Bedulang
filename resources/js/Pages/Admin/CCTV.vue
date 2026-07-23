@@ -1,7 +1,7 @@
 <script setup>
 import { Head } from '@inertiajs/vue3'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
-import { ref, nextTick } from 'vue'
+import { ref, nextTick, onBeforeUnmount } from 'vue'
 import Hls from 'hls.js'
 
 import 'leaflet/dist/leaflet.css'
@@ -32,6 +32,7 @@ const props = defineProps({
 const selectedCCTV = ref(null)
 const video = ref(null)
 let hls = null
+let loadedMetadataHandler = null
 
 const zoom = 13
 const center = [-2.45, 106.15]
@@ -41,6 +42,7 @@ const openCCTV = async (cctv) => {
     await nextTick()
     if (hls) {
         hls.destroy()
+        hls = null
     }
     if (Hls.isSupported() && video.value) {
         hls = new Hls()
@@ -48,10 +50,32 @@ const openCCTV = async (cctv) => {
         hls.attachMedia(video.value)
 
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
-            video.value.play()
+            video.value.play().catch(e => console.log('Autoplay handled:', e))
         })
+    } else if (video.value && video.value.canPlayType('application/vnd.apple.mpegurl')) {
+        // Native HLS support for Safari on macOS / iOS
+        // Remove previous handler to prevent listener accumulation
+        if (loadedMetadataHandler) {
+            video.value.removeEventListener('loadedmetadata', loadedMetadataHandler)
+        }
+        video.value.src = cctv.stream
+        loadedMetadataHandler = () => {
+            video.value.play().catch(e => console.log('Autoplay handled:', e))
+        }
+        video.value.addEventListener('loadedmetadata', loadedMetadataHandler)
     }
 }
+
+onBeforeUnmount(() => {
+    if (hls) {
+        hls.destroy()
+        hls = null
+    }
+    if (video.value && loadedMetadataHandler) {
+        video.value.removeEventListener('loadedmetadata', loadedMetadataHandler)
+        loadedMetadataHandler = null
+    }
+})
 
 const goBack = () => {
     if (window.history.length > 1) {
@@ -64,7 +88,7 @@ const goBack = () => {
 
 <template>
     <AdminLayout>
-        <Head title="CCTV Monitoring" />
+        <Head title="CCTV Monitoring"></Head>
         <div class="space-y-6">
 
             <!-- HEADER -->
@@ -117,7 +141,7 @@ const goBack = () => {
                             :center="center"
                             class="h-full w-full z-0"
                         >
-                            <LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                            <LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"></LTileLayer>
 
                             <LMarker
                                 v-for="cctv in cctvs"

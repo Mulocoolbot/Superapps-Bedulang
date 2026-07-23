@@ -54,7 +54,7 @@ const save = () => {
 
 <template>
     <AdminLayout>
-        <Head :title="`Detail Pengaduan - ${complaint.title}`" />
+        <Head :title="`Detail Pengaduan - ${complaint.title}`"></Head>
 
         <div class="mx-auto max-w-4xl space-y-6">
             <!-- Back navigation link -->

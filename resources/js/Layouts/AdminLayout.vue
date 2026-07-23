@@ -1,11 +1,20 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { Link, usePage, router } from '@inertiajs/vue3'
+
+const notificationDropdownRef = ref(null)
+const notificationBellRef = ref(null)
 import Footer from '@/Components/Front/Footer.vue'
 
 const page = usePage()
 const notificationsOpen = ref(false)
 const activeNotificationTab = ref('unread')
+
+const markAllAsRead = () => {
+    router.post('/notifications/read-all', {}, {
+        preserveScroll: true,
+    })
+}
 
 const authUser = computed(() => page.props.auth?.user)
 const notifications = computed(() => authUser.value?.notifications || [])
@@ -25,7 +34,7 @@ const markAsRead = (notification) => {
     })
 }
 
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, onBeforeUnmount } from 'vue'
 import { NotificationService } from '@/Services/NotificationService'
 
 let pollTimer = null
@@ -39,7 +48,21 @@ const triggerBellRing = () => {
     }, 1000)
 }
 
+const handleClickOutside = (e) => {
+    if (
+        notificationsOpen.value &&
+        notificationDropdownRef.value &&
+        !notificationDropdownRef.value.contains(e.target) &&
+        notificationBellRef.value &&
+        !notificationBellRef.value.contains(e.target)
+    ) {
+        notificationsOpen.value = false
+    }
+}
+
 onMounted(() => {
+    document.addEventListener('mousedown', handleClickOutside)
+
     if (authUser.value) {
         NotificationService.requestPermission()
         notifications.value.forEach(n => seenIdsSet.add(n.id))
@@ -61,6 +84,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+    document.removeEventListener('mousedown', handleClickOutside)
     if (pollTimer) {
         clearInterval(pollTimer)
     }
@@ -172,6 +196,7 @@ onUnmounted(() => {
                 <!-- Admin Notification Bell Component -->
                 <div v-if="authUser" class="relative">
                     <button
+                        ref="notificationBellRef"
                         @click="notificationsOpen = !notificationsOpen"
                         class="relative inline-flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 p-2.5 transition cursor-pointer"
                         :class="{ 'animate-bell-ring text-rose-600': isBellRinging }"
@@ -200,6 +225,7 @@ onUnmounted(() => {
                         leave-to-class="transform opacity-0 scale-95 -translate-y-2"
                     >
                         <div
+                            ref="notificationDropdownRef"
                             v-show="notificationsOpen"
                             class="absolute right-0 mt-3 w-80 sm:w-96 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl z-50 transition-all"
                         >
@@ -326,7 +352,7 @@ onUnmounted(() => {
     </div>
 
     <!-- Homepage Footer at bottom -->
-    <Footer />
+    <Footer ></Footer>
 </div>
 </template>
 

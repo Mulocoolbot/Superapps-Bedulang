@@ -73,7 +73,7 @@ const formatNumber = (val) => {
                     {{ card.title }}
                 </span>
                 <p class="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-                    <AnimatedNumber :value="card.value" />
+                    <AnimatedNumber :value="card.value"></AnimatedNumber>
                 </p>
                 <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">{{ card.meta }}</p>
             </div>
@@ -144,7 +144,7 @@ const formatNumber = (val) => {
                     >
                         <div class="flex justify-between text-xs font-semibold text-slate-700 dark:text-slate-200">
                             <span>{{ row.kecamatan }}</span>
-                            <span class="font-bold"><AnimatedNumber :value="row.jumlah_perempuan + row.jumlah_laki" /> siswa</span>
+                            <span class="font-bold"><AnimatedNumber :value="row.jumlah_perempuan + row.jumlah_laki"></AnimatedNumber> siswa</span>
                         </div>
                         <div class="relative group py-0.5 focus:outline-none" tabindex="0">
                             <!-- Track -->

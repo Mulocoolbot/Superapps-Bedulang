@@ -73,7 +73,7 @@ const pageLinks = computed(() => {
 </script>
 
 <template>
-    <Head title="Riwayat Pengaduan Saya" />
+    <Head title="Riwayat Pengaduan Saya"></Head>
 
     <FrontLayout>
         <div class="py-8 bg-slate-50/60 dark:bg-gray-900/60 min-h-[calc(100vh-7rem)]">

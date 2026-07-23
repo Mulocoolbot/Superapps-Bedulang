@@ -62,7 +62,7 @@ const resetFilters = () => {
 
 <template>
     <AdminLayout>
-        <Head title="Monitoring Pengaduan" />
+        <Head title="Monitoring Pengaduan"></Head>
 
         <div class="mx-auto max-w-7xl space-y-6">
             <!-- Header section -->

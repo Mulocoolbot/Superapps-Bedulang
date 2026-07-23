@@ -31,7 +31,7 @@ const toggleDarkMode = () => {
     <div class="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
 
         <!-- NAVBAR -->
-        <Navbar />
+        <Navbar ></Navbar>
 
         <!-- CONTENT -->
         <main class="pt-28 relative z-0 min-h-[calc(100vh-5.5rem)]">

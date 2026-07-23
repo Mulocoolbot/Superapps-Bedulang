@@ -9,7 +9,7 @@ const props = defineProps({
 </script>
 
 <template>
-<Head title="Edit Admin" />
+<Head title="Edit Admin"></Head>
 
 <AdminLayout>
     <div class="space-y-6">

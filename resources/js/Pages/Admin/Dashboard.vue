@@ -1,7 +1,7 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import Hls from 'hls.js'
 
 const props = defineProps({
@@ -43,6 +43,9 @@ const playCCTV = (cctv) => {
             })
         } else if (videoRef.value.canPlayType('application/vnd.apple.mpegurl')) {
             videoRef.value.src = streamUrl
+            videoRef.value.addEventListener('loadedmetadata', () => {
+                videoRef.value.play().catch(() => {})
+            })
         }
     })
 }
@@ -52,10 +55,17 @@ onMounted(() => {
         playCCTV(selectedCCTV.value)
     }
 })
+
+onBeforeUnmount(() => {
+    if (hls) {
+        hls.destroy()
+        hls = null
+    }
+})
 </script>
 
 <template>
-    <Head title="Dashboard Admin"/>
+    <Head title="Dashboard Admin"></Head>
 
     <AdminLayout>
         <!-- Top header row with Landing Page button on top right -->

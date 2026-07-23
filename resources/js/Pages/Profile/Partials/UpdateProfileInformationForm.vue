@@ -39,7 +39,7 @@ const form = useForm({
             class="mt-6 space-y-6"
         >
             <div>
-                <InputLabel for="name" value="Name" />
+                <InputLabel for="name" value="Name"></InputLabel>
 
                 <TextInput
                     id="name"
@@ -48,14 +48,13 @@ const form = useForm({
                     v-model="form.name"
                     required
                     autofocus
-                    autocomplete="name"
-                />
+                    autocomplete="name"></TextInput>
 
-                <InputError class="mt-2" :message="form.errors.name" />
+                <InputError class="mt-2" :message="form.errors.name"></InputError>
             </div>
 
             <div>
-                <InputLabel for="email" value="Email" />
+                <InputLabel for="email" value="Email"></InputLabel>
 
                 <TextInput
                     id="email"
@@ -63,10 +62,9 @@ const form = useForm({
                     class="mt-1 block w-full"
                     v-model="form.email"
                     required
-                    autocomplete="username"
-                />
+                    autocomplete="username"></TextInput>
 
-                <InputError class="mt-2" :message="form.errors.email" />
+                <InputError class="mt-2" :message="form.errors.email"></InputError>
             </div>
 
             <div v-if="mustVerifyEmail && user.email_verified_at === null">

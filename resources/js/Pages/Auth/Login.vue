@@ -29,7 +29,7 @@ const submit = () => {
 
 <template>
 
-<Head title="Login" />
+<Head title="Login"></Head>
 
 <section
     class="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-50 via-white to-slate-100 dark:from-gray-950 dark:via-gray-900 dark:to-black px-6">
@@ -101,7 +101,7 @@ const submit = () => {
 
                 <InputLabel
                     for="email"
-                    value="Email" />
+                    value="Email"></InputLabel>
 
                 <TextInput
                     id="email"
@@ -110,12 +110,11 @@ const submit = () => {
                     v-model="form.email"
                     required
                     autofocus
-                    autocomplete="username"
-                />
+                    autocomplete="username"></TextInput>
 
                 <InputError
                     class="mt-2"
-                    :message="form.errors.email" />
+                    :message="form.errors.email"></InputError>
 
             </div>
 
@@ -123,7 +122,7 @@ const submit = () => {
 
                 <InputLabel
                     for="password"
-                    value="Password" />
+                    value="Password"></InputLabel>
 
                 <TextInput
                     id="password"
@@ -131,12 +130,11 @@ const submit = () => {
                     class="mt-2 block w-full rounded-xl"
                     v-model="form.password"
                     required
-                    autocomplete="current-password"
-                />
+                    autocomplete="current-password"></TextInput>
 
                 <InputError
                     class="mt-2"
-                    :message="form.errors.password" />
+                    :message="form.errors.password"></InputError>
 
             </div>
 
@@ -150,7 +148,7 @@ const submit = () => {
 
                     <Checkbox
                         name="remember"
-                        v-model:checked="form.remember" />
+                        v-model:checked="form.remember"></Checkbox>
 
                     <span
                         class="ml-2 text-sm text-gray-600 dark:text-gray-400">

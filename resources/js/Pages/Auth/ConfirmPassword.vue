@@ -19,7 +19,7 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Confirm Password" />
+        <Head title="Confirm Password"></Head>
 
         <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
             This is a secure area of the application. Please confirm your
@@ -28,7 +28,7 @@ const submit = () => {
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="password" value="Password" />
+                <InputLabel for="password" value="Password"></InputLabel>
                 <TextInput
                     id="password"
                     type="password"
@@ -36,9 +36,8 @@ const submit = () => {
                     v-model="form.password"
                     required
                     autocomplete="current-password"
-                    autofocus
-                />
-                <InputError class="mt-2" :message="form.errors.password" />
+                    autofocus></TextInput>
+                <InputError class="mt-2" :message="form.errors.password"></InputError>
             </div>
 
             <div class="mt-4 flex justify-end">

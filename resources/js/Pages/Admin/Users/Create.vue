@@ -8,7 +8,7 @@ const props = defineProps({
 </script>
 
 <template>
-<Head title="Tambah Admin" />
+<Head title="Tambah Admin"></Head>
 
 <AdminLayout>
     <div class="space-y-6">
