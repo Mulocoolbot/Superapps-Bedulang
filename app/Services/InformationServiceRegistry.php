@@ -78,12 +78,7 @@ class InformationServiceRegistry
                 ['label' => 'Kematian', 'value' => 'kematian'],
             ],
         ],
-        'lingkungan' => [
-            'name' => 'DPKP',
-            'icon' => '🌾',
-            'description' => 'Dashboard informasi Dinas Pertanian & Ketahanan Pangan Kabupaten Bangka Tengah.',
-            'filters' => [],
-        ],
+        'lingkungan' => DkpService::class,
         'pariwisata' => [
             'name' => 'Pariwisata',
             'icon' => '🏖️',

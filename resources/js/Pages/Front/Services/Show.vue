@@ -48,6 +48,8 @@ const serviceSourceUrl = computed(() => {
             return 'https://disperindagkop-ukm.bangkatengahkab.go.id/'
         case 'makanan-bergizi-gratis':
             return 'https://mbg.pdm.kemendikdasmen.go.id/portal'
+        case 'lingkungan':
+            return 'https://dpkp.bangkatengahkab.go.id/'
         default:
             return props.dashboard?.metadata?.source_url || ''
     }
@@ -59,6 +61,8 @@ const serviceSourceLabel = computed(() => {
             return 'disperindagkop-ukm.bangkatengahkab.go.id'
         case 'makanan-bergizi-gratis':
             return 'mbg.pdm.kemendikdasmen.go.id/portal'
+        case 'lingkungan':
+            return 'dpkp.bangkatengahkab.go.id'
         default:
             return props.dashboard?.metadata?.source || 'Portal Satu Data Bangka Tengah'
     }

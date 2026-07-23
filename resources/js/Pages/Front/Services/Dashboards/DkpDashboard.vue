@@ -23,33 +23,54 @@ const currentDateString = computed(() => {
     })
 })
 
+// Date display from DPKP metadata or fallback
+const displayDate = computed(() => {
+    return props.dashboard?.metadata?.updated_at || currentDateString.value
+})
+
+const previewPdfUrl = computed(() => {
+    return props.dashboard?.metadata?.preview_pdf || 'https://dpkp.bangkatengahkab.go.id/harga-tbs/preview-pdf'
+})
+
+const downloadPdfUrl = computed(() => {
+    return props.dashboard?.metadata?.download_pdf || 'https://dpkp.bangkatengahkab.go.id/harga-tbs/download-pdf'
+})
+
 // Active Tab state (1: Pabrik Kelapa Sawit, 2: Rerata Harga Perkebun Non Mitra)
 const activeTab = ref(1)
 const searchQuery = ref('')
 
-// Dummy Data for Tab 1: Harga Di Pabrik Kelapa Sawit
-const factoryPrices = ref([
-    { id: 1, name: 'PT Swarna Land Agro', today: 2450, yesterday: 2400 },
-    { id: 2, name: 'PT Bangka Agro Mandiri (BAM)', today: 2480, yesterday: 2420 },
-    { id: 3, name: 'PT Bangka Kelapa Industri (BKI)', today: 2420, yesterday: 2420 },
-    { id: 4, name: 'PT Sinar Agro Palm', today: 2500, yesterday: 2440 },
-    { id: 5, name: 'PT Sawit Gemilang Abadi', today: 2380, yesterday: 2410 },
-    { id: 6, name: 'PT Murni Palma Sejahtera', today: 2460, yesterday: 2400 },
-    { id: 7, name: 'PT Bumi Bangka Perkebunan', today: 2430, yesterday: 2390 },
-])
+// Factory prices from backend DPKP service or mock fallback
+const factoryPrices = computed(() => {
+    if (props.dashboard?.factory_prices && Array.isArray(props.dashboard.factory_prices) && props.dashboard.factory_prices.length > 0) {
+        return props.dashboard.factory_prices
+    }
+    return [
+        { id: 1, name: 'PT Putra Bangka Tani', location: 'Desa Belilik', today: 3100, yesterday: 3100 },
+        { id: 2, name: 'PT Bangka Agro Mandiri', location: 'Desa Pinang Sebatang', today: 3050, yesterday: 3050 },
+        { id: 3, name: 'PT Perlang Sawitindo Mas', location: 'Desa Perlang', today: 3030, yesterday: 3030 },
+        { id: 4, name: 'PT Swarna Nusa Sentosa', location: 'Desa Kemingking', today: 3000, yesterday: 3000 },
+    ]
+})
 
-// Dummy Data for Tab 2: Rerata Harga Perkebun Non Mitra
-const districtPrices = ref([
-    { id: 1, district: 'Kecamatan Koba', today: 2250, yesterday: 2210 },
-    { id: 2, district: 'Kecamatan Pangkalan Baru', today: 2280, yesterday: 2250 },
-    { id: 3, district: 'Kecamatan Sungai Selan', today: 2210, yesterday: 2210 },
-    { id: 4, district: 'Kecamatan Simpang Katis', today: 2240, yesterday: 2200 },
-    { id: 5, district: 'Kecamatan Namang', today: 2260, yesterday: 2280 },
-    { id: 6, district: 'Kecamatan Lubuk Besar', today: 2230, yesterday: 2190 },
-])
+// District prices from backend DPKP service or mock fallback
+const districtPrices = computed(() => {
+    if (props.dashboard?.district_prices && Array.isArray(props.dashboard.district_prices) && props.dashboard.district_prices.length > 0) {
+        return props.dashboard.district_prices
+    }
+    return [
+        { id: 1, district: 'Kecamatan Sungaiselan', today: 2750, yesterday: 2750 },
+        { id: 2, district: 'Kecamatan Lubuk Besar', today: 2820, yesterday: 2820 },
+        { id: 3, district: 'Kecamatan Simpangkatis', today: 2827, yesterday: 2827 },
+        { id: 4, district: 'Kecamatan Pangkalan Baru', today: 2817, yesterday: 2817 },
+        { id: 5, district: 'Kecamatan Koba', today: 2850, yesterday: 2850 },
+        { id: 6, district: 'Kecamatan Namang', today: 2857, yesterday: 2857 },
+    ]
+})
 
 // Format Rupiah helper
 const formatRupiah = (val) => {
+    if (val === undefined || val === null) return 'Rp 0'
     return 'Rp ' + val.toLocaleString('id-ID')
 }
 
@@ -62,7 +83,10 @@ const getDiff = (today, yesterday) => {
 const filteredFactoryPrices = computed(() => {
     if (!searchQuery.value.trim()) return factoryPrices.value
     const q = searchQuery.value.toLowerCase()
-    return factoryPrices.value.filter(item => item.name.toLowerCase().includes(q))
+    return factoryPrices.value.filter(item => 
+        item.name.toLowerCase().includes(q) || 
+        (item.location && item.location.toLowerCase().includes(q))
+    )
 })
 
 // Filtered Tab 2 items
@@ -74,22 +98,34 @@ const filteredDistrictPrices = computed(() => {
 
 // Tab 1 Stats summary
 const avgFactoryPrice = computed(() => {
+    if (!factoryPrices.value || factoryPrices.value.length === 0) return 0
     const total = factoryPrices.value.reduce((acc, curr) => acc + curr.today, 0)
     return Math.round(total / factoryPrices.value.length)
 })
 
 const highestFactory = computed(() => {
+    if (!factoryPrices.value || factoryPrices.value.length === 0) return { name: '-', today: 0 }
     return [...factoryPrices.value].sort((a, b) => b.today - a.today)[0]
 })
 
 // Tab 2 Stats summary
 const avgDistrictPrice = computed(() => {
+    if (!districtPrices.value || districtPrices.value.length === 0) return 0
     const total = districtPrices.value.reduce((acc, curr) => acc + curr.today, 0)
     return Math.round(total / districtPrices.value.length)
 })
 
 const highestDistrict = computed(() => {
+    if (!districtPrices.value || districtPrices.value.length === 0) return { district: '-', today: 0 }
     return [...districtPrices.value].sort((a, b) => b.today - a.today)[0]
+})
+
+// Average price difference across active tab
+const avgDiff = computed(() => {
+    const list = activeTab.value === 1 ? factoryPrices.value : districtPrices.value
+    if (!list || list.length === 0) return 0
+    const sum = list.reduce((acc, curr) => acc + (curr.today - curr.yesterday), 0)
+    return Math.round(sum / list.length)
 })
 </script>
 
@@ -103,18 +139,18 @@ const highestDistrict = computed(() => {
             <div class="absolute -left-16 -bottom-16 h-64 w-64 rounded-full bg-teal-300/20 blur-3xl" />
 
             <div class="relative flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                <div class="space-y-2">
+                <div class="space-y-3">
                     <!-- Tanggal Terkini -->
                     <div class="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-md px-3.5 py-1 text-xs font-semibold tracking-wide text-emerald-200 border border-white/10">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
                         </svg>
-                        <span>{{ currentDateString }}</span>
+                        <span>📅 {{ displayDate }}</span>
                     </div>
 
                     <!-- Teks Utama Update Harga TBS -->
                     <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight font-sans drop-shadow-sm text-white">
-                        Update Harga TBS
+                        Update Harga TBS Kelapa Sawit
                     </h2>
                     <p class="text-xs sm:text-sm text-emerald-100/90 max-w-xl font-medium leading-relaxed">
                         Dinas Pertanian & Ketahanan Pangan Kabupaten Bangka Tengah — Pemantauan harga Tandan Buah Segar (TBS) Kelapa Sawit real-time di tingkat Pabrik & Pekebun Non Mitra.
@@ -157,11 +193,13 @@ const highestDistrict = computed(() => {
 
             <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-1 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-emerald-300 dark:hover:border-emerald-800">
                 <span class="text-xs font-semibold text-slate-500 dark:text-slate-400">Rata-rata Selisih Harga</span>
-                <div class="text-2xl font-extrabold text-teal-600 dark:text-teal-400 font-sans">
-                    +Rp 42 <span class="text-xs font-medium text-slate-400">/ kg</span>
+                <div class="text-2xl font-extrabold font-sans" :class="avgDiff >= 0 ? 'text-teal-600 dark:text-teal-400' : 'text-rose-600 dark:text-rose-400'">
+                    {{ avgDiff >= 0 ? '+' : '' }}{{ formatRupiah(avgDiff) }} <span class="text-xs font-medium text-slate-400">/ kg</span>
                 </div>
-                <div class="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold">
-                    ▲ Tren Kenaikan Positif
+                <div class="text-[11px] font-semibold" :class="avgDiff > 0 ? 'text-emerald-600 dark:text-emerald-400' : avgDiff < 0 ? 'text-rose-600 dark:text-rose-400' : 'text-slate-500'">
+                    <span v-if="avgDiff > 0">▲ Tren Kenaikan Positif</span>
+                    <span v-else-if="avgDiff < 0">▼ Tren Penurunan Harga</span>
+                    <span v-else>= Harga Stabil</span>
                 </div>
             </div>
         </div>
@@ -195,7 +233,7 @@ const highestDistrict = computed(() => {
             </div>
         </div>
 
-        <!-- 4. TABEL DATA HARGA TBS & CARI DATA (WITHOUT WORD "PAGE") -->
+        <!-- 4. TABEL DATA HARGA TBS & CARI DATA -->
         <div class="animate-fade-in-up [animation-delay:300ms]">
             
             <!-- TAB 1: HARGA DI PABRIK KELAPA SAWIT -->
@@ -216,7 +254,7 @@ const highestDistrict = computed(() => {
                             <input
                                 v-model="searchQuery"
                                 type="text"
-                                placeholder="Cari pabrik..."
+                                placeholder="Cari pabrik atau lokasi..."
                                 class="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:outline-none"
                             />
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 absolute left-3 top-2.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -235,8 +273,8 @@ const highestDistrict = computed(() => {
                         <thead class="bg-slate-50 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 font-bold uppercase text-[11px] tracking-wider border-b border-slate-200 dark:border-slate-800">
                             <tr>
                                 <th class="py-3.5 px-6">Pabrik Kelapa Sawit</th>
-                                <th class="py-3.5 px-6 text-right">Harga Hari Ini</th>
                                 <th class="py-3.5 px-6 text-right">Harga Kemarin</th>
+                                <th class="py-3.5 px-6 text-right">Harga Hari Ini</th>
                                 <th class="py-3.5 px-6 text-right">Selisih</th>
                             </tr>
                         </thead>
@@ -246,17 +284,22 @@ const highestDistrict = computed(() => {
                                 :key="item.id"
                                 class="hover:bg-emerald-50/40 dark:hover:bg-slate-800/40 transition-colors"
                             >
-                                <td class="py-4 px-6 font-bold flex items-center gap-2.5">
-                                    <span class="p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
-                                        🏭
-                                    </span>
-                                    <span class="font-sans text-slate-900 dark:text-white">{{ item.name }}</span>
-                                </td>
-                                <td class="py-4 px-6 text-right font-extrabold text-slate-900 dark:text-white font-sans">
-                                    {{ formatRupiah(item.today) }} <span class="text-xs text-slate-400 font-normal">/kg</span>
+                                <td class="py-4 px-6 font-bold">
+                                    <div class="flex items-center gap-2.5">
+                                        <span class="p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 shrink-0">
+                                            🏭
+                                        </span>
+                                        <div>
+                                            <div class="font-sans text-slate-900 dark:text-white">{{ item.name }}</div>
+                                            <div v-if="item.location" class="text-[11px] text-slate-400 font-normal font-sans">📍 {{ item.location }}</div>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td class="py-4 px-6 text-right font-medium text-slate-500 dark:text-slate-400">
                                     {{ formatRupiah(item.yesterday) }} <span class="text-xs text-slate-400 font-normal">/kg</span>
+                                </td>
+                                <td class="py-4 px-6 text-right font-extrabold text-slate-900 dark:text-white font-sans">
+                                    {{ formatRupiah(item.today) }} <span class="text-xs text-slate-400 font-normal">/kg</span>
                                 </td>
                                 <td class="py-4 px-6 text-right font-bold font-sans">
                                     <span 
@@ -275,7 +318,7 @@ const highestDistrict = computed(() => {
                                         v-else
                                         class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
                                     >
-                                        = Rp 0
+                                        — Rp 0
                                     </span>
                                 </td>
                             </tr>
@@ -327,8 +370,8 @@ const highestDistrict = computed(() => {
                         <thead class="bg-slate-50 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 font-bold uppercase text-[11px] tracking-wider border-b border-slate-200 dark:border-slate-800">
                             <tr>
                                 <th class="py-3.5 px-6">Kecamatan</th>
-                                <th class="py-3.5 px-6 text-right">Harga Hari Ini</th>
                                 <th class="py-3.5 px-6 text-right">Harga Kemarin</th>
+                                <th class="py-3.5 px-6 text-right">Harga Hari Ini</th>
                                 <th class="py-3.5 px-6 text-right">Selisih</th>
                             </tr>
                         </thead>
@@ -344,11 +387,11 @@ const highestDistrict = computed(() => {
                                     </span>
                                     <span class="font-sans text-slate-900 dark:text-white">{{ item.district }}</span>
                                 </td>
-                                <td class="py-4 px-6 text-right font-extrabold text-slate-900 dark:text-white font-sans">
-                                    {{ formatRupiah(item.today) }} <span class="text-xs text-slate-400 font-normal">/kg</span>
-                                </td>
                                 <td class="py-4 px-6 text-right font-medium text-slate-500 dark:text-slate-400">
                                     {{ formatRupiah(item.yesterday) }} <span class="text-xs text-slate-400 font-normal">/kg</span>
+                                </td>
+                                <td class="py-4 px-6 text-right font-extrabold text-slate-900 dark:text-white font-sans">
+                                    {{ formatRupiah(item.today) }} <span class="text-xs text-slate-400 font-normal">/kg</span>
                                 </td>
                                 <td class="py-4 px-6 text-right font-bold font-sans">
                                     <span 
@@ -367,7 +410,7 @@ const highestDistrict = computed(() => {
                                         v-else
                                         class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
                                     >
-                                        = Rp 0
+                                        — Rp 0
                                     </span>
                                 </td>
                             </tr>
