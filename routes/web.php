@@ -27,9 +27,6 @@ Route::get('/', function () {
     return Inertia::render('Front/Home');
 });
 
-Route::get('/layanan/{slug}', [InformationServiceController::class, 'show'])
-    ->name('layanan.show');
-
 Route::post('/complaints', [ComplaintController::class, 'store'])
     ->middleware(['auth', 'throttle:10,1'])
     ->name('complaints.store');
@@ -88,6 +85,9 @@ Route::middleware(['auth', 'super_admin'])->prefix('admin')->group(function () {
 */
 
 Route::middleware('auth')->group(function () {
+
+    Route::get('/layanan/{slug}', [InformationServiceController::class, 'show'])
+        ->name('layanan.show');
 
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');

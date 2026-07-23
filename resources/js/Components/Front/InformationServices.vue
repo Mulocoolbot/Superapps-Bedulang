@@ -1,6 +1,9 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
-import { Link } from '@inertiajs/vue3'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { Link, usePage } from '@inertiajs/vue3'
+
+const page = usePage()
+const isAuthenticated = computed(() => !!page.props.auth?.user)
 
 const activeTab = ref('info')
 
@@ -70,23 +73,27 @@ const apps = [
 const publicServices = [
     {
         name: 'PERIZINAN TERPADU',
+        slug: 'perizinan-terpadu',
         logo: '/services/govern.svg',
-        url: '/login'
+        url: '/layanan/perizinan-terpadu'
     },
     {
         name: 'PELAYANAN KESEHATAN',
+        slug: 'pelayanan-kesehatan',
         logo: '/services/health.svg',
-        url: '/login'
+        url: '/layanan/pelayanan-kesehatan'
     },
     {
         name: 'PENGADUAN PPID',
+        slug: 'pengaduan-ppid',
         logo: '/services/lapor.png',
-        url: '/login'
+        url: '/layanan/pengaduan-ppid'
     },
     {
         name: 'ADMINISTRASI WARGA',
+        slug: 'administrasi-warga',
         logo: '/services/society.svg',
-        url: '/login'
+        url: '/layanan/administrasi-warga'
     },
 ]
 const setTab = (tab) => {
@@ -195,16 +202,27 @@ onUnmounted(() => {
                             <Link
                                 v-for="(app, index) in apps"
                                 :key="app.name"
-                                :href="'/layanan/' + app.slug"
+                                :href="isAuthenticated ? '/layanan/' + app.slug : '/login'"
                                 class="group w-full md:w-[180px] flex-shrink-0 transition-all duration-300"
                             >
                                 <div 
                                     :id="'layanan-' + app.name.toLowerCase().replace(/[^a-z0-9]/g, '-')"
-                                    class="overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-blue-400 dark:hover:border-blue-500"
+                                    class="relative overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-blue-400 dark:hover:border-blue-500"
                                 >
+                                    <!-- Lock Icon Badge for Guest User -->
+                                    <div 
+                                        v-if="!isAuthenticated" 
+                                        class="absolute top-2.5 right-2.5 z-10 p-1.5 rounded-full bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 shadow-xs backdrop-blur-xs flex items-center justify-center"
+                                        title="Login diperlukan untuk mengakses pelayanan"
+                                    >
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
+                                        </svg>
+                                    </div>
+
                                     <!-- Thumbnail -->
-                                    <div class="h-28 flex items-center justify-center bg-gray-50 dark:bg-gray-900/70">
-                                        <img :src="app.logo" :alt="app.name" class="w-[65%] h-[65%] object-contain transition-transform duration-500 ease-out group-hover:scale-105" />
+                                    <div class="h-28 flex items-center justify-center bg-gray-50 dark:bg-gray-900/70 relative">
+                                        <img :src="app.logo" :alt="app.name" class="w-[65%] h-[65%] object-contain transition-transform duration-500 ease-out group-hover:scale-105" :class="{ 'opacity-80': !isAuthenticated }" />
                                     </div>
                                     <!-- Footer -->
                                     <div class="flex items-center justify-between px-3.5 py-3.5">
@@ -224,16 +242,27 @@ onUnmounted(() => {
                             <Link
                                 v-for="(app, index) in publicServices"
                                 :key="app.name"
-                                :href="app.url"
+                                :href="isAuthenticated ? app.url : '/login'"
                                 class="group w-full md:w-[180px] flex-shrink-0 transition-all duration-300"
                             >
                                 <div 
                                     :id="'layanan-' + app.name.toLowerCase().replace(/[^a-z0-9]/g, '-')"
-                                    class="overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-blue-400 dark:hover:border-blue-500"
+                                    class="relative overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-blue-400 dark:hover:border-blue-500"
                                 >
+                                    <!-- Lock Icon Badge for Guest User -->
+                                    <div 
+                                        v-if="!isAuthenticated" 
+                                        class="absolute top-2.5 right-2.5 z-10 p-1.5 rounded-full bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 shadow-xs backdrop-blur-xs flex items-center justify-center"
+                                        title="Login diperlukan untuk mengakses pelayanan"
+                                    >
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/>
+                                        </svg>
+                                    </div>
+
                                     <!-- Thumbnail -->
-                                    <div class="h-28 flex items-center justify-center bg-gray-50 dark:bg-gray-900/70">
-                                        <img :src="app.logo" :alt="app.name" class="w-[65%] h-[65%] object-contain transition-transform duration-500 ease-out group-hover:scale-105" />
+                                    <div class="h-28 flex items-center justify-center bg-gray-50 dark:bg-gray-900/70 relative">
+                                        <img :src="app.logo" :alt="app.name" class="w-[65%] h-[65%] object-contain transition-transform duration-500 ease-out group-hover:scale-105" :class="{ 'opacity-80': !isAuthenticated }" />
                                     </div>
                                     <!-- Footer -->
                                     <div class="flex items-center justify-between px-3.5 py-3.5">

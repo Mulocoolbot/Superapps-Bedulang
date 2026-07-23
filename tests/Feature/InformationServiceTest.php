@@ -2,14 +2,25 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class InformationServiceTest extends TestCase
 {
-    public function test_service_pages_are_available_for_all_frontend_layanan_slugs(): void
+    use RefreshDatabase;
+    public function test_unauthenticated_user_redirected_to_login_when_accessing_service_pages(): void
     {
+        $this->get('/layanan/pemerintahan')
+            ->assertRedirect('/login');
+    }
+
+    public function test_service_pages_are_available_for_authenticated_users(): void
+    {
+        $user = User::factory()->create();
+
         $slugs = [
             'pemerintahan',
             'pendidikan',
@@ -23,10 +34,15 @@ class InformationServiceTest extends TestCase
             'pariwisata',
             'data-sektoral',
             'makanan-bergizi-gratis',
+            'perizinan-terpadu',
+            'pelayanan-kesehatan',
+            'pengaduan-ppid',
+            'administrasi-warga',
         ];
 
         foreach ($slugs as $slug) {
-            $this->get('/layanan/' . $slug)
+            $this->actingAs($user)
+                ->get('/layanan/' . $slug)
                 ->assertOk();
         }
     }

@@ -105,6 +105,30 @@ class InformationServiceRegistry
             ],
         ],
         'makanan-bergizi-gratis' => MbgService::class,
+        'perizinan-terpadu' => [
+            'name' => 'Perizinan Terpadu',
+            'icon' => '🏛️',
+            'description' => 'Portal Layanan Perizinan Terpadu Kabupaten Bangka Tengah.',
+            'filters' => [],
+        ],
+        'pelayanan-kesehatan' => [
+            'name' => 'Pelayanan Kesehatan',
+            'icon' => '🏥',
+            'description' => 'Portal Pelayanan Kesehatan Kabupaten Bangka Tengah.',
+            'filters' => [],
+        ],
+        'pengaduan-ppid' => [
+            'name' => 'Pengaduan PPID',
+            'icon' => '📢',
+            'description' => 'Portal Layanan Pengaduan PPID Kabupaten Bangka Tengah.',
+            'filters' => [],
+        ],
+        'administrasi-warga' => [
+            'name' => 'Administrasi Warga',
+            'icon' => '🪪',
+            'description' => 'Portal Layanan Administrasi Warga Kabupaten Bangka Tengah.',
+            'filters' => [],
+        ],
     ];
 
     public function has(string $slug): bool
