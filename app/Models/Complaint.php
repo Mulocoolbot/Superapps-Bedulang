@@ -65,6 +65,7 @@ class Complaint extends Model
             'kependudukan' => 'KEPENDUDUKAN',
             'kepegawaian' => 'KEPEGAWAIAN',
             'pertanian' => 'PERTANIAN',
+            'informasi-publik' => 'INFORMASI PUBLIK',
             'pariwisata' => 'PARIWISATA',
             'data-sektoral' => 'DATA SEKTORAL',
             'makanan-bergizi-gratis' => 'MAKANAN BERGIZI GRATIS',

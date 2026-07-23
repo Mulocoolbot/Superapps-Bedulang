@@ -10,6 +10,7 @@ import PerindagkopDashboard from './Dashboards/PerindagkopDashboard.vue'
 import MbgDashboard from './Dashboards/MbgDashboard.vue'
 import KepegawaianDashboard from './Dashboards/KepegawaianDashboard.vue'
 import PertanianDashboard from './Dashboards/PertanianDashboard.vue'
+import InformasiPublikDashboard from './Dashboards/InformasiPublikDashboard.vue'
 import DefaultDashboard from './Dashboards/DefaultDashboard.vue'
 
 const isComplaintModalOpen = ref(false)
@@ -36,6 +37,8 @@ const dashboardComponent = computed(() => {
             return KepegawaianDashboard
         case 'pertanian':
             return PertanianDashboard
+        case 'informasi-publik':
+            return InformasiPublikDashboard
         default:
             return DefaultDashboard
     }
@@ -53,6 +56,8 @@ const serviceSourceUrl = computed(() => {
             return 'https://mbg.pdm.kemendikdasmen.go.id/portal'
         case 'pertanian':
             return 'https://dpkp.bangkatengahkab.go.id/'
+        case 'informasi-publik':
+            return 'https://bangkatengahkab.go.id/'
         case 'kepegawaian':
             return 'https://bkpsdmd.bangkatengahkab.go.id/'
         default:
@@ -68,6 +73,8 @@ const serviceSourceLabel = computed(() => {
             return 'mbg.pdm.kemendikdasmen.go.id/portal'
         case 'pertanian':
             return 'dpkp.bangkatengahkab.go.id'
+        case 'informasi-publik':
+            return 'bangkatengahkab.go.id'
         case 'kepegawaian':
             return 'bkpsdmd.bangkatengahkab.go.id'
         default:
@@ -139,15 +146,18 @@ const serviceSourceLabel = computed(() => {
                 </div>
             </div>
 
-            <!-- Dynamically Rendered Segmented Dashboard -->
-            <component 
-                :is="dashboardComponent" 
-                :service="service" 
-                :dashboard="dashboard" 
-            />
+            <!-- Dynamically Rendered Segmented Dashboard with Smooth Transition -->
+            <Transition name="page-fade" mode="out-in">
+                <component 
+                    :is="dashboardComponent" 
+                    :key="service?.slug"
+                    :service="service" 
+                    :dashboard="dashboard" 
+                />
+            </Transition>
 
-            <!-- Sumber Data Section (Footer data note inside page margin) -->
-            <div class="mt-12 pt-6 border-t border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+            <!-- Sumber Data Section (Footer data note inside page margin - Hidden for Informasi Publik as each tab manages its own source) -->
+            <div v-if="service?.slug !== 'informasi-publik'" class="mt-12 pt-6 border-t border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                 <div class="flex items-center gap-1.5">
                     <span>Sumber Data:</span>
                     <a 
@@ -211,6 +221,22 @@ const serviceSourceLabel = computed(() => {
 
 .animate-fade-in-up {
     animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Page / Dashboard Transition Animations */
+.page-fade-enter-active,
+.page-fade-leave-active {
+    transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-fade-enter-from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.99);
+}
+
+.page-fade-leave-to {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.99);
 }
 
 .animate-grow-width {

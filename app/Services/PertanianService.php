@@ -26,7 +26,8 @@ class PertanianService implements InformationServiceInterface
     }
 
     /**
-     * Get the dashboard data.
+     * Get the dashboard data for Pertanian.
+     * Returns live TBS prices data used by InformasiPublikService or fallback.
      *
      * @param Request $request
      * @return array
@@ -134,7 +135,7 @@ class PertanianService implements InformationServiceInterface
 
             return [
                 'metadata' => [
-                    'source' => 'Dinas Pertanian & Ketahanan Pangan Kab. Bangka Tengah',
+                    'source' => 'Dinas Pertanian Kab. Bangka Tengah',
                     'source_url' => 'https://dpkp.bangkatengahkab.go.id/',
                     'updated_at' => $formattedDate,
                     'preview_pdf' => $previewPdf,
@@ -157,7 +158,7 @@ class PertanianService implements InformationServiceInterface
     {
         return [
             'metadata' => [
-                'source' => 'Dinas Pertanian & Ketahanan Pangan Kab. Bangka Tengah',
+                'source' => 'Dinas Pertanian Kab. Bangka Tengah',
                 'source_url' => 'https://dpkp.bangkatengahkab.go.id/',
                 'updated_at' => 'Kamis, 23 Juli 2026',
                 'preview_pdf' => 'https://dpkp.bangkatengahkab.go.id/harga-tbs/preview-pdf?tanggal=2026-07-23',

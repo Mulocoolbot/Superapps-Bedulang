@@ -47,6 +47,16 @@ class DatabaseSeeder extends Seeder
         );
 
         User::updateOrCreate(
+            ['email' => 'admin.utd@example.com'],
+            [
+                'name' => 'Admin UTD Bangka Tengah',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+                'service_slug' => 'informasi-publik',
+            ]
+        );
+
+        User::updateOrCreate(
             ['email' => 'pimpinan@example.com'],
             [
                 'name' => 'Pimpinan',
@@ -63,5 +73,23 @@ class DatabaseSeeder extends Seeder
                 'role' => 'publik',
             ]
         );
+
+        // Clear old records if any
+        \App\Models\BloodStock::whereNotIn('blood_type', ['A', 'B', 'AB', 'O'])->delete();
+
+        // Seed Default 4 Blood Stocks (A, B, AB, O)
+        $defaultStocks = [
+            ['blood_type' => 'A', 'amount' => 20],
+            ['blood_type' => 'B', 'amount' => 25],
+            ['blood_type' => 'AB', 'amount' => 12],
+            ['blood_type' => 'O', 'amount' => 32],
+        ];
+
+        foreach ($defaultStocks as $stock) {
+            \App\Models\BloodStock::updateOrCreate(
+                ['blood_type' => $stock['blood_type']],
+                ['amount' => $stock['amount'], 'unit' => 'Kantong']
+            );
+        }
     }
 }

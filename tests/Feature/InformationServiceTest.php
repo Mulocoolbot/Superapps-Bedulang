@@ -31,6 +31,7 @@ class InformationServiceTest extends TestCase
             'kependudukan',
             'kepegawaian',
             'pertanian',
+            'informasi-publik',
             'pariwisata',
             'data-sektoral',
             'makanan-bergizi-gratis',

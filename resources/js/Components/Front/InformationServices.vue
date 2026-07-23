@@ -49,8 +49,8 @@ const apps = [
         logo: '/services/work.svg',
     },
     {
-        name: 'Pertanian',
-        slug: 'pertanian',
+        name: 'Informasi Publik',
+        slug: 'informasi-publik',
         logo: '/services/environment.svg',
     },
     {

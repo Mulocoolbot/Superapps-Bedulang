@@ -79,6 +79,7 @@ class ComplaintController extends Controller
             ['slug' => 'kependudukan', 'name' => 'KEPENDUDUKAN'],
             ['slug' => 'kepegawaian', 'name' => 'KEPEGAWAIAN'],
             ['slug' => 'pertanian', 'name' => 'PERTANIAN'],
+            ['slug' => 'informasi-publik', 'name' => 'INFORMASI PUBLIK'],
             ['slug' => 'pariwisata', 'name' => 'PARIWISATA'],
             ['slug' => 'data-sektoral', 'name' => 'DATA SEKTORAL'],
             ['slug' => 'makanan-bergizi-gratis', 'name' => 'MAKANAN BERGIZI GRATIS'],
@@ -107,7 +108,7 @@ class ComplaintController extends Controller
             'service_slug' => ['required', 'string', Rule::in([
                 'pemerintahan', 'pendidikan', 'kesehatan', 'perindagkop-ukm',
                 'hukum', 'sosial', 'kependudukan', 'kepegawaian', 'pertanian',
-                'pariwisata', 'data-sektoral', 'makanan-bergizi-gratis',
+                'informasi-publik', 'pariwisata', 'data-sektoral', 'makanan-bergizi-gratis',
             ])],
             'title' => 'required|string|max:255',
             'description' => 'required|string',

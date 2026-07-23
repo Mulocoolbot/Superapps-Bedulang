@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\CCTVController;
 use App\Http\Controllers\Admin\ComplaintController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\BloodStockController;
 use App\Http\Controllers\InformationServiceController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -56,6 +57,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 
     Route::delete('/complaints/{complaint}', [ComplaintController::class, 'destroy'])
         ->name('admin.complaints.destroy');
+
+    Route::post('/blood-stocks', [BloodStockController::class, 'update'])
+        ->name('admin.blood-stocks.update');
 });
 
 Route::middleware(['auth', 'super_admin'])->prefix('admin')->group(function () {

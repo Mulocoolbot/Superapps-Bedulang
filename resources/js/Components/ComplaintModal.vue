@@ -275,6 +275,7 @@ const servicesList = [
   { slug: 'kependudukan', name: 'Kependudukan' },
   { slug: 'kepegawaian', name: 'Kepegawaian' },
   { slug: 'pertanian', name: 'Pertanian' },
+  { slug: 'informasi-publik', name: 'Informasi Publik' },
   { slug: 'pariwisata', name: 'Pariwisata' },
   { slug: 'data-sektoral', name: 'Data Sektoral' },
   { slug: 'makanan-bergizi-gratis', name: 'Makanan Bergizi Gratis' },
