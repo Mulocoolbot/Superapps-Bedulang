@@ -1,9 +1,11 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AdminLayout from '@/Layouts/AdminLayout.vue';
 import DeleteUserForm from './Partials/DeleteUserForm.vue';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue';
-import { Head } from '@inertiajs/vue3';
+import { Head, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
 defineProps({
     mustVerifyEmail: {
@@ -13,17 +15,26 @@ defineProps({
         type: String,
     },
 });
+
+const page = usePage();
+const isAdmin = computed(() => {
+    const role = page.props.auth?.user?.role;
+    return ['admin', 'super_admin', 'pimpinan'].includes(role);
+});
+const layoutComponent = computed(() => {
+    return isAdmin.value ? AdminLayout : AuthenticatedLayout;
+});
 </script>
 
 <template>
-    <Head title="Profile" />
+    <Head title="Profil" />
 
-    <AuthenticatedLayout>
-        <template #header>
+    <component :is="layoutComponent">
+        <template #header v-if="!isAdmin">
             <h2
                 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200"
             >
-                Profile
+                Profil
             </h2>
         </template>
 
@@ -52,5 +63,5 @@ defineProps({
                 </div>
             </div>
         </div>
-    </AuthenticatedLayout>
+    </component>
 </template>

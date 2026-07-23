@@ -79,24 +79,10 @@ class InformationServiceRegistry
             ],
         ],
         'lingkungan' => [
-            'name' => 'Lingkungan',
-            'icon' => '🌿',
-            'description' => 'Dashboard informasi Lingkungan Kabupaten Bangka Tengah.',
-            'filters' => [
-                ['label' => 'Kematian', 'value' => 'kematian'],
-                ['label' => 'Kelahiran', 'value' => 'kelahiran'],
-                ['label' => 'Harga Cabe', 'value' => 'harga-cabe'],
-            ],
-        ],
-        'geografis' => [
-            'name' => 'Geografis',
-            'icon' => '🗺️',
-            'description' => 'Dashboard informasi Geografis Kabupaten Bangka Tengah.',
-            'filters' => [
-                ['label' => 'Kelahiran', 'value' => 'kelahiran'],
-                ['label' => 'Gender', 'value' => 'gender'],
-                ['label' => 'Harga Terigu', 'value' => 'harga-terigu'],
-            ],
+            'name' => 'DPKP',
+            'icon' => '🌾',
+            'description' => 'Dashboard informasi Dinas Pertanian & Ketahanan Pangan Kabupaten Bangka Tengah.',
+            'filters' => [],
         ],
         'pariwisata' => [
             'name' => 'Pariwisata',
@@ -117,6 +103,31 @@ class InformationServiceRegistry
                 ['label' => 'Harga Terigu', 'value' => 'harga-terigu'],
                 ['label' => 'Gender', 'value' => 'gender'],
             ],
+        ],
+        'makanan-bergizi-gratis' => MbgService::class,
+        'perizinan-terpadu' => [
+            'name' => 'Perizinan Terpadu',
+            'icon' => '🏛️',
+            'description' => 'Portal Layanan Perizinan Terpadu Kabupaten Bangka Tengah.',
+            'filters' => [],
+        ],
+        'pelayanan-kesehatan' => [
+            'name' => 'Pelayanan Kesehatan',
+            'icon' => '🏥',
+            'description' => 'Portal Pelayanan Kesehatan Kabupaten Bangka Tengah.',
+            'filters' => [],
+        ],
+        'pengaduan-ppid' => [
+            'name' => 'Pengaduan PPID',
+            'icon' => '📢',
+            'description' => 'Portal Layanan Pengaduan PPID Kabupaten Bangka Tengah.',
+            'filters' => [],
+        ],
+        'administrasi-warga' => [
+            'name' => 'Administrasi Warga',
+            'icon' => '🪪',
+            'description' => 'Portal Layanan Administrasi Warga Kabupaten Bangka Tengah.',
+            'filters' => [],
         ],
     ];
 

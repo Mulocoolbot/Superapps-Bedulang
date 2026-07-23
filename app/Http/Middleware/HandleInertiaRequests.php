@@ -32,7 +32,15 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'auth' => [
-                'user' => $request->user(),
+                'user' => $request->user() ? [
+                    'id' => $request->user()->id,
+                    'name' => $request->user()->name,
+                    'email' => $request->user()->email,
+                    'role' => $request->user()->role,
+                    'service_slug' => $request->user()->service_slug,
+                    'notifications' => $request->user()->notifications()->latest()->take(30)->get(),
+                    'unread_notifications_count' => $request->user()->unreadNotifications()->count(),
+                ] : null,
             ],
             'csrf_token' => fn () => csrf_token(),
             'whatsapp' => [
