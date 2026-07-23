@@ -103,7 +103,7 @@ onMounted(() => {
                             <div>
                                 <h3 class="font-bold text-gray-800 text-lg">Fitur CCTV - Live Stream</h3>
                                 <p class="text-xs text-gray-500" v-if="selectedCCTV">
-                                    Kamera: {{ selectedCCTV.name }} (IP: {{ selectedCCTV.ip }})
+                                    Kamera: {{ selectedCCTV.name }}
                                 </p>
                             </div>
                         </div>
