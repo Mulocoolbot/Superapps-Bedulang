@@ -29,7 +29,7 @@ const apps = [
         logo: '/services/culture.svg',
     },
     {
-        name: 'HUKUM',
+        name: 'KDMP',
         slug: 'hukum',
         logo: '/services/law.svg',
     },
@@ -52,11 +52,6 @@ const apps = [
         name: 'Pertanian dan Ketahanan Pangan',
         slug: 'lingkungan',
         logo: '/services/environment.svg',
-    },
-    {
-        name: 'GEOGRAFIS',
-        slug: 'geografis',
-        logo: '/services/geo.svg',
     },
     {
         name: 'PARIWISATA',

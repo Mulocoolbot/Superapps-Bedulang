@@ -84,16 +84,6 @@ class InformationServiceRegistry
             'description' => 'Dashboard informasi Dinas Pertanian & Ketahanan Pangan Kabupaten Bangka Tengah.',
             'filters' => [],
         ],
-        'geografis' => [
-            'name' => 'Geografis',
-            'icon' => '🗺️',
-            'description' => 'Dashboard informasi Geografis Kabupaten Bangka Tengah.',
-            'filters' => [
-                ['label' => 'Kelahiran', 'value' => 'kelahiran'],
-                ['label' => 'Gender', 'value' => 'gender'],
-                ['label' => 'Harga Terigu', 'value' => 'harga-terigu'],
-            ],
-        ],
         'pariwisata' => [
             'name' => 'Pariwisata',
             'icon' => '🏖️',
