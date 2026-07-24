@@ -11,62 +11,62 @@ const apps = [
     {
         name: 'PEMERINTAHAN',
         slug: 'pemerintahan',
-        logo: '/services/govern.svg',
+        logo: '/services/pemerintahan.svg',
     },
     {
         name: 'PENDIDIKAN',
         slug: 'pendidikan',
-        logo: '/services/education.svg',
+        logo: '/services/pendidikan.svg',
     },
     {
         name: 'KESEHATAN',
         slug: 'kesehatan',
-        logo: '/services/health.svg',
+        logo: '/services/kesehatan.svg',
     },
     {
         name: 'PERINDAGKOP-UKM',
         slug: 'perindagkop-ukm',
-        logo: '/services/culture.svg',
+        logo: '/services/perindagkop.svg',
     },
     {
         name: 'KDMP',
         slug: 'hukum',
-        logo: '/services/law.svg',
+        logo: '/services/kdmp.png',
     },
     {
         name: 'SOSIAL',
         slug: 'sosial',
-        logo: '/services/social.svg',
+        logo: '/services/sosial.svg',
     },
     {
         name: 'KEPENDUDUKAN',
         slug: 'kependudukan',
-        logo: '/services/society.svg',
+        logo: '/services/kependudukan.svg',
     },
     {
         name: 'KEPEGAWAIAN',
         slug: 'kepegawaian',
-        logo: '/services/work.svg',
+        logo: '/services/kepegawaian.svg',
     },
     {
         name: 'Pertanian dan Ketahanan Pangan',
         slug: 'lingkungan',
-        logo: '/services/environment.svg',
+        logo: '/services/informasi publik.svg',
     },
     {
         name: 'PARIWISATA',
         slug: 'pariwisata',
-        logo: '/services/vacation.svg',
+        logo: '/services/pariwisata.svg',
     },
     {
         name: 'DATA SEKTORAL',
         slug: 'data-sektoral',
-        logo: '/services/voting.svg',
+        logo: '/services/sektoral.svg',
     },
     {
         name: 'Makanan Bergizi Gratis',
         slug: 'makanan-bergizi-gratis',
-        logo: '/services/makanan-bergizi-gratis.svg',
+        logo: '/services/bgn.png',
     },
 ]
 
@@ -88,6 +88,19 @@ const publicServices = [
         slug: 'pengaduan-ppid',
         logo: '/services/lapor.png',
         url: '/layanan/pengaduan-ppid'
+    },
+    {
+        name: 'PENGADUAN BEDULANG',
+        slug: 'layanan-pengaduan-bedulang',
+        logo: '/services/lapor.png',
+        url: '/layanan/pengaduan-bedulang'
+    },
+    {
+        name: 'MONITORING CCTV',
+        slug: 'monitoring-cctv',
+        logo: '/services/cctv.svg',
+        url: '/cctv',
+        allowGuest: true
     },
     {
         name: 'ADMINISTRASI WARGA',
@@ -222,7 +235,7 @@ onUnmounted(() => {
 
                                     <!-- Thumbnail -->
                                     <div class="h-28 flex items-center justify-center bg-gray-50 dark:bg-gray-900/70 relative">
-                                        <img :src="app.logo" :alt="app.name" class="w-[65%] h-[65%] object-contain transition-transform duration-500 ease-out group-hover:scale-105" :class="{ 'opacity-80': !isAuthenticated }" />
+                                        <img :src="app.logo" :alt="app.name" class="w-[90%] h-[90%] object-contain transition-transform duration-500 ease-out group-hover:scale-105" :class="{ 'opacity-80': !isAuthenticated }" />
                                     </div>
                                     <!-- Footer -->
                                     <div class="flex items-center justify-between px-3.5 py-3.5">
@@ -242,7 +255,7 @@ onUnmounted(() => {
                             <Link
                                 v-for="(app, index) in publicServices"
                                 :key="app.name"
-                                :href="isAuthenticated ? app.url : '/login'"
+                                :href="isAuthenticated || app.allowGuest ? app.url : '/login'"
                                 class="group w-full md:w-[180px] flex-shrink-0 transition-all duration-300"
                             >
                                 <div 
@@ -251,7 +264,7 @@ onUnmounted(() => {
                                 >
                                     <!-- Lock Icon Badge for Guest User -->
                                     <div 
-                                        v-if="!isAuthenticated" 
+                                        v-if="!isAuthenticated && !app.allowGuest" 
                                         class="absolute top-2.5 right-2.5 z-10 p-1.5 rounded-full bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 shadow-xs backdrop-blur-xs flex items-center justify-center"
                                         title="Login diperlukan untuk mengakses pelayanan"
                                     >
@@ -262,7 +275,7 @@ onUnmounted(() => {
 
                                     <!-- Thumbnail -->
                                     <div class="h-28 flex items-center justify-center bg-gray-50 dark:bg-gray-900/70 relative">
-                                        <img :src="app.logo" :alt="app.name" class="w-[65%] h-[65%] object-contain transition-transform duration-500 ease-out group-hover:scale-105" :class="{ 'opacity-80': !isAuthenticated }" />
+                                        <img :src="app.logo" :alt="app.name" class="w-[70%] h-[70%] object-contain transition-transform duration-500 ease-out group-hover:scale-105" :class="{ 'opacity-80': !isAuthenticated && !app.allowGuest }" />
                                     </div>
                                     <!-- Footer -->
                                     <div class="flex items-center justify-between px-3.5 py-3.5">

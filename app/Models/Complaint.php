@@ -26,10 +26,18 @@ class Complaint extends Model
         'whatsapp_sent_at',
         'whatsapp_message_id',
         'notes',
+
+        //Bedulang
+        'followup_image',
+        'followup_image_uploaded_at',
+        'rating',
+        'review',
     ];
 
     protected $casts = [
         'whatsapp_sent_at' => 'datetime',
+        'followup_image_uploaded_at' => 'datetime',
+        'rating' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -45,7 +53,7 @@ class Complaint extends Model
     /**
      * Get the progress history logs for this complaint
      */
-    public function progressLogs(): HasMany
+    public function progressLogs()
     {
         return $this->hasMany(ComplaintProgressLog::class, 'complaint_id')->orderBy('created_at', 'desc');
     }
@@ -68,6 +76,7 @@ class Complaint extends Model
             'pariwisata' => 'PARIWISATA',
             'data-sektoral' => 'DATA SEKTORAL',
             'makanan-bergizi-gratis' => 'MAKANAN BERGIZI GRATIS',
+            'pengaduan-bedulang' => 'PENGADUAN BEDULANG',
         ];
 
         return $services[$this->service_slug] ?? ucfirst($this->service_slug);

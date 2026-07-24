@@ -80,6 +80,14 @@ class User extends Authenticatable
             return true;
         }
 
+        if ($serviceSlug === 'pengaduan-bedulang') {
+            return (
+            $this->isAdmin()
+            ||
+            $this->isPimpinan()
+        );
+        }
+
         return $this->service_slug === $serviceSlug;
     }
 }

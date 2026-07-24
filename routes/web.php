@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\ComplaintController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\InformationServiceController;
+use App\Http\Controllers\UserComplaintController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -26,6 +27,8 @@ Route::get('/readiness', [KubernetesController::class, 'siap']);
 Route::get('/', function () {
     return Inertia::render('Front/Home');
 });
+
+Route::get('/cctv', [CCTVController::class, 'index'])->name('cctv.index');
 
 Route::post('/complaints', [ComplaintController::class, 'store'])
     ->middleware(['auth', 'throttle:10,1'])
@@ -85,6 +88,23 @@ Route::middleware(['auth', 'super_admin'])->prefix('admin')->group(function () {
 */
 
 Route::middleware('auth')->group(function () {
+    Route::get(
+    '/layanan/pengaduan-bedulang',
+    [UserComplaintController::class,'createBedulang']
+)
+->name('complaints.bedulang');
+
+    Route::post('/complaints/bedulang', [UserComplaintController::class, 'storeBedulang'])
+        ->name('complaints.store.bedulang');
+
+    Route::patch(
+        '/complaints/{complaint}/mark-sent',
+        [UserComplaintController::class,'markAsSent']
+    )
+    ->name('complaints.mark.sent');
+
+    Route::post('/my-complaints/{complaint}/review', [\App\Http\Controllers\UserComplaintController::class, 'storeReview'])
+        ->name('user.complaints.review');
 
     Route::get('/layanan/{slug}', [InformationServiceController::class, 'show'])
         ->name('layanan.show');

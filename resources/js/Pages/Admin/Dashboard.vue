@@ -24,11 +24,21 @@ const selectedCCTV = ref(props.cctvs && props.cctvs.length > 0 ? props.cctvs[0] 
 
 let hls = null
 
+const resolveStreamUrl = (streamUrl) => {
+    if (!streamUrl) return ''
+    try {
+        const url = new URL(streamUrl)
+        return `${url.protocol}//${window.location.hostname}:8888${url.pathname}${url.search}`
+    } catch (e) {
+        return streamUrl
+    }
+}
+
 const playCCTV = (cctv) => {
     selectedCCTV.value = cctv
     nextTick(() => {
         if (!cctv || !videoRef.value) return
-        const streamUrl = cctv.stream
+        const streamUrl = resolveStreamUrl(cctv.stream)
 
         if (hls) {
             hls.destroy()
@@ -43,6 +53,9 @@ const playCCTV = (cctv) => {
             })
         } else if (videoRef.value.canPlayType('application/vnd.apple.mpegurl')) {
             videoRef.value.src = streamUrl
+            videoRef.value.addEventListener('loadedmetadata', () => {
+                videoRef.value.play().catch(() => {})
+            })
         }
     })
 }

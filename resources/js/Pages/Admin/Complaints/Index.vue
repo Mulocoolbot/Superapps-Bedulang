@@ -7,16 +7,17 @@ const props = defineProps({
     complaints: { type: Object, required: true },
     stats: {
         type: Object,
-        default: () => ({ total: 0, pending: 0, processing: 0, resolved: 0, rejected: 0, cancelled: 0 })
+        default: () => ({ total: 0, pending: 0, processing: 0, resolved: 0, rejected: 0, cancelled: 0, terkirim: 0 })
     },
     services: { type: Array, default: () => [] },
-    filters: { type: Object, default: () => ({ status: 'all', service: '', search: '' }) },
+    filters: { type: Object, default: () => ({ status: 'all', service: '', search: '', type: 'all' }) },
     userDomain: { type: String, default: null },
     isSuperAdmin: { type: Boolean, default: true },
 })
 
 const statusLabel = {
     pending: 'Menunggu',
+    terkirim: 'Terkirim',
     processing: 'Diproses',
     resolved: 'Selesai',
     rejected: 'Ditolak',
@@ -25,6 +26,7 @@ const statusLabel = {
 
 const statusClass = (status) => ({
     pending: 'bg-amber-100 text-amber-800 border-amber-200',
+    terkirim: 'bg-indigo-100 text-indigo-800 border-indigo-200',
     processing: 'bg-blue-100 text-blue-800 border-blue-200',
     resolved: 'bg-emerald-100 text-emerald-800 border-emerald-200',
     rejected: 'bg-rose-100 text-rose-800 border-rose-200',
@@ -34,6 +36,7 @@ const statusClass = (status) => ({
 const searchInput = ref(props.filters.search ?? '')
 const selectedStatus = ref(props.filters.status ?? 'all')
 const selectedService = ref(props.filters.service ?? '')
+const selectedType = ref(props.filters.type ?? 'all')
 
 const applyFilters = () => {
     router.get(
@@ -42,6 +45,7 @@ const applyFilters = () => {
             status: selectedStatus.value,
             service: selectedService.value,
             search: searchInput.value,
+            type: selectedType.value,
         },
         { preserveState: true, replace: true }
     )
@@ -56,6 +60,7 @@ const resetFilters = () => {
     searchInput.value = ''
     selectedStatus.value = 'all'
     selectedService.value = ''
+    selectedType.value = 'all'
     applyFilters()
 }
 </script>
@@ -83,8 +88,8 @@ const resetFilters = () => {
                 </div>
             </div>
 
-            <!-- Summary Statistics Cards (6 Cards) -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            <!-- Summary Statistics Cards (7 Cards) -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4">
                 <!-- Total Pengaduan -->
                 <button
                     @click="filterByStatus('all')"
@@ -117,6 +122,23 @@ const resetFilters = () => {
                         <h2 class="text-2xl font-extrabold text-amber-600">{{ stats.pending }}</h2>
                     </div>
                     <p class="text-xs font-semibold text-amber-600 uppercase tracking-wider">Menunggu</p>
+                </button>
+
+                <!-- Terkirim (Terkirim) -->
+                <button
+                    @click="filterByStatus('terkirim')"
+                    class="bg-white rounded-2xl p-4 shadow-sm border text-left transition hover:shadow-md cursor-pointer space-y-2"
+                    :class="selectedStatus === 'terkirim' ? 'border-indigo-500 ring-2 ring-indigo-500' : 'border-slate-200/80'"
+                >
+                    <div class="flex items-center justify-between">
+                        <div class="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                            </svg>
+                        </div>
+                        <h2 class="text-2xl font-extrabold text-indigo-600">{{ stats.terkirim || 0 }}</h2>
+                    </div>
+                    <p class="text-xs font-semibold text-indigo-600 uppercase tracking-wider">Terkirim</p>
                 </button>
 
                 <!-- Sedang Diproses (Processing) -->
@@ -190,7 +212,7 @@ const resetFilters = () => {
 
             <!-- Filter Controls Bar -->
             <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
                     <!-- Search Input -->
                     <div class="md:col-span-2">
                         <label class="block text-xs font-medium text-slate-500 mb-1">Cari Pengaduan</label>
@@ -220,10 +242,25 @@ const resetFilters = () => {
                         >
                             <option value="all">Semua Status</option>
                             <option value="pending">Menunggu</option>
+                            <option value="terkirim">Terkirim</option>
                             <option value="processing">Diproses</option>
                             <option value="resolved">Selesai</option>
                             <option value="rejected">Ditolak</option>
                             <option value="cancelled">Dibatalkan</option>
+                        </select>
+                    </div>
+
+                    <!-- Tipe Pengaduan Filter -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 mb-1">Tipe Pengaduan</label>
+                        <select
+                            v-model="selectedType"
+                            @change="applyFilters"
+                            class="w-full rounded-xl border-slate-200 text-sm focus:border-blue-500 focus:ring-blue-500"
+                        >
+                            <option value="all">Semua Tipe</option>
+                            <option value="bedulang">Pengaduan Bedulang</option>
+                            <option value="layanan_info">Informasi & Data</option>
                         </select>
                     </div>
 

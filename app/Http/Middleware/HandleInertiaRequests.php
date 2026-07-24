@@ -46,6 +46,11 @@ class HandleInertiaRequests extends Middleware
             'whatsapp' => [
                 'complaint_phone' => config('services.whatsapp.complaint_phone', '6283128848371'),
             ],
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'warning' => fn () => $request->session()->get('warning'),
+                'error' => fn () => $request->session()->get('error'),
+            ],
         ];
     }
 }

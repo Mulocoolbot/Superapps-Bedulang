@@ -5,7 +5,13 @@ import AdminLayout from '@/Layouts/AdminLayout.vue'
 
 const props = defineProps({ complaint: { type: Object, required: true } })
 
-const isFinalStatus = computed(() => ['rejected', 'resolved', 'cancelled'].includes(props.complaint.status))
+const isFinalStatus = computed(() => 
+[
+'rejected',
+'resolved',
+'cancelled'
+].includes(props.complaint.status)
+)
 
 const initialStatus = () => {
     if (props.complaint.status === 'pending') return 'processing'
@@ -17,9 +23,12 @@ const status = ref(initialStatus())
 const notes = ref(props.complaint.notes ?? '')
 const saving = ref(false)
 const successMessage = ref('')
+const followupImage = ref(null)
+const imagePreview = ref(null)
 
 const statusLabel = {
     pending: 'Menunggu',
+    terkirim: 'Terkirim',
     processing: 'Diproses',
     resolved: 'Selesai',
     rejected: 'Ditolak',
@@ -28,27 +37,112 @@ const statusLabel = {
 
 const statusClass = (st) => ({
     pending: 'bg-amber-100 text-amber-800 border-amber-200',
+    terkirim: 'bg-indigo-100 text-indigo-800 border-indigo-200',
     processing: 'bg-blue-100 text-blue-800 border-blue-200',
     resolved: 'bg-emerald-100 text-emerald-800 border-emerald-200',
     rejected: 'bg-rose-100 text-rose-800 border-rose-200',
     cancelled: 'bg-slate-100 text-slate-800 border-slate-300',
 }[st] ?? 'bg-slate-100 text-slate-700 border-slate-200')
 
+const handleImage = (event) => {
+
+    const file = event.target.files[0]
+
+    if(file){
+
+        followupImage.value = file
+
+        imagePreview.value = URL.createObjectURL(file)
+
+    }
+
+}
+
 const save = () => {
+
+
+    if(
+        status.value === 'resolved' &&
+        !followupImage.value &&
+        !props.complaint.followup_image
+    ){
+
+        alert(
+            'Bukti tindak lanjut wajib diunggah sebelum status Selesai.'
+        )
+
+        return
+
+    }
+
+
     saving.value = true
-    successMessage.value = ''
-    router.put(
+
+
+    const form = new FormData()
+
+
+    form.append(
+        'status',
+        status.value
+    )
+
+
+    form.append(
+        'notes',
+        notes.value
+    )
+
+
+    if(followupImage.value){
+
+        form.append(
+            'followup_image',
+            followupImage.value
+        )
+
+    }
+
+
+    form.append(
+        '_method',
+        'PUT'
+    )
+
+
+
+    router.post(
         `/admin/complaints/${props.complaint.id}`,
-        { status: status.value, notes: notes.value },
+        form,
         {
-            preserveScroll: true,
-            onSuccess: () => {
-                successMessage.value = 'Status pengaduan dan catatan tindak lanjut berhasil diperbarui!'
-                setTimeout(() => { successMessage.value = '' }, 4000)
+
+            forceFormData:true,
+
+            preserveScroll:true,
+
+
+            onSuccess:()=>{
+
+                successMessage.value =
+                'Status dan tindak lanjut berhasil diperbarui!'
+
+
+                setTimeout(()=>{
+                    successMessage.value=''
+                },4000)
+
             },
-            onFinish: () => { saving.value = false }
+
+
+            onFinish:()=>{
+
+                saving.value=false
+
+            }
+
         }
     )
+
 }
 </script>
 
@@ -107,6 +201,28 @@ const save = () => {
                     <div class="whitespace-pre-line text-sm text-slate-700 bg-slate-50 rounded-xl p-4 border border-slate-200/60 leading-relaxed">
                         {{ complaint.description }}
                     </div>
+                <div
+                    v-if="complaint.rating"
+                    class="rounded-xl bg-yellow-50 border border-yellow-200 p-4"
+                    >
+
+                    <h3 class="font-semibold text-sm">
+                    Review Pelapor
+                    </h3>
+
+
+                    <p class="mt-2">
+                    Rating:
+                    {{ complaint.rating }} ⭐
+                    </p>
+
+
+                    <p class="mt-2 text-sm">
+                    {{ complaint.review }}
+                    </p>
+
+
+                    </div>
                 </div>
             </div>
 
@@ -148,9 +264,14 @@ const save = () => {
                     <div>
                         <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Status Pengaduan</label>
                         <select v-model="status" :disabled="isFinalStatus" class="w-full rounded-xl border-slate-200 text-sm focus:border-blue-500 focus:ring-blue-500 disabled:bg-slate-100 disabled:text-slate-500">
-                            <option v-if="complaint.status === 'pending'" value="processing">Diproses (Processing)</option>
+                            <option v-if="complaint.status === 'terkirim'" value="processing">Diproses (Processing)</option>
                             <option v-if="complaint.status === 'pending'" value="rejected">Ditolak (Rejected)</option>
-
+                            <option 
+                                v-if="complaint.status === 'terkirim'" 
+                                value="rejected"
+                                >
+                                Ditolak (Rejected)
+                                </option>
                             <option v-if="complaint.status === 'processing'" value="resolved">Selesai (Resolved)</option>
                             <option v-if="complaint.status === 'processing'" value="rejected">Ditolak (Rejected)</option>
 
@@ -169,6 +290,44 @@ const save = () => {
                             placeholder="Tuliskan catatan tindak lanjut atau tanggapan admin..."
                             class="w-full rounded-xl border-slate-200 text-sm focus:border-blue-500 focus:ring-blue-500 disabled:bg-slate-100 disabled:text-slate-500"
                         ></textarea>
+                        <div
+                            v-if="status === 'resolved'"
+                            class="mt-4"
+                        >
+                            <label class="block text-xs font-semibold text-slate-500 uppercase mb-2">
+                                Bukti Tindak Lanjut
+                                <span class="text-red-500">*</span>
+                            </label>
+
+                            <input
+                                type="file"
+                                accept="image/*"
+                                @change="handleImage"
+                                class="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
+                            />
+                            <p class="text-[11px] text-slate-400 mt-1.5">
+                                Keterangan: Hanya diperbolehkan file gambar format JPG, JPEG, atau PNG dengan ukuran maksimal 2MB.
+                            </p>
+
+                            <img
+                                v-if="imagePreview"
+                                :src="imagePreview"
+                                class="mt-3 rounded-xl max-w-xs border border-slate-200 shadow-sm"
+                            />
+
+                            <div
+                                v-if="complaint.followup_image"
+                                class="mt-3"
+                            >
+                                <p class="text-xs text-slate-500 mb-2">
+                                    Gambar sebelumnya:
+                                </p>
+                                <img
+                                    :src="`/${complaint.followup_image}`"
+                                    class="rounded-xl max-w-xs border border-slate-200 shadow-sm"
+                                />
+                            </div>
+                        </div>
                     </div>
 
                     <button
@@ -201,6 +360,7 @@ const save = () => {
                         <div class="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full border-2 border-white shadow-sm"
                             :class="{
                                 'bg-amber-500': log.status === 'pending',
+                                'bg-indigo-500': log.status === 'terkirim',
                                 'bg-blue-500': log.status === 'processing',
                                 'bg-emerald-500': log.status === 'resolved',
                                 'bg-rose-500': log.status === 'rejected',

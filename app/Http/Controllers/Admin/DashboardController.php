@@ -31,9 +31,9 @@ class DashboardController extends Controller
                 'name' => 'GERBANG KOBA',
                 'ip' => '157.10.109.241',
                 'channel' => '101',
-                'stream' => 'http://localhost:8888/gerbang_koba/index.m3u8',
-                'lat' => -2.123,
-                'lng' => 106.123,
+                'stream' => 'http://157.10.109.241:8888/gerbang_koba/index.m3u8',
+                'lat' => -2.4738699,
+                'lng' => 106.3742131,
             ],
         ];
 

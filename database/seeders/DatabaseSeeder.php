@@ -47,10 +47,10 @@ class DatabaseSeeder extends Seeder
         );
 
         User::updateOrCreate(
-            ['email' => 'pimpinan@example.com'],
+            ['email' => 'pimpinan@email.com'],
             [
                 'name' => 'Pimpinan',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('qwertyu'),
                 'role' => 'pimpinan',
             ]
         );
