@@ -17,11 +17,16 @@ const props = defineProps({
 const page = usePage()
 
 // Active Sidebar Tab State ('bapok', 'sawit', 'umkm', 'utd')
-const activeSidebarTab = ref('bapok')
-const isSidebarOpen = ref(true)
+const activeSidebarTab = ref(new URLSearchParams(window.location.search).get('tab') || 'bapok')
+const isSidebarOpen = ref(false)
 
 const toggleSidebar = () => {
     isSidebarOpen.value = !isSidebarOpen.value
+}
+
+const selectTab = (tab) => {
+    activeSidebarTab.value = tab
+    isSidebarOpen.value = false
 }
 
 // -------------------------------------------------------------
@@ -271,7 +276,7 @@ const getAvailabilityStatus = (amount) => {
                     <nav class="space-y-1.5">
                         <!-- Tab 1: Harga Pasar & Stok Bapok -->
                         <button
-                            @click="activeSidebarTab = 'bapok'"
+                            @click="selectTab('bapok')"
                             class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold transition-all text-left cursor-pointer"
                             :class="activeSidebarTab === 'bapok'
                                 ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
@@ -288,7 +293,7 @@ const getAvailabilityStatus = (amount) => {
 
                         <!-- Tab 2: Harga Sawit -->
                         <button
-                            @click="activeSidebarTab = 'sawit'"
+                            @click="selectTab('sawit')"
                             class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold transition-all text-left cursor-pointer"
                             :class="activeSidebarTab === 'sawit'
                                 ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/20'
@@ -303,26 +308,10 @@ const getAvailabilityStatus = (amount) => {
                             </svg>
                         </button>
 
-                        <!-- Tab 3: Data UMKM -->
-                        <button
-                            @click="activeSidebarTab = 'umkm'"
-                            class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold transition-all text-left cursor-pointer"
-                            :class="activeSidebarTab === 'umkm'
-                                ? 'bg-amber-600 text-white shadow-md shadow-amber-500/20'
-                                : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'"
-                        >
-                            <div class="flex items-center gap-3">
-                                <span class="text-base">🏪</span>
-                                <span>Data UMKM</span>
-                            </div>
-                            <span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 font-semibold">
-                                Pengembangan
-                            </span>
-                        </button>
 
                         <!-- Tab 4: Unit Transfusi Darah -->
                         <button
-                            @click="activeSidebarTab = 'utd'"
+                            @click="selectTab('utd')"
                             class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold transition-all text-left cursor-pointer"
                             :class="activeSidebarTab === 'utd'
                                 ? 'bg-rose-600 text-white shadow-md shadow-rose-500/20'
@@ -522,38 +511,6 @@ const getAvailabilityStatus = (amount) => {
 
                 </div>
 
-                <!-- 🏪 SUB-VIEW 3: DATA UMKM (PLACEHOLDER EMPTY STATE) -->
-                <div v-else-if="activeSidebarTab === 'umkm'" key="umkm" class="space-y-8">
-                    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-12 text-center shadow-sm space-y-4">
-                        <div class="w-16 h-16 rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center text-3xl mx-auto shadow-inner">
-                            🏪
-                        </div>
-                        <div class="max-w-md mx-auto space-y-2">
-                            <h2 class="text-xl font-bold text-slate-900 dark:text-white">
-                                Data UMKM Kabupaten Bangka Tengah
-                            </h2>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                                Data Usaha Mikro, Kecil, dan Menengah (UMKM) sedang dalam tahap pengumpulan data dan pengintegrasian ke dalam Portal Informasi Publik.
-                            </p>
-                        </div>
-                        <div class="pt-2">
-                            <span class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold bg-amber-50 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-200/60 dark:border-amber-900">
-                                <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                                Dalam Tahap Pengembangan
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- TAB 3 SPECIFIC DATA SOURCE FOOTER -->
-                    <div class="pt-4 border-t border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400 gap-2">
-                        <div class="flex items-center gap-1.5">
-                            <span class="font-medium">Sumber Data:</span>
-                            <a href="https://bangkatengahkab.go.id/" target="_blank" rel="noopener noreferrer" class="font-semibold text-amber-600 hover:text-amber-700 dark:text-amber-400 underline">
-                                Dinas Perindagkop & UMKM Kabupaten Bangka Tengah (bangkatengahkab.go.id)
-                            </a>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- 🩸 SUB-VIEW 4: UNIT TRANSFUSI DARAH (UTD) -->
                 <div v-else-if="activeSidebarTab === 'utd'" key="utd" class="space-y-8">

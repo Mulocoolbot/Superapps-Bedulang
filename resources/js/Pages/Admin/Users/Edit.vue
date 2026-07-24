@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3'
-import AdminLayout from '@/Layouts/AdminLayout.vue'
+import SuperAdminLayout from '@/Layouts/SuperAdminLayout.vue'
 
 const props = defineProps({
     user: Object,
@@ -11,7 +11,7 @@ const props = defineProps({
 <template>
 <Head title="Edit Admin"></Head>
 
-<AdminLayout>
+<SuperAdminLayout>
     <div class="space-y-6">
         <div class="rounded-2xl bg-white p-6 shadow-sm">
             <div class="mb-4">
@@ -97,5 +97,5 @@ const props = defineProps({
             </form>
         </div>
     </div>
-</AdminLayout>
+</SuperAdminLayout>
 </template>

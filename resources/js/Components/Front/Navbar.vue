@@ -643,10 +643,10 @@ const toggleDarkMode = () => {
                                 <div class="border-t border-gray-100 dark:border-gray-700"></div>
 
                                 <Link
-                                    href="/admin"
+                                    :href="authUser.role === 'pimpinan' ? '/pimpinan' : '/admin'"
                                     class="block w-full px-5 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700 font-medium transition"
                                 >
-                                    Admin Panel
+                                    {{ authUser.role === 'pimpinan' ? 'Dashboard Pimpinan' : 'Admin Panel' }}
                                 </Link>
                             </template>
 
@@ -784,10 +784,10 @@ const toggleDarkMode = () => {
                         <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
 
                         <Link
-                            href="/admin"
+                            :href="authUser.role === 'pimpinan' ? '/pimpinan' : '/admin'"
                             class="block text-center mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg"
                         >
-                            Admin Panel
+                            {{ authUser.role === 'pimpinan' ? 'Dashboard Pimpinan' : 'Admin Panel' }}
                         </Link>
                     </template>
                 </template>

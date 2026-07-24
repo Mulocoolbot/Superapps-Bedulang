@@ -101,17 +101,17 @@ onUnmounted(() => {
                     <Link href="/">
                         <img
                             src="/services/logobateng3.png"
-                            class="w-24 h-auto mx-auto object-contain transition-transform hover:scale-105"
+                            class="w-24 h-auto object-contain hover:scale-105 transition duration-300"
                             alt="Logo Bangka Tengah"
-                        >
+                        />
                     </Link>
                 </div>
 
                 <nav class="p-4 space-y-2">
                     <Link
-                        href="/admin"
+                        :href="$page.props.auth?.user?.role === 'pimpinan' ? '/pimpinan' : '/admin'"
                         class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition"
-                        :class="page.url === '/admin' ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'"
+                        :class="(page.url === '/admin' || page.url === '/pimpinan') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
@@ -190,7 +190,7 @@ onUnmounted(() => {
             <!-- Navbar Header -->
             <header class="bg-white shadow px-8 py-4 flex justify-between items-center relative">
                 <h1 class="font-bold text-xl text-gray-800">
-                    Admin Panel
+                    {{ $page.props.auth?.user?.role === 'pimpinan' ? 'Dashboard Pimpinan' : 'Admin Panel' }}
                 </h1>
 
                 <!-- Admin Notification Bell Component -->

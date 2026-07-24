@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\BloodStockController;
 use App\Http\Controllers\InformationServiceController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PimpinanDashboardController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\KubernetesController;
@@ -102,6 +103,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
+
+    Route::get('/pimpinan', [PimpinanDashboardController::class, 'index'])
+        ->name('pimpinan.dashboard');
 
     Route::get('/my-complaints', [\App\Http\Controllers\UserComplaintController::class, 'index'])
         ->name('user.complaints.index');

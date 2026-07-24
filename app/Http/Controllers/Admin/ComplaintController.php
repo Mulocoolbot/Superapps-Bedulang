@@ -24,9 +24,9 @@ class ComplaintController extends Controller
 
         $user = $request->user();
 
-        // Base scoped query for user domain
+        // Base scoped query for user domain (pimpinan and super_admin see all)
         $baseQuery = Complaint::query();
-        if (!$user->isSuperAdmin() && !empty($user->service_slug)) {
+        if (!$user->isSuperAdmin() && !$user->isPimpinan() && !empty($user->service_slug)) {
             $baseQuery->where('service_slug', $user->service_slug);
         }
 
@@ -95,8 +95,8 @@ class ComplaintController extends Controller
                 'service' => $request->service ?? '',
                 'search' => $request->search ?? '',
             ],
-            'userDomain' => $user->service_slug,
-            'isSuperAdmin' => $user->isSuperAdmin() || empty($user->service_slug),
+            'userDomain' => $user->isPimpinan() ? '' : $user->service_slug,
+            'isSuperAdmin' => $user->isSuperAdmin() || $user->isPimpinan() || empty($user->service_slug),
         ]);
     }
 
@@ -105,6 +105,10 @@ class ComplaintController extends Controller
      */
     public function store(Request $request)
     {
+        if (auth()->user()->role !== 'pimpinan') {
+            abort(403, 'Anda tidak memiliki akses untuk mengajukan pengaduan.');
+        }
+
         $validated = $request->validate([
             'service_slug' => ['required', 'string', Rule::in([
                 'pemerintahan', 'pendidikan', 'kesehatan', 'perindagkop-ukm',

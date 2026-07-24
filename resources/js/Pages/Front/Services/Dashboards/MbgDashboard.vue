@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import AnimatedNumber from '@/Components/Front/AnimatedNumber.vue'
 
 const props = defineProps({
@@ -15,13 +15,25 @@ const props = defineProps({
 
 const dashboardData = computed(() => props.dashboard ?? {})
 
-const serviceTypes = computed(() =>
-    props.service?.filters?.length > 0
-        ? props.service.filters
-        : [{ label: 'Semua Jenis', value: 'all' }]
-)
+const availableJenjangs = computed(() => {
+    return dashboardData.value.available_jenjangs || ['paud', 'sd', 'smp']
+})
 
-const selectedType = ref(serviceTypes.value[0]?.value ?? 'all')
+const serviceTypes = computed(() => {
+    return availableJenjangs.value.map(j => ({
+        label: j.toUpperCase(),
+        value: j
+    }))
+})
+
+const selectedType = ref(availableJenjangs.value[0] || 'paud')
+
+// If data changes, ensure selectedType is valid
+watch(availableJenjangs, (newVal) => {
+    if (!newVal.includes(selectedType.value) && newVal.length > 0) {
+        selectedType.value = newVal[0]
+    }
+})
 
 const maxStudentCount = computed(() => {
     const list = dashboardData.value.tables?.[selectedType.value] || []
@@ -35,21 +47,6 @@ const formatNumber = (val) => {
 </script>
 
 <template>
-    <!-- Menu Bar Section (only for Makanan Bergizi Gratis) -->
-    <div class="mt-6 flex flex-wrap gap-2 rounded-xl bg-slate-100 p-1.5 dark:bg-slate-800/60 w-full animate-fade-in-up [animation-delay:100ms]">
-        <button
-            v-for="filter in serviceTypes"
-            :key="filter.value"
-            @click="selectedType = filter.value"
-            type="button"
-            class="flex-1 rounded-lg px-4 py-2 text-center text-sm font-semibold transition-all duration-200 select-none cursor-pointer"
-            :class="selectedType === filter.value 
-                ? 'bg-white text-blue-600 shadow-sm dark:bg-slate-700 dark:text-blue-400' 
-                : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200'"
-        >
-            {{ filter.label }}
-        </button>
-    </div>
 
     <!-- Summary Statistics Grid -->
     <div class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4 animate-fade-in-up [animation-delay:150ms]">
@@ -84,14 +81,26 @@ const formatNumber = (val) => {
     <div class="mt-6 grid gap-6 lg:grid-cols-[2fr_1fr]">
         <!-- Left Column: Table of subdistricts -->
         <section class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900 animate-fade-in-up [animation-delay:200ms]">
-            <div>
-                <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Data Wilayah</p>
-                <h2 class="mt-0.5 text-lg font-extrabold text-slate-900 dark:text-white">
-                    Rincian Penerima & Kondisi Kesehatan per Kecamatan
-                </h2>
-                <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                    Menampilkan data penerima program Makanan Bergizi Gratis di tingkat {{ selectedType.toUpperCase() }}.
-                </p>
+            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                <div>
+                    <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Data Wilayah</p>
+                    <h2 class="mt-0.5 text-lg font-extrabold text-slate-900 dark:text-white">
+                        Rincian Penerima & Kondisi Kesehatan per Kecamatan
+                    </h2>
+                    <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                        Menampilkan data penerima program Makanan Bergizi Gratis di tingkat {{ selectedType.toUpperCase() }}.
+                    </p>
+                </div>
+                <div class="shrink-0">
+                    <select
+                        v-model="selectedType"
+                        class="rounded-xl border-slate-200 bg-slate-50 py-2 pl-4 pr-10 text-sm font-semibold text-slate-700 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                    >
+                        <option v-for="type in serviceTypes" :key="type.value" :value="type.value">
+                            Jenjang: {{ type.label }}
+                        </option>
+                    </select>
+                </div>
             </div>
 
             <div class="mt-6 overflow-hidden rounded-xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900">

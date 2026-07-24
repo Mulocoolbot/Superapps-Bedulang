@@ -125,7 +125,7 @@ const serviceSourceLabel = computed(() => {
                     </div>
 
                     <!-- Complaint Action Button -->
-                    <div class="flex shrink-0 items-center">
+                    <div class="flex shrink-0 items-center" v-if="$page.props.auth.user && $page.props.auth.user.role === 'pimpinan' && $page.props.auth.user.service_slug === service.slug">
                         <button
                             @click="isComplaintModalOpen = true"
                             class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 shadow-md shadow-blue-500/10 hover:shadow-lg hover:shadow-blue-500/20 cursor-pointer"
