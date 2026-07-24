@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { Head, Link, router, usePage } from '@inertiajs/vue3'
 import FrontLayout from '@/Layouts/FrontLayout.vue'
+import { useSlidingPagination } from '@/Composables/useSlidingPagination'
 
 const props = defineProps({
     complaints: {
@@ -60,16 +61,8 @@ const confirmCancel = (id) => {
     )
 }
 
-// Compute page number links for circular pagination bubbles
-const pageLinks = computed(() => {
-    if (!props.complaints?.links) return []
-    return props.complaints.links
-        .filter(l => !l.label.includes('Previous') && !l.label.includes('Next') && !l.label.includes('&laquo;') && !l.label.includes('&raquo;'))
-        .map(l => ({
-            ...l,
-            label: l.label.replace('&laquo;', '').replace('&raquo;', '').trim()
-        }))
-})
+// Sliding window pagination (max 5 bubble, geser sesuai halaman aktif)
+const { visiblePageLinks: pageLinks, hasPagination: showPagination } = useSlidingPagination(() => props.complaints)
 </script>
 
 <template>
@@ -275,7 +268,7 @@ const pageLinks = computed(() => {
                     </div>
 
                     <!-- Custom Pagination with Circular Bubbles & Hiding Arrow Controls -->
-                    <div v-if="complaints.last_page > 1" class="flex items-center justify-center gap-2 pt-6">
+                    <div v-if="showPagination" class="flex items-center justify-center gap-2 pt-6">
                         <!-- Left Arrow (Hidden on Page 1) -->
                         <Link
                             v-if="complaints.prev_page_url"

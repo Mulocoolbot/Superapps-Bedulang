@@ -58,9 +58,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::delete('/complaints/{complaint}', [ComplaintController::class, 'destroy'])
         ->name('admin.complaints.destroy');
 
+    Route::get('/blood-stocks/history', [BloodStockController::class, 'history'])
+        ->name('admin.blood-stocks.history');
+
     Route::post('/blood-stocks', [BloodStockController::class, 'update'])
         ->name('admin.blood-stocks.update');
 });
+
+Route::get('/utd/history', [BloodStockController::class, 'history'])
+    ->name('utd.history');
 
 Route::middleware(['auth', 'super_admin'])->prefix('admin')->group(function () {
     Route::get('/users', [UserController::class, 'index'])

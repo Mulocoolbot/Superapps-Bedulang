@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { usePage, router } from '@inertiajs/vue3'
+import { usePage, router, Link } from '@inertiajs/vue3'
 import PerindagkopDashboard from './PerindagkopDashboard.vue'
 
 const props = defineProps({
@@ -18,6 +18,11 @@ const page = usePage()
 
 // Active Sidebar Tab State ('bapok', 'sawit', 'umkm', 'utd')
 const activeSidebarTab = ref('bapok')
+const isSidebarOpen = ref(true)
+
+const toggleSidebar = () => {
+    isSidebarOpen.value = !isSidebarOpen.value
+}
 
 // -------------------------------------------------------------
 // SUB-VIEW 1: HARGA PASAR & STOK BAPOK
@@ -99,27 +104,46 @@ const avgDistrictPrice = computed(() => {
 // -------------------------------------------------------------
 const utdData = computed(() => props.dashboard?.utd || {})
 
-const bloodStockList = computed(() => {
-    if (utdData.value?.stocks && Array.isArray(utdData.value.stocks) && utdData.value.stocks.length > 0) {
-        return utdData.value.stocks
-    }
-    return [
-        { id: 1, blood_type: 'A', amount: 20, unit: 'Kantong' },
-        { id: 2, blood_type: 'B', amount: 25, unit: 'Kantong' },
-        { id: 3, blood_type: 'AB', amount: 12, unit: 'Kantong' },
-        { id: 4, blood_type: 'O', amount: 32, unit: 'Kantong' },
-    ]
+const componentsList = computed(() => {
+    return utdData.value?.components || ['Whole Blood (WB)', 'Packed Red Blood (PRC)']
 })
+
+const bloodTypesList = computed(() => {
+    return utdData.value?.blood_types || ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']
+})
+
+const lastUpdatedText = computed(() => {
+    return utdData.value?.last_updated || 'Belum diperbarui'
+})
+
+const stockMatrixMap = computed(() => {
+    const map = {}
+    const stocks = utdData.value?.stocks || []
+    stocks.forEach(s => {
+        const comp = s.component || 'Whole Blood (WB)'
+        const bt = s.blood_type
+        map[`${comp}_${bt}`] = s.amount || 0
+    })
+    return map
+})
+
+const getStockAmount = (component, bloodType) => {
+    return stockMatrixMap.value[`${component}_${bloodType}`] ?? 0
+}
+
+const getComponentTotal = (component) => {
+    return bloodTypesList.value.reduce((sum, bt) => sum + getStockAmount(component, bt), 0)
+}
+
+const getBloodTypeTotal = (bloodType) => {
+    return componentsList.value.reduce((sum, comp) => sum + getStockAmount(comp, bloodType), 0)
+}
 
 const totalBloodStock = computed(() => {
     if (utdData.value?.total_stock !== undefined && utdData.value?.total_stock !== null) {
         return utdData.value.total_stock
     }
-    return bloodStockList.value.reduce((acc, item) => acc + (item.amount || 0), 0)
-})
-
-const bloodLogs = computed(() => {
-    return utdData.value?.logs || []
+    return componentsList.value.reduce((sum, comp) => sum + getComponentTotal(comp), 0)
 })
 
 // UTD Admin Check & Form Modal State
@@ -143,10 +167,17 @@ const isSubmitting = ref(false)
 const editableStocks = ref([])
 
 const openEditModal = () => {
-    editableStocks.value = bloodStockList.value.map(s => ({
-        blood_type: s.blood_type,
-        amount: s.amount
-    }))
+    const list = []
+    componentsList.value.forEach(comp => {
+        bloodTypesList.value.forEach(bt => {
+            list.push({
+                component: comp,
+                blood_type: bt,
+                amount: getStockAmount(comp, bt)
+            })
+        })
+    })
+    editableStocks.value = list
     isEditModalOpen.value = true
 }
 
@@ -188,91 +219,133 @@ const getAvailabilityStatus = (amount) => {
 </script>
 
 <template>
-    <div class="mt-6 flex flex-col lg:flex-row gap-8 min-h-[600px]">
+    <div class="relative mt-6 min-h-[600px]">
 
-        <!-- SIDEBAR NAVIGATION -->
-        <aside class="w-full lg:w-72 shrink-0 space-y-4">
-            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 shadow-sm space-y-2">
-                <div class="px-3 py-2 border-b border-slate-100 dark:border-slate-800 mb-2">
-                    <h3 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-                        Kategori Informasi
-                    </h3>
-                </div>
-
-                <nav class="space-y-1.5">
-                    <!-- Tab 1: Harga Pasar & Stok Bapok -->
-                    <button
-                        @click="activeSidebarTab = 'bapok'"
-                        class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold transition-all text-left cursor-pointer"
-                        :class="activeSidebarTab === 'bapok'
-                            ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'"
-                    >
-                        <div class="flex items-center gap-3">
-                            <span class="text-base">🛒</span>
-                            <span>Harga Pasar & Stok Bapok</span>
-                        </div>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                        </svg>
-                    </button>
-
-                    <!-- Tab 2: Harga Sawit -->
-                    <button
-                        @click="activeSidebarTab = 'sawit'"
-                        class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold transition-all text-left cursor-pointer"
-                        :class="activeSidebarTab === 'sawit'
-                            ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/20'
-                            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'"
-                    >
-                        <div class="flex items-center gap-3">
-                            <span class="text-base">🌴</span>
-                            <span>Harga Sawit</span>
-                        </div>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                        </svg>
-                    </button>
-
-                    <!-- Tab 3: Data UMKM -->
-                    <button
-                        @click="activeSidebarTab = 'umkm'"
-                        class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold transition-all text-left cursor-pointer"
-                        :class="activeSidebarTab === 'umkm'
-                            ? 'bg-amber-600 text-white shadow-md shadow-amber-500/20'
-                            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'"
-                    >
-                        <div class="flex items-center gap-3">
-                            <span class="text-base">🏪</span>
-                            <span>Data UMKM</span>
-                        </div>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 font-semibold">
-                            Pengembangan
-                        </span>
-                    </button>
-
-                    <!-- Tab 4: Unit Transfusi Darah -->
-                    <button
-                        @click="activeSidebarTab = 'utd'"
-                        class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold transition-all text-left cursor-pointer"
-                        :class="activeSidebarTab === 'utd'
-                            ? 'bg-rose-600 text-white shadow-md shadow-rose-500/20'
-                            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'"
-                    >
-                        <div class="flex items-center gap-3">
-                            <span class="text-base">🩸</span>
-                            <span>Unit Transfusi Darah</span>
-                        </div>
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                        </svg>
-                    </button>
-                </nav>
+        <!-- FIXED EDGE OPEN BUTTON (SHOWN ON SCREEN'S LEFT EDGE WHEN SIDEBAR IS COLLAPSED) -->
+        <button
+            v-if="!isSidebarOpen"
+            @click="toggleSidebar"
+            class="fixed left-0 top-44 z-40 flex items-center gap-2 py-3.5 px-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-r-2xl shadow-2xl transition-all duration-300 transform hover:translate-x-1 cursor-pointer group border-y border-r border-blue-400/30 animate-fade-in-up"
+            title="Buka Sidebar Kategori"
+        >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5 transition-transform duration-300 group-hover:scale-125">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+            </svg>
+            <div class="flex flex-col text-left">
+                <span class="text-[10px] font-black uppercase tracking-wider text-blue-200">Kategori</span>
+                <span class="text-xs font-black uppercase tracking-tight">{{ activeSidebarTab }}</span>
             </div>
-        </aside>
+        </button>
 
-        <!-- MAIN DISPLAY AREA (DYNAMIC BY ACTIVE SIDEBAR TAB WITH SMOOTH TRANSITION) -->
-        <main class="flex-1 min-w-0">
+        <!-- BACKDROP OVERLAY FOR MOBILE WHEN FIXED SIDEBAR IS OPEN -->
+        <div
+            v-if="isSidebarOpen"
+            @click="toggleSidebar"
+            class="fixed inset-0 z-30 bg-slate-900/30 backdrop-blur-xs transition-opacity duration-300 lg:hidden"
+        />
+
+        <!-- FIXED SCREEN-LOCKED SIDEBAR NAVIGATION (DRAWER PANEL ON LEFT EDGE) -->
+        <Transition name="sidebar-fade">
+            <aside
+                v-if="isSidebarOpen"
+                class="fixed left-0 top-24 z-40 w-80 max-w-[90vw] h-[calc(100vh-7rem)] overflow-y-auto p-4 transition-all duration-300"
+            >
+                <div class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 shadow-2xl space-y-2">
+                    <div class="px-3 py-2 border-b border-slate-100 dark:border-slate-800 mb-2 flex items-center justify-between">
+                        <h3 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                            Kategori Informasi
+                        </h3>
+
+                        <button
+                            @click="toggleSidebar"
+                            class="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer flex items-center gap-1 text-[11px] font-semibold"
+                            title="Sembunyikan Sidebar"
+                        >
+                            <span class="hidden sm:inline">Tutup</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <nav class="space-y-1.5">
+                        <!-- Tab 1: Harga Pasar & Stok Bapok -->
+                        <button
+                            @click="activeSidebarTab = 'bapok'"
+                            class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold transition-all text-left cursor-pointer"
+                            :class="activeSidebarTab === 'bapok'
+                                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                                : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'"
+                        >
+                            <div class="flex items-center gap-3">
+                                <span class="text-base">🛒</span>
+                                <span>Harga Pasar & Stok Bapok</span>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                            </svg>
+                        </button>
+
+                        <!-- Tab 2: Harga Sawit -->
+                        <button
+                            @click="activeSidebarTab = 'sawit'"
+                            class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold transition-all text-left cursor-pointer"
+                            :class="activeSidebarTab === 'sawit'
+                                ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/20'
+                                : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'"
+                        >
+                            <div class="flex items-center gap-3">
+                                <span class="text-base">🌴</span>
+                                <span>Harga Sawit</span>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                            </svg>
+                        </button>
+
+                        <!-- Tab 3: Data UMKM -->
+                        <button
+                            @click="activeSidebarTab = 'umkm'"
+                            class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold transition-all text-left cursor-pointer"
+                            :class="activeSidebarTab === 'umkm'
+                                ? 'bg-amber-600 text-white shadow-md shadow-amber-500/20'
+                                : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'"
+                        >
+                            <div class="flex items-center gap-3">
+                                <span class="text-base">🏪</span>
+                                <span>Data UMKM</span>
+                            </div>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 font-semibold">
+                                Pengembangan
+                            </span>
+                        </button>
+
+                        <!-- Tab 4: Unit Transfusi Darah -->
+                        <button
+                            @click="activeSidebarTab = 'utd'"
+                            class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold transition-all text-left cursor-pointer"
+                            :class="activeSidebarTab === 'utd'
+                                ? 'bg-rose-600 text-white shadow-md shadow-rose-500/20'
+                                : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'"
+                        >
+                            <div class="flex items-center gap-3">
+                                <span class="text-base">🩸</span>
+                                <span>Unit Transfusi Darah</span>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                            </svg>
+                        </button>
+                    </nav>
+                </div>
+            </aside>
+        </Transition>
+
+        <!-- MAIN DISPLAY AREA (DYNAMIC MARGIN PADDING WHEN SIDEBAR IS OPEN) -->
+        <main
+            class="w-full min-w-0 transition-all duration-300"
+            :class="isSidebarOpen ? 'lg:pl-84' : 'pl-0'"
+        >
             <Transition name="tab-fade" mode="out-in">
                 <!-- 🛒 SUB-VIEW 1: HARGA PASAR & STOK BAPOK -->
                 <div v-if="activeSidebarTab === 'bapok'" key="bapok" class="space-y-8">
@@ -496,23 +569,33 @@ const getAvailabilityStatus = (amount) => {
                                     Informasi Stok Darah Unit Transfusi Darah (UTD)
                                 </h2>
                                 <p class="text-xs text-slate-600 dark:text-slate-400 max-w-xl leading-relaxed">
-                                    Informasi real-time ketersediaan stok darah per golongan darah di Unit Transfusi Darah (UTD) Kabupaten Bangka Tengah.
+                                    Informasi real-time ketersediaan stok darah per komponen dan golongan darah di Unit Transfusi Darah (UTD) Kabupaten Bangka Tengah.
                                 </p>
                             </div>
 
-                            <!-- Admin UTD Edit Button (Visible to UTD Admin / Superadmin) -->
-                            <div v-if="isUtdAdmin" class="shrink-0">
+                            <div class="flex items-center gap-3 shrink-0">
+                                <!-- Link to History Page (Visible to UTD Admin / Superadmin Only) -->
+                                <Link
+                                    v-if="isUtdAdmin"
+                                    href="/utd/history"
+                                    class="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-4 py-2.5 text-xs font-extrabold text-rose-700 dark:text-rose-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition shadow-sm cursor-pointer"
+                                >
+                                    <span>📜 Riwayat Transfusi</span>
+                                </Link>
+
+                                <!-- Admin UTD Edit Button (Visible to UTD Admin / Superadmin) -->
                                 <button
+                                    v-if="isUtdAdmin"
                                     @click="openEditModal"
                                     class="inline-flex items-center gap-2 rounded-xl bg-rose-600 hover:bg-rose-700 px-4 py-2.5 text-xs font-bold text-white transition shadow-md shadow-rose-500/20 cursor-pointer"
                                 >
-                                    <span>⚙️ Input / Update Stok Darah</span>
+                                    <span>⚙️ Update Stok Darah</span>
                                 </button>
                             </div>
                         </div>
                     </div>
 
-                    <!-- TOTAL STOK SUMMARY CARD -->
+                    <!-- TOTAL STOK SUMMARY & LAST UPDATED CARD -->
                     <div class="bg-white dark:bg-slate-900 rounded-2xl border border-rose-100 dark:border-slate-800 p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
                         <div class="flex items-center gap-4">
                             <div class="w-14 h-14 rounded-2xl bg-rose-100 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400 flex items-center justify-center text-2xl shadow-inner shrink-0">
@@ -525,99 +608,88 @@ const getAvailabilityStatus = (amount) => {
                                 </h3>
                             </div>
                         </div>
-                        <div class="text-right sm:text-left border-t sm:border-t-0 sm:border-l border-slate-100 dark:border-slate-800 pt-3 sm:pt-0 sm:pl-6 text-xs text-slate-500 space-y-1">
-                            <div>📍 Unit Transfusi Darah Kab. Bangka Tengah</div>
-                            <div>⏱️ Pemantauan Stok Harian Terintegrasi</div>
+
+                        <!-- FITUR LAST UPDATED -->
+                        <div class="text-right sm:text-left border-t sm:border-t-0 sm:border-l border-slate-100 dark:border-slate-800 pt-3 sm:pt-0 sm:pl-6 text-xs space-y-1.5">
+                            <div class="flex items-center gap-1.5 text-slate-700 dark:text-slate-300 font-bold">
+                                <span>⏱️ Last Updated:</span>
+                                <span class="px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 font-mono font-black text-xs">
+                                    {{ lastUpdatedText }}
+                                </span>
+                            </div>
+                            <div class="text-slate-400 text-[11px]">📍 Unit Transfusi Darah Kab. Bangka Tengah</div>
                         </div>
                     </div>
 
-                    <!-- BLOOD STOCK TABLE BY GOLONGAN DARAH -->
-                    <div class="overflow-hidden rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
-                        <div class="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex items-center justify-between">
-                            <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-200">
-                                Rincian Stok per Golongan Darah
-                            </h4>
-                            <span class="text-[11px] text-slate-400 font-medium">4 Golongan Darah</span>
+                    <!-- MATRIX TABLE STOK DARAH (X: Gol. Darah, Y: Komponen, Corner: Komponen) -->
+                    <div class="overflow-x-auto rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+                        <div class="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <div>
+                                <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-800 dark:text-slate-200 flex items-center gap-2">
+                                    <span>🩸 Matrix Stok Darah Per Komponen & Golongan</span>
+                                </h4>
+                                <p class="text-[11px] text-slate-400 font-medium mt-0.5">
+                                    Jumlah kantong darah berdasarkan kombinasi jenis komponen dan rhesus golongan darah.
+                                </p>
+                            </div>
                         </div>
+
                         <table class="w-full text-left text-xs sm:text-sm">
-                            <thead class="bg-slate-50 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 font-bold uppercase text-[11px] tracking-wider border-b border-slate-200 dark:border-slate-800">
+                            <thead class="bg-slate-100/80 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 font-extrabold uppercase text-[11px] tracking-wider border-b border-slate-200 dark:border-slate-800">
                                 <tr>
-                                    <th class="py-3.5 px-6">Golongan Darah</th>
-                                    <th class="py-3.5 px-6 text-right">Jumlah (Kantong)</th>
+                                    <!-- Corner Header Cell (Top-Left): Komponen -->
+                                    <th class="py-4 px-6 bg-slate-200/60 dark:bg-slate-800 text-slate-900 dark:text-white font-black border-r border-slate-200 dark:border-slate-700">
+                                        <div class="flex items-center justify-between">
+                                            <span>Komponen</span>
+                                            <span class="text-[10px] text-slate-400 font-normal">Gol. Darah ➔</span>
+                                        </div>
+                                    </th>
+
+                                    <!-- X-Axis Headers: Golongan Darah (A+, A-, B+, B-, O+, O-, AB+, AB-) -->
+                                    <th v-for="bt in bloodTypesList" :key="bt" class="py-4 px-3 text-center border-r border-slate-200/60 dark:border-slate-800 font-black">
+                                        <span class="inline-flex items-center justify-center px-2 py-0.5 rounded-lg bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 border border-rose-200 dark:border-rose-900 font-black text-xs">
+                                            {{ bt }}
+                                        </span>
+                                    </th>
+
+                                    <!-- Row Total Header -->
+                                    <th class="py-4 px-4 text-center bg-slate-200/40 dark:bg-slate-800/60 font-black">
+                                        Total
+                                    </th>
                                 </tr>
                             </thead>
+
                             <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-800 dark:text-slate-200">
-                                <tr v-for="item in bloodStockList" :key="item.id || item.blood_type" class="hover:bg-rose-50/30 dark:hover:bg-slate-800/40 transition">
-                                    <td class="py-4 px-6 font-extrabold">
-                                        <div class="inline-flex items-center gap-2.5">
-                                            <span class="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300 font-black text-xs flex items-center justify-center border border-rose-200 dark:border-rose-900">
-                                                {{ item.blood_type }}
-                                            </span>
-                                            <span class="text-slate-900 dark:text-white font-bold">Golongan {{ item.blood_type }}</span>
+                                <!-- Y-Axis Rows: Components (Whole Blood (WB), Packed Red Blood (PRC)) -->
+                                <tr v-for="comp in componentsList" :key="comp" class="hover:bg-rose-50/20 dark:hover:bg-slate-800/40 transition">
+                                    <td class="py-4 px-6 font-extrabold bg-slate-50/70 dark:bg-slate-800/40 text-slate-900 dark:text-white border-r border-slate-200/60 dark:border-slate-800">
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                                            <span>{{ comp }}</span>
                                         </div>
                                     </td>
-                                    <td class="py-4 px-6 text-right font-extrabold text-slate-900 dark:text-white font-mono text-base">
-                                        {{ item.amount }} <span class="text-xs font-normal text-slate-400">Kantong</span>
+
+                                    <td v-for="bt in bloodTypesList" :key="bt" class="py-4 px-3 text-center font-mono font-extrabold border-r border-slate-100 dark:border-slate-800 text-sm">
+                                        <span :class="getStockAmount(comp, bt) > 0 ? 'text-slate-900 dark:text-white' : 'text-slate-300 dark:text-slate-600'">
+                                            {{ getStockAmount(comp, bt) }}
+                                        </span>
+                                    </td>
+
+                                    <td class="py-4 px-4 text-center font-mono font-black text-rose-600 dark:text-rose-400 bg-slate-50/50 dark:bg-slate-800/30 text-sm">
+                                        {{ getComponentTotal(comp) }}
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
-                    </div>
 
-                    <!-- BLOOD STOCK CHANGE HISTORY (FOR ADMIN UTD & SUPERADMIN ONLY) -->
-                    <div v-if="isUtdAdmin" class="overflow-hidden rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm mt-6">
-                        <div class="p-4 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex items-center justify-between">
-                            <div class="flex items-center gap-2">
-                                <span class="text-base">📜</span>
-                                <h4 class="text-xs font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-200">
-                                    Riwayat Perubahan Stok Darah (Khusus Admin)
-                                </h4>
+                        <!-- KETERANGAN KOMPONEN DARAH -->
+                        <div class="p-3.5 bg-slate-50/80 dark:bg-slate-800/40 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-6">
+                            <span class="font-bold text-slate-700 dark:text-slate-300">ℹ️ Keterangan:</span>
+                            <div class="flex flex-wrap items-center gap-4">
+                                <div><strong class="text-slate-800 dark:text-slate-200">Whole Blood (WB)</strong> = Darah Lengkap</div>
+                                <div><strong class="text-slate-800 dark:text-slate-200">Packed Red Cell (PRC)</strong> = Darah Merah Pekat</div>
                             </div>
-                            <span class="text-[11px] text-slate-400 font-medium">Hanya Terlihat Oleh Admin UTD & Superadmin</span>
                         </div>
-                        
-                        <div v-if="bloodLogs.length === 0" class="p-6 text-center text-xs text-slate-400">
-                            Belum ada riwayat perubahan stok darah yang tercatat.
-                        </div>
-
-                        <table v-else class="w-full text-left text-xs sm:text-sm">
-                            <thead class="bg-slate-50 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 font-bold uppercase text-[11px] tracking-wider border-b border-slate-200 dark:border-slate-800">
-                                <tr>
-                                    <th class="py-3.5 px-6">Waktu Update</th>
-                                    <th class="py-3.5 px-6">Golongan Darah</th>
-                                    <th class="py-3.5 px-6 text-center">Sebelumnya</th>
-                                    <th class="py-3.5 px-6 text-center">Stok Baru</th>
-                                    <th class="py-3.5 px-6 text-center">Perubahan</th>
-                                    <th class="py-3.5 px-6 text-right">Petugas / Admin</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-800 dark:text-slate-200">
-                                <tr v-for="log in bloodLogs" :key="log.id" class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition">
-                                    <td class="py-3.5 px-6 text-xs text-slate-500 font-mono">
-                                        {{ log.updated_at || '-' }}
-                                    </td>
-                                    <td class="py-3.5 px-6 font-bold">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300 font-black text-xs">
-                                            Gol. {{ log.blood_type }}
-                                        </span>
-                                    </td>
-                                    <td class="py-3.5 px-6 text-center font-mono text-slate-500">
-                                        {{ log.old_amount }} Kantong
-                                    </td>
-                                    <td class="py-3.5 px-6 text-center font-mono font-bold text-slate-900 dark:text-white">
-                                        {{ log.new_amount }} Kantong
-                                    </td>
-                                    <td class="py-3.5 px-6 text-center font-extrabold font-mono">
-                                        <span :class="log.delta > 0 ? 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full text-xs' : 'text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 px-2 py-0.5 rounded-full text-xs'">
-                                            {{ log.delta > 0 ? '+' + log.delta : log.delta }} Kantong
-                                        </span>
-                                    </td>
-                                    <td class="py-3.5 px-6 text-right text-xs font-semibold text-slate-600 dark:text-slate-300">
-                                        👤 {{ log.updater_name }}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
                     </div>
 
                     <!-- TAB 4 SPECIFIC DATA SOURCE FOOTER -->
@@ -628,23 +700,27 @@ const getAvailabilityStatus = (amount) => {
                                 Unit Transfusi Darah (UTD) Kabupaten Bangka Tengah (bangkatengahkab.go.id)
                             </a>
                         </div>
+                        <div class="flex items-center gap-2">
+                            <span>Last Updated: <strong class="text-rose-600 dark:text-rose-400">{{ lastUpdatedText }}</strong></span>
+                        </div>
                     </div>
 
                 </div>
             </Transition>
         </main>
+    </div>
 
-        <!-- ADMIN UTD INPUT / EDIT MODAL -->
+        <!-- ADMIN UTD INPUT / EDIT MODAL (GRID BY COMPONENT & BLOOD TYPE) -->
         <Teleport to="body">
             <div v-if="isEditModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in-up">
-                <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl max-w-lg w-full overflow-hidden">
+                <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-2xl max-w-3xl w-full overflow-hidden">
                     <div class="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-gradient-to-r from-rose-50 to-pink-50 dark:from-rose-950/60 dark:to-slate-900">
                         <div>
                             <h3 class="text-lg font-extrabold text-slate-900 dark:text-white">
-                                Update Data Stok Darah UTD
+                                Update Data Stok Darah UTD (Matrix Form)
                             </h3>
                             <p class="text-xs text-slate-500 dark:text-slate-400">
-                                Masukkan jumlah stok darah (kantong) terbaru per golongan darah.
+                                Masukkan jumlah stok darah (kantong) terbaru per komponen dan golongan darah.
                             </p>
                         </div>
                         <button @click="closeEditModal" class="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition">
@@ -652,94 +728,129 @@ const getAvailabilityStatus = (amount) => {
                         </button>
                     </div>
 
-                    <form @submit.prevent="saveBloodStocks" class="p-6 space-y-4">
-                        <div class="grid grid-cols-2 gap-4 max-h-[360px] overflow-y-auto pr-1">
-                            <div v-for="(stock, idx) in editableStocks" :key="stock.blood_type" class="space-y-1">
-                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">
-                                    Gol. Darah {{ stock.blood_type }}
-                                </label>
-                                <div class="relative">
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        v-model.number="stock.amount"
-                                        class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2 text-sm font-mono font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition"
-                                        required
-                                    />
-                                    <span class="absolute right-3 top-2.5 text-xs text-slate-400 font-normal">Kantong</span>
+                    <form @submit.prevent="saveBloodStocks" class="p-6 space-y-6">
+                        <div class="max-h-[420px] overflow-y-auto pr-1 space-y-6">
+                            <div v-for="comp in componentsList" :key="comp" class="space-y-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60">
+                                <h4 class="text-xs font-black uppercase tracking-wider text-rose-700 dark:text-rose-400 flex items-center gap-2">
+                                    <span>🩸 {{ comp }}</span>
+                                </h4>
+                                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                    <div
+                                        v-for="stock in editableStocks.filter(s => s.component === comp)"
+                                        :key="`${stock.component}_${stock.blood_type}`"
+                                        class="space-y-1"
+                                    >
+                                        <label class="block text-[11px] font-extrabold text-slate-700 dark:text-slate-300">
+                                            Gol. Darah {{ stock.blood_type }}
+                                        </label>
+                                        <div class="relative">
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                v-model.number="stock.amount"
+                                                class="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-xs font-mono font-bold text-slate-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition"
+                                                required
+                                            />
+                                            <span class="absolute right-2.5 top-2 text-[10px] text-slate-400">Ktg</span>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end gap-3">
-                            <button
-                                type="button"
-                                @click="closeEditModal"
-                                class="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
-                            >
-                                Batal
-                            </button>
-                            <button
-                                type="submit"
-                                :disabled="isSubmitting"
-                                class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 disabled:opacity-50 text-xs font-bold text-white transition shadow-md shadow-rose-500/20 cursor-pointer"
-                            >
-                                <span v-if="isSubmitting">Menyimpan...</span>
-                                <span v-else>Simpan Perubahan</span>
-                            </button>
+                        <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
+                            <Link href="/utd/history" @click="closeEditModal" class="text-xs font-bold text-rose-600 hover:text-rose-700 dark:text-rose-400 underline">
+                                📜 Buka Halaman Riwayat Perubahan
+                            </Link>
+
+                            <div class="flex items-center gap-3">
+                                <button
+                                    type="button"
+                                    @click="closeEditModal"
+                                    class="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
+                                >
+                                    Batal
+                                </button>
+                                <button
+                                    type="submit"
+                                    :disabled="isSubmitting"
+                                    class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 disabled:opacity-50 text-xs font-extrabold text-white transition shadow-md shadow-rose-500/20 cursor-pointer"
+                                >
+                                    <span v-if="isSubmitting">Menyimpan...</span>
+                                    <span v-else>Simpan Perubahan</span>
+                                </button>
+                            </div>
                         </div>
                     </form>
                 </div>
             </div>
         </Teleport>
 
-    </div>
 </template>
 
 <style scoped>
 @keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(12px);
+        transform: translateY(16px) scale(0.98);
     }
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
     }
 }
 
 .animate-fade-in-up {
-    animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: fadeInUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* Smooth Tab Transition Animations */
-.tab-fade-enter-active,
+/* Fixed Sidebar Screen-Locked Drawer Transition */
+.sidebar-fade-enter-active,
+.sidebar-fade-leave-active {
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+}
+
+.sidebar-fade-enter-from,
+.sidebar-fade-leave-to {
+    opacity: 0;
+    transform: translateX(-100%);
+}
+
+/* Smooth Main Content Tab Transition Animations */
+.tab-fade-enter-active {
+    transition: opacity 0.35s ease-out, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 .tab-fade-leave-active {
-    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 0.2s ease-in, transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .tab-fade-enter-from {
     opacity: 0;
-    transform: translateY(12px) scale(0.99);
+    transform: translateY(14px) scale(0.99);
 }
 
 .tab-fade-leave-to {
     opacity: 0;
-    transform: translateY(-8px) scale(0.99);
+    transform: translateY(-10px) scale(0.99);
 }
 
-.subtab-fade-enter-active,
+/* Sub-Tab Fade Transitions */
+.subtab-fade-enter-active {
+    transition: opacity 0.3s ease-out, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 .subtab-fade-leave-active {
-    transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: opacity 0.18s ease-in, transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .subtab-fade-enter-from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(10px);
 }
 
 .subtab-fade-leave-to {
     opacity: 0;
-    transform: translateY(-6px);
+    transform: translateY(-8px);
 }
 </style>

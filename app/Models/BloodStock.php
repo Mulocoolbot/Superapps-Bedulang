@@ -11,6 +11,7 @@ class BloodStock extends Model
     use HasFactory;
 
     protected $fillable = [
+        'component',
         'blood_type',
         'amount',
         'unit',

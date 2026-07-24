@@ -10,10 +10,12 @@ class BloodStockLog extends Model
     use HasFactory;
 
     protected $fillable = [
+        'component',
         'blood_type',
         'old_amount',
         'new_amount',
         'delta',
+        'description',
         'updated_by',
     ];
 

@@ -46,7 +46,7 @@ const apps = [
     {
         name: 'KEPEGAWAIAN',
         slug: 'kepegawaian',
-        logo: '/services/work.svg',
+        logo: '/services/kepegawaian.png',
     },
     {
         name: 'Informasi Publik',

@@ -20,7 +20,8 @@ class UserComplaintController extends Controller
             ->where('user_id', $request->user()->id)
             ->with(['progressLogs.user'])
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->paginate(10)
+            ->onEachSide(100);
 
         return Inertia::render('Front/MyComplaints', [
             'complaints' => $complaints,

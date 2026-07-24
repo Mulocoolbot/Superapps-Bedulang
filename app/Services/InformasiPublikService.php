@@ -43,9 +43,10 @@ class InformasiPublikService implements InformationServiceInterface
         $perindagData = $this->perindagService->getDashboardData($request);
         $sawitData = $this->pertanianService->getDashboardData($request);
 
-        $bloodStocks = \App\Models\BloodStock::orderBy('blood_type')->get()->map(function ($item) {
+        $bloodStocks = \App\Models\BloodStock::get()->map(function ($item) {
             return [
                 'id' => $item->id,
+                'component' => $item->component ?? 'Whole Blood (WB)',
                 'blood_type' => $item->blood_type,
                 'amount' => $item->amount,
                 'unit' => $item->unit,
@@ -53,24 +54,21 @@ class InformasiPublikService implements InformationServiceInterface
             ];
         });
 
-        $totalBloodStock = \App\Models\BloodStock::sum('amount');
+        $latestLog = \App\Models\BloodStockLog::latest()->first();
+        $latestStock = \App\Models\BloodStock::latest('updated_at')->first();
+        
+        $lastUpdatedAt = null;
+        if ($latestLog && $latestStock) {
+            $lastUpdatedAt = $latestLog->created_at > $latestStock->updated_at ? $latestLog->created_at : $latestStock->updated_at;
+        } elseif ($latestLog) {
+            $lastUpdatedAt = $latestLog->created_at;
+        } elseif ($latestStock) {
+            $lastUpdatedAt = $latestStock->updated_at;
+        }
 
-        // Fetch recent blood stock logs (latest 30)
-        $bloodLogs = \App\Models\BloodStockLog::with('updater')
-            ->latest()
-            ->take(30)
-            ->get()
-            ->map(function ($log) {
-                return [
-                    'id' => $log->id,
-                    'blood_type' => $log->blood_type,
-                    'old_amount' => $log->old_amount,
-                    'new_amount' => $log->new_amount,
-                    'delta' => $log->delta,
-                    'updater_name' => $log->updater ? $log->updater->name : 'System Admin',
-                    'updated_at' => $log->created_at ? $log->created_at->format('d M Y, H:i') : null,
-                ];
-            });
+        $formattedLastUpdated = $lastUpdatedAt ? $lastUpdatedAt->translatedFormat('d F Y, H:i') . ' WIB' : date('d F Y, H:i') . ' WIB';
+
+        $totalBloodStock = \App\Models\BloodStock::sum('amount');
 
         return [
             'metadata' => [
@@ -89,8 +87,10 @@ class InformasiPublikService implements InformationServiceInterface
                 'status' => 'active',
                 'title' => 'Unit Transfusi Darah (UTD)',
                 'total_stock' => $totalBloodStock,
+                'last_updated' => $formattedLastUpdated,
+                'components' => ['Whole Blood (WB)', 'Packed Red Blood (PRC)'],
+                'blood_types' => ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'],
                 'stocks' => $bloodStocks,
-                'logs' => $bloodLogs,
             ],
         ];
     }

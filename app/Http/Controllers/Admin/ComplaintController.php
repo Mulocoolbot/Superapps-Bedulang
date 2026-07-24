@@ -67,6 +67,7 @@ class ComplaintController extends Controller
         $complaints = $query->with('user')
             ->orderBy('created_at', 'desc')
             ->paginate(15)
+            ->onEachSide(100)
             ->withQueryString();
 
         $servicesList = [
