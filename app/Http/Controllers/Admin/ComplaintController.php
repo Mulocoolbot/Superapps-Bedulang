@@ -24,15 +24,10 @@ class ComplaintController extends Controller
 
         $user = $request->user();
 
-        // Base scoped query for user domain
+        // Base scoped query for user domain (pimpinan and super_admin see all)
         $baseQuery = Complaint::query();
-        if (
-            !$user->isSuperAdmin()
-            &&
-            !$user->isPimpinan()
-            &&
-            !empty($user->service_slug)
-        ) {
+
+        if (!$user->isSuperAdmin() && !$user->isPimpinan() && !empty($user->service_slug)) {
             $baseQuery->where('service_slug', $user->service_slug);
         }
 
@@ -83,6 +78,7 @@ class ComplaintController extends Controller
         $complaints = $query->with('user')
             ->orderBy('created_at', 'desc')
             ->paginate(15)
+            ->onEachSide(100)
             ->withQueryString();
 
         $servicesList = [
@@ -94,7 +90,8 @@ class ComplaintController extends Controller
             ['slug' => 'sosial', 'name' => 'SOSIAL'],
             ['slug' => 'kependudukan', 'name' => 'KEPENDUDUKAN'],
             ['slug' => 'kepegawaian', 'name' => 'KEPEGAWAIAN'],
-            ['slug' => 'lingkungan', 'name' => 'LINGKUNGAN'],
+            ['slug' => 'pertanian', 'name' => 'PERTANIAN'],
+            ['slug' => 'informasi-publik', 'name' => 'INFORMASI PUBLIK'],
             ['slug' => 'pariwisata', 'name' => 'PARIWISATA'],
             ['slug' => 'data-sektoral', 'name' => 'DATA SEKTORAL'],
             ['slug' => 'makanan-bergizi-gratis', 'name' => 'MAKANAN BERGIZI GRATIS'],
@@ -111,8 +108,8 @@ class ComplaintController extends Controller
                 'search' => $request->search ?? '',
                 'type' => $request->type ?? 'all',
             ],
-            'userDomain' => $user->service_slug,
-            'isSuperAdmin' => $user->isSuperAdmin() || empty($user->service_slug),
+            'userDomain' => $user->isPimpinan() ? '' : $user->service_slug,
+            'isSuperAdmin' => $user->isSuperAdmin() || $user->isPimpinan() || empty($user->service_slug),
         ]);
     }
 
@@ -121,11 +118,15 @@ class ComplaintController extends Controller
      */
     public function store(Request $request)
     {
+        if (auth()->user()->role !== 'pimpinan') {
+            abort(403, 'Anda tidak memiliki akses untuk mengajukan pengaduan.');
+        }
+
         $validated = $request->validate([
             'service_slug' => ['required', 'string', Rule::in([
                 'pemerintahan', 'pendidikan', 'kesehatan', 'perindagkop-ukm',
-                'hukum', 'sosial', 'kependudukan', 'kepegawaian', 'lingkungan',
-                'pariwisata', 'data-sektoral', 'makanan-bergizi-gratis',
+                'hukum', 'sosial', 'kependudukan', 'kepegawaian', 'pertanian',
+                'informasi-publik', 'pariwisata', 'data-sektoral', 'makanan-bergizi-gratis',
             ])],
             'title' => 'required|string|max:255',
             'description' => 'required|string',

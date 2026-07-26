@@ -76,7 +76,7 @@ class User extends Authenticatable
 
     public function canAccessService(?string $serviceSlug): bool
     {
-        if ($this->isSuperAdmin() || empty($this->service_slug)) {
+        if ($this->isSuperAdmin() || $this->isPimpinan() || empty($this->service_slug)) {
             return true;
         }
 

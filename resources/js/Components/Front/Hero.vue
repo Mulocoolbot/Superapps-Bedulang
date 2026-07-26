@@ -19,12 +19,17 @@ const slides = [
     },
     {
         titleHtml: '<span class="text-blue-600">Visi</span>',
-        description: '', // Blank
+        description: '"Satu Aplikasi, Satu Layanan Terpadu, Satu Inovasi untuk Bangka Tengah."',
         image: '/services/ketawai.jpg'
     },
     {
         titleHtml: '<span class="text-blue-600">Misi</span>',
-        description: '', // Blank
+        descriptionList: [
+            'Integrasi seluruh layanan pemerintah.',
+            'Inovasi pelayanan berbasis digital.',
+            'Kolaborasi antar perangkat daerah.',
+            'Kemudahan akses layanan bagi masyarakat.'
+        ],
         image: '/services/misi_kaolin.jpg'
     }
 ]
@@ -320,6 +325,12 @@ onUnmounted(() => {
                                 >
                                     {{ slide.description }}
                                 </p>
+                                <ul 
+                                    class="mt-6 text-base lg:text-lg leading-relaxed text-gray-600 dark:text-gray-300 min-h-[120px] list-decimal pl-6 space-y-1"
+                                    v-else-if="slide.descriptionList"
+                                >
+                                    <li v-for="(item, idx) in slide.descriptionList" :key="idx" class="pl-1">{{ item }}</li>
+                                </ul>
                                 <div class="mt-6 min-h-[120px]" v-else></div>
                             </div>
 

@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Complaint extends Model
 {
+    use HasFactory;
+
     protected $appends = [
         'service_name',
     ];
@@ -72,7 +75,8 @@ class Complaint extends Model
             'sosial' => 'SOSIAL',
             'kependudukan' => 'KEPENDUDUKAN',
             'kepegawaian' => 'KEPEGAWAIAN',
-            'lingkungan' => 'LINGKUNGAN',
+            'pertanian' => 'PERTANIAN',
+            'informasi-publik' => 'INFORMASI PUBLIK',
             'pariwisata' => 'PARIWISATA',
             'data-sektoral' => 'DATA SEKTORAL',
             'makanan-bergizi-gratis' => 'MAKANAN BERGIZI GRATIS',

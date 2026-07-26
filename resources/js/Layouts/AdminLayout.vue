@@ -1,11 +1,20 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { Link, usePage, router } from '@inertiajs/vue3'
+
+const notificationDropdownRef = ref(null)
+const notificationBellRef = ref(null)
 import Footer from '@/Components/Front/Footer.vue'
 
 const page = usePage()
 const notificationsOpen = ref(false)
 const activeNotificationTab = ref('unread')
+
+const markAllAsRead = () => {
+    router.post('/notifications/read-all', {}, {
+        preserveScroll: true,
+    })
+}
 
 const authUser = computed(() => page.props.auth?.user)
 const notifications = computed(() => authUser.value?.notifications || [])
@@ -25,7 +34,7 @@ const markAsRead = (notification) => {
     })
 }
 
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, onBeforeUnmount } from 'vue'
 import { NotificationService } from '@/Services/NotificationService'
 
 let pollTimer = null
@@ -39,7 +48,21 @@ const triggerBellRing = () => {
     }, 1000)
 }
 
+const handleClickOutside = (e) => {
+    if (
+        notificationsOpen.value &&
+        notificationDropdownRef.value &&
+        !notificationDropdownRef.value.contains(e.target) &&
+        notificationBellRef.value &&
+        !notificationBellRef.value.contains(e.target)
+    ) {
+        notificationsOpen.value = false
+    }
+}
+
 onMounted(() => {
+    document.addEventListener('mousedown', handleClickOutside)
+
     if (authUser.value) {
         NotificationService.requestPermission()
         notifications.value.forEach(n => seenIdsSet.add(n.id))
@@ -61,6 +84,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+    document.removeEventListener('mousedown', handleClickOutside)
     if (pollTimer) {
         clearInterval(pollTimer)
     }
@@ -77,17 +101,17 @@ onUnmounted(() => {
                     <Link href="/">
                         <img
                             src="/services/logobateng3.png"
-                            class="w-24 h-auto mx-auto object-contain transition-transform hover:scale-105"
+                            class="w-24 h-auto object-contain hover:scale-105 transition duration-300"
                             alt="Logo Bangka Tengah"
-                        >
+                        />
                     </Link>
                 </div>
 
                 <nav class="p-4 space-y-2">
                     <Link
-                        href="/admin"
+                        :href="$page.props.auth?.user?.role === 'pimpinan' ? '/pimpinan' : '/admin'"
                         class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition"
-                        :class="page.url === '/admin' ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'"
+                        :class="(page.url === '/admin' || page.url === '/pimpinan') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
@@ -166,12 +190,13 @@ onUnmounted(() => {
             <!-- Navbar Header -->
             <header class="bg-white shadow px-8 py-4 flex justify-between items-center relative">
                 <h1 class="font-bold text-xl text-gray-800">
-                    Admin Panel
+                    {{ $page.props.auth?.user?.role === 'pimpinan' ? 'Dashboard Pimpinan' : 'Admin Panel' }}
                 </h1>
 
                 <!-- Admin Notification Bell Component -->
                 <div v-if="authUser" class="relative">
                     <button
+                        ref="notificationBellRef"
                         @click="notificationsOpen = !notificationsOpen"
                         class="relative inline-flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 p-2.5 transition cursor-pointer"
                         :class="{ 'animate-bell-ring text-rose-600': isBellRinging }"
@@ -200,6 +225,7 @@ onUnmounted(() => {
                         leave-to-class="transform opacity-0 scale-95 -translate-y-2"
                     >
                         <div
+                            ref="notificationDropdownRef"
                             v-show="notificationsOpen"
                             class="absolute right-0 mt-3 w-80 sm:w-96 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl z-50 transition-all"
                         >
@@ -326,7 +352,7 @@ onUnmounted(() => {
     </div>
 
     <!-- Homepage Footer at bottom -->
-    <Footer />
+    <Footer ></Footer>
 </div>
 </template>
 

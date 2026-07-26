@@ -50,7 +50,12 @@ const apps = [
     },
     {
         name: 'Pertanian dan Ketahanan Pangan',
-        slug: 'lingkungan',
+        slug: 'pertanian',
+        logo: '/services/pertanian.svg',
+    },
+    {
+        name: 'Informasi Publik',
+        slug: 'informasi-publik',
         logo: '/services/informasi publik.svg',
     },
     {

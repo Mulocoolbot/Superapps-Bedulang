@@ -1,6 +1,6 @@
 <script setup>
 
-import AdminLayout from '@/Layouts/AdminLayout.vue'
+import SuperAdminLayout from '@/Layouts/SuperAdminLayout.vue'
 import { Head } from '@inertiajs/vue3'
 
 defineProps({
@@ -11,9 +11,9 @@ defineProps({
 
 <template>
 
-<Head title="Kelola Admin"/>
+<Head title="Kelola Admin"></Head>
 
-<AdminLayout>
+<SuperAdminLayout>
 
 <h1 class="text-3xl font-bold mb-6">
 
@@ -72,6 +72,6 @@ class="border-t">
 
 </div>
 
-</AdminLayout>
+</SuperAdminLayout>
 
 </template>

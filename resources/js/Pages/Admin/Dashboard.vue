@@ -1,7 +1,7 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
-import { ref, onMounted, nextTick } from 'vue'
+import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import Hls from 'hls.js'
 
 const props = defineProps({
@@ -65,10 +65,17 @@ onMounted(() => {
         playCCTV(selectedCCTV.value)
     }
 })
+
+onBeforeUnmount(() => {
+    if (hls) {
+        hls.destroy()
+        hls = null
+    }
+})
 </script>
 
 <template>
-    <Head title="Dashboard Admin"/>
+    <Head title="Dashboard Admin"></Head>
 
     <AdminLayout>
         <!-- Top header row with Landing Page button on top right -->
@@ -88,12 +95,12 @@ onMounted(() => {
             <!-- Top right landing page back button -->
             <Link
                 href="/"
-                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-blue-600 shadow-sm font-semibold transition shrink-0"
+                class="inline-flex justify-center items-center p-2.5 rounded-xl bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-blue-600 shadow-sm transition shrink-0"
+                title="Kembali ke Landing Page"
             >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
                 </svg>
-                <span>Kembali ke Landing Page</span>
             </Link>
         </div>
 
@@ -186,8 +193,8 @@ onMounted(() => {
                             </div>
                         </div>
 
-                        <!-- Grid 2 Indicators inside Single Card -->
-                        <div class="grid grid-cols-2 gap-3 pt-1">
+                        <!-- Grid 3 Indicators inside Single Card -->
+                        <div class="grid grid-cols-3 gap-3 pt-1">
                             <!-- Pending Stat Box -->
                             <Link
                                 href="/admin/complaints?status=pending"
@@ -210,6 +217,18 @@ onMounted(() => {
                                     {{ complaintStats?.processing ?? 0 }}
                                 </span>
                                 <span class="text-[11px] text-blue-700 font-medium block">Sedang Ditangani</span>
+                            </Link>
+
+                            <!-- Resolved Stat Box -->
+                            <Link
+                                href="/admin/complaints?status=resolved"
+                                class="p-4 rounded-xl bg-green-50/80 hover:bg-green-100/80 border border-green-200/70 transition space-y-2 text-center group"
+                            >
+                                <span class="text-xs font-semibold text-green-800 uppercase tracking-wider block">Selesai</span>
+                                <span class="text-3xl font-extrabold text-green-600 block group-hover:scale-105 transition">
+                                    {{ complaintStats?.resolved ?? 0 }}
+                                </span>
+                                <span class="text-[11px] text-green-700 font-medium block">Telah Diselesaikan</span>
                             </Link>
                         </div>
                     </div>

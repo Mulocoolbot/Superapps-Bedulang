@@ -1,7 +1,8 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { Head, Link, router } from '@inertiajs/vue3'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
+import { useSlidingPagination } from '@/Composables/useSlidingPagination'
 
 const props = defineProps({
     complaints: { type: Object, required: true },
@@ -14,6 +15,8 @@ const props = defineProps({
     userDomain: { type: String, default: null },
     isSuperAdmin: { type: Boolean, default: true },
 })
+
+const { visiblePageLinks: visiblePaginationLinks, prevLink, nextLink, hasPagination } = useSlidingPagination(() => props.complaints)
 
 const statusLabel = {
     pending: 'Menunggu',
@@ -67,7 +70,7 @@ const resetFilters = () => {
 
 <template>
     <AdminLayout>
-        <Head title="Monitoring Pengaduan" />
+        <Head title="Monitoring Pengaduan"></Head>
 
         <div class="mx-auto max-w-7xl space-y-6">
             <!-- Header section -->
@@ -330,7 +333,7 @@ const resetFilters = () => {
                             :href="`/admin/complaints/${complaint.id}`"
                             class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white text-xs font-semibold transition shrink-0 self-start md:self-center"
                         >
-                            <span>Tindak Lanjut & Detail</span>
+                            <span>{{ $page.props.auth.user.role === 'pimpinan' ? 'Detail Pengaduan' : 'Tindak Lanjut & Detail' }}</span>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                             </svg>
@@ -338,21 +341,63 @@ const resetFilters = () => {
                     </div>
                 </div>
 
-                <!-- Pagination links if available -->
-                <div v-if="complaints.links && complaints.links.length > 3" class="p-4 border-t border-slate-100 flex items-center justify-between">
-                    <div class="flex flex-wrap gap-1">
+                <!-- Pagination Controls (Sliding Window 5 Bubbles) -->
+                <div v-if="hasPagination" class="p-4 border-t border-slate-100 flex items-center justify-between">
+                    <div class="text-xs text-slate-500">
+                        Halaman <span class="font-bold text-slate-900 font-mono">{{ complaints.current_page }}</span>
+                        dari <span class="font-bold text-slate-900 font-mono">{{ complaints.last_page }}</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <!-- Prev Arrow -->
                         <Link
-                            v-for="(link, k) in complaints.links"
-                            :key="k"
-                            :href="link.url || '#'"
-                            v-html="link.label"
-                            class="px-3 py-1.5 rounded-lg text-xs font-medium transition"
-                            :class="{
-                                'bg-blue-600 text-white': link.active,
-                                'text-slate-600 hover:bg-slate-100': !link.active && link.url,
-                                'text-slate-300 cursor-not-allowed': !link.url
-                            }"
-                        />
+                            v-if="prevLink?.url"
+                            :href="prevLink.url"
+                            class="w-8 h-8 rounded-lg flex items-center justify-center bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 transition-all duration-200 transform hover:scale-105 shadow-xs"
+                            aria-label="Previous Page"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                            </svg>
+                        </Link>
+                        <span v-else class="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-50 text-slate-300 opacity-50 cursor-not-allowed">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                            </svg>
+                        </span>
+
+                        <!-- Numeric Page Bubbles -->
+                        <template v-for="(link, k) in visiblePaginationLinks" :key="k">
+                            <Link
+                                v-if="link.url"
+                                :href="link.url"
+                                class="w-8 h-8 rounded-lg text-xs font-bold flex items-center justify-center transition-all duration-200 transform hover:scale-105"
+                                :class="link.active
+                                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                                    : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'"
+                            >
+                                {{ link.label }}
+                            </Link>
+                            <span v-else class="w-8 h-8 rounded-lg text-xs font-bold flex items-center justify-center bg-slate-50 text-slate-400">
+                                {{ link.label }}
+                            </span>
+                        </template>
+
+                        <!-- Next Arrow -->
+                        <Link
+                            v-if="nextLink?.url"
+                            :href="nextLink.url"
+                            class="w-8 h-8 rounded-lg flex items-center justify-center bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 transition-all duration-200 transform hover:scale-105 shadow-xs"
+                            aria-label="Next Page"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                            </svg>
+                        </Link>
+                        <span v-else class="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-50 text-slate-300 opacity-50 cursor-not-allowed">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                            </svg>
+                        </span>
                     </div>
                 </div>
             </div>

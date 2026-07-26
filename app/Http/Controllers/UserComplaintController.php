@@ -32,7 +32,9 @@ class UserComplaintController extends Controller
             }
         }
 
-        $complaints = $query->paginate(10)->withQueryString();
+        $complaints = $query->paginate(10)
+            ->onEachSide(100)
+            ->withQueryString();
 
         return Inertia::render('Front/MyComplaints', [
             'complaints' => $complaints,
