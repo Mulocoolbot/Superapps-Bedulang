@@ -83,7 +83,7 @@ const publicServices = [
     { name: 'Pelayanan Kesehatan', id: 'pelayanan-kesehatan' },
     { name: 'Pengaduan PPID', id: 'pengaduan-ppid' },
     { name: 'Administrasi Warga', id: 'administrasi-warga' },
-    { name: 'Pengaduan Bedulan', id: 'pengaduan-bedulang' },
+    { name: 'Pengaduan Bedulang', id: 'pengaduan-bedulang' },
     { name: 'Monitoring CCTV', url: '/admin/cctv' },
 ]
 
