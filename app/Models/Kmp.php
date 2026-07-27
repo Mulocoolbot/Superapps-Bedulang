@@ -34,6 +34,8 @@ class Kmp extends Model
         'sekretaris_foto',
         'bendahara_nama',
         'bendahara_foto',
+        'simpanan_pokok',
+        'simpanan_wajib',
     ];
 
     public function user()

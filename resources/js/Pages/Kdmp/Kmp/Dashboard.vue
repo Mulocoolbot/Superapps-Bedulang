@@ -38,7 +38,13 @@ const managementForm = useForm({
     sekretaris_foto: null,
     bendahara_nama: props.kmp?.bendahara_nama || '',
     bendahara_foto: null,
+    simpanan_pokok: props.kmp?.simpanan_pokok || 0,
+    simpanan_wajib: props.kmp?.simpanan_wajib || 0,
 })
+
+const formatRupiah = (value) => {
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(value || 0)
+}
 
 const submitKmp = () => {
     if (props.kmp) {
@@ -252,9 +258,9 @@ const submitManagement = () => {
                 <!-- Manajemen Struktur Koperasi -->
                 <div v-if="kmp" class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                     <header>
-                        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Manajemen Struktur Koperasi</h2>
+                        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Manajemen Struktur & Keuangan Koperasi</h2>
                         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                            Kelola jumlah keanggotaan dan struktur kepengurusan KMP Anda.
+                            Kelola jumlah keanggotaan, struktur kepengurusan, serta data simpanan KMP Anda.
                         </p>
                     </header>
 
@@ -328,6 +334,27 @@ const submitManagement = () => {
                                     <div v-if="kmp.bendahara_foto" class="mt-2">
                                         <img :src="`/storage/${kmp.bendahara_foto}`" alt="Foto Bendahara" class="h-16 w-16 object-cover rounded shadow">
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="border-gray-200 dark:border-gray-700" />
+
+                        <!-- Data Keuangan -->
+                        <div class="space-y-6">
+                            <h3 class="text-md font-medium text-gray-900 dark:text-gray-100">Data Keuangan</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+                                <div>
+                                    <InputLabel for="simpanan_pokok" value="Total Simpanan Pokok (Rp)" />
+                                    <TextInput id="simpanan_pokok" v-model="managementForm.simpanan_pokok" type="number" min="0" class="mt-1 block w-full" />
+                                    <p class="mt-1 text-sm text-gray-500">{{ formatRupiah(managementForm.simpanan_pokok) }}</p>
+                                    <InputError :message="managementForm.errors.simpanan_pokok" class="mt-2" />
+                                </div>
+                                <div>
+                                    <InputLabel for="simpanan_wajib" value="Total Simpanan Wajib (Rp)" />
+                                    <TextInput id="simpanan_wajib" v-model="managementForm.simpanan_wajib" type="number" min="0" class="mt-1 block w-full" />
+                                    <p class="mt-1 text-sm text-gray-500">{{ formatRupiah(managementForm.simpanan_wajib) }}</p>
+                                    <InputError :message="managementForm.errors.simpanan_wajib" class="mt-2" />
                                 </div>
                             </div>
                         </div>

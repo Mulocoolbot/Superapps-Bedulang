@@ -145,8 +145,8 @@ class KdmpService implements InformationServiceInterface
                 'pengurus' => $kmp->jumlah_pengurus ?? 0,
             ],
             'keuangan' => [
-                'simpanan_pokok' => rand(10, 50) * 1000000,
-                'simpanan_wajib' => rand(5, 20) * 1000000,
+                'simpanan_pokok' => $kmp->simpanan_pokok ?? 0,
+                'simpanan_wajib' => $kmp->simpanan_wajib ?? 0,
             ],
         ];
     }

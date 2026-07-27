@@ -161,6 +161,8 @@ class AdminKmpController extends Controller
             'sekretaris_foto' => 'nullable|image|max:2048',
             'bendahara_nama' => 'nullable|string|max:255',
             'bendahara_foto' => 'nullable|image|max:2048',
+            'simpanan_pokok' => 'nullable|integer|min:0',
+            'simpanan_wajib' => 'nullable|integer|min:0',
         ]);
 
         if ($request->hasFile('ketua_foto')) {
