@@ -46,11 +46,14 @@ class KdmpService implements InformationServiceInterface
             ];
         }
 
-        // Mock SDM data since we don't have this in KMP table yet, or we could leave it as mock
+        $totalPengawas = Kmp::whereIn('kecamatan', $kecamatans)->where('status_pembentukan', 'verified')->sum('jumlah_pengawas');
+        $totalPengurus = Kmp::whereIn('kecamatan', $kecamatans)->where('status_pembentukan', 'verified')->sum('jumlah_pengurus');
+        $totalAnggota = Kmp::whereIn('kecamatan', $kecamatans)->where('status_pembentukan', 'verified')->sum('jumlah_anggota');
+
         $sdm = [
-            'pengawas' => 135,
-            'pengurus' => 240,
-            'anggota' => 1500,
+            'pengawas' => $totalPengawas,
+            'pengurus' => $totalPengurus,
+            'anggota' => $totalAnggota,
         ];
         
         $totalSdm = $sdm['pengawas'] + $sdm['pengurus'] + $sdm['anggota'];
@@ -99,7 +102,7 @@ class KdmpService implements InformationServiceInterface
                 'type' => $kmp->jenis,
                 'operasional' => $kmp->status_operasional ? 'Sudah' : 'Belum',
                 'no_ahu' => $kmp->no_ahu ?? 'Belum ada',
-                'anggota' => rand(20, 150), // Mock anggota since it's not in schema yet
+                'anggota' => $kmp->jumlah_anggota ?? 0,
                 'file_sertifikat' => $kmp->file_sertifikat,
             ];
         }
@@ -131,11 +134,15 @@ class KdmpService implements InformationServiceInterface
             'sertifikat' => $kmp->status_sertifikat === 'verified' ? 'Sudah' : 'Belum',
             'pelatihan' => $kmp->status_pelatihan ? 'Sudah' : 'Belum',
             'file_sertifikat' => $kmp->file_sertifikat,
-            // Keep pengurus and keuangan as mock for now, as requested schema doesn't cover them yet
             'pengurus' => [
-                'kepala' => ['nama' => 'Budi Santoso', 'foto' => null],
-                'sekretaris' => ['nama' => 'Siti Aminah', 'foto' => null],
-                'bendahara' => ['nama' => 'Ahmad Faisal', 'foto' => null],
+                'kepala' => ['nama' => $kmp->ketua_nama ?? 'Belum ada data', 'foto' => $kmp->ketua_foto],
+                'sekretaris' => ['nama' => $kmp->sekretaris_nama ?? 'Belum ada data', 'foto' => $kmp->sekretaris_foto],
+                'bendahara' => ['nama' => $kmp->bendahara_nama ?? 'Belum ada data', 'foto' => $kmp->bendahara_foto],
+            ],
+            'jumlah' => [
+                'anggota' => $kmp->jumlah_anggota ?? 0,
+                'pengawas' => $kmp->jumlah_pengawas ?? 0,
+                'pengurus' => $kmp->jumlah_pengurus ?? 0,
             ],
             'keuangan' => [
                 'simpanan_pokok' => rand(10, 50) * 1000000,
