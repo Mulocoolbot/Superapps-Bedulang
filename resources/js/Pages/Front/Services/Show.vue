@@ -11,6 +11,7 @@ import MbgDashboard from './Dashboards/MbgDashboard.vue'
 import KepegawaianDashboard from './Dashboards/KepegawaianDashboard.vue'
 import PertanianDashboard from './Dashboards/PertanianDashboard.vue'
 import InformasiPublikDashboard from './Dashboards/InformasiPublikDashboard.vue'
+import KdmpDashboard from './Dashboards/KdmpDashboard.vue'
 import DefaultDashboard from './Dashboards/DefaultDashboard.vue'
 
 const isComplaintModalOpen = ref(false)
@@ -39,6 +40,8 @@ const dashboardComponent = computed(() => {
             return PertanianDashboard
         case 'informasi-publik':
             return InformasiPublikDashboard
+        case 'kdmp':
+            return KdmpDashboard
         default:
             return DefaultDashboard
     }

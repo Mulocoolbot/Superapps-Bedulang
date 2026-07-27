@@ -99,6 +99,29 @@ Route::middleware(['auth', 'super_admin'])->prefix('admin')->group(function () {
 */
 
 Route::middleware('auth')->group(function () {
+    // KDMP Admin Keseluruhan
+    Route::get('/admin/kdmp', [\App\Http\Controllers\Kdmp\AdminKdmpController::class, 'dashboard'])->name('admin.kdmp.dashboard');
+    Route::post('/admin/kdmp/admin', [\App\Http\Controllers\Kdmp\AdminKdmpController::class, 'storeAdmin'])->name('admin.kdmp.store_admin');
+    Route::get('/admin/kdmp/history', [\App\Http\Controllers\Kdmp\AdminKdmpController::class, 'historyLog'])->name('admin.kdmp.history');
+
+    // KDMP Admin Kecamatan
+    Route::get('/admin/kdmp/kecamatan', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'dashboard'])->name('admin.kdmp.kecamatan.dashboard');
+    Route::get('/admin/kdmp/kecamatan/verifikasi-kmp', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'verifikasiKmp'])->name('admin.kdmp.kecamatan.verifikasi_kmp_page');
+    Route::get('/admin/kdmp/kecamatan/verifikasi-perubahan', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'verifikasiPerubahan'])->name('admin.kdmp.kecamatan.verifikasi_perubahan_page');
+    Route::post('/admin/kdmp/kecamatan/admin-kmp', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'storeKmpAdmin'])->name('admin.kdmp.kecamatan.store_admin');
+    Route::post('/admin/kdmp/kecamatan/kmp/{kmp}/verify-pembentukan', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'verifyPembentukan'])->name('admin.kdmp.kecamatan.verify_pembentukan');
+    Route::post('/admin/kdmp/kecamatan/kmp/{kmp}/verify-sertifikat', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'verifySertifikat'])->name('admin.kdmp.kecamatan.verify_sertifikat');
+    Route::post('/admin/kdmp/kecamatan/kmp-edit/{editRequest}/verify', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'verifyEditRequest'])->name('admin.kdmp.kecamatan.verify_edit');
+    Route::get('/admin/kdmp/kecamatan/history', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'historyLog'])->name('admin.kdmp.kecamatan.history');
+
+    // KDMP Admin KMP
+    Route::get('/admin/kdmp/kmp', [\App\Http\Controllers\Kdmp\AdminKmpController::class, 'dashboard'])->name('admin.kdmp.kmp.dashboard');
+    Route::post('/admin/kdmp/kmp', [\App\Http\Controllers\Kdmp\AdminKmpController::class, 'storeKmp'])->name('admin.kdmp.kmp.store');
+    Route::post('/admin/kdmp/kmp/edit', [\App\Http\Controllers\Kdmp\AdminKmpController::class, 'requestEdit'])->name('admin.kdmp.kmp.request_edit');
+    Route::post('/admin/kdmp/kmp/sertifikat', [\App\Http\Controllers\Kdmp\AdminKmpController::class, 'uploadSertifikat'])->name('admin.kdmp.kmp.upload_sertifikat');
+    Route::post('/admin/kdmp/kmp/management', [\App\Http\Controllers\Kdmp\AdminKmpController::class, 'updateManagement'])->name('admin.kdmp.kmp.update_management');
+    Route::get('/admin/kdmp/kmp/history', [\App\Http\Controllers\Kdmp\AdminKmpController::class, 'historyLog'])->name('admin.kdmp.kmp.history');
+
     Route::get(
     '/layanan/pengaduan-bedulang',
     [UserComplaintController::class,'createBedulang']
@@ -116,6 +139,12 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/my-complaints/{complaint}/review', [\App\Http\Controllers\UserComplaintController::class, 'storeReview'])
         ->name('user.complaints.review');
+
+    Route::get('/layanan/kdmp/koperasi/{id}', [InformationServiceController::class, 'showKdmpKoperasi'])
+        ->name('layanan.kdmp.koperasi');
+
+    Route::get('/layanan/kdmp/kecamatan/{nama}', [InformationServiceController::class, 'showKdmpKecamatan'])
+        ->name('layanan.kdmp.kecamatan');
 
     Route::get('/layanan/{slug}', [InformationServiceController::class, 'show'])
         ->name('layanan.show');

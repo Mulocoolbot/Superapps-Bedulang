@@ -30,7 +30,7 @@ const apps = [
     },
     {
         name: 'KDMP',
-        slug: 'hukum',
+        slug: 'kdmp',
         logo: '/services/kdmp.png',
     },
     {
