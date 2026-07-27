@@ -118,9 +118,6 @@ class ComplaintController extends Controller
      */
     public function store(Request $request)
     {
-        if (auth()->user()->role !== 'pimpinan') {
-            abort(403, 'Anda tidak memiliki akses untuk mengajukan pengaduan.');
-        }
 
         $validated = $request->validate([
             'service_slug' => ['required', 'string', Rule::in([
