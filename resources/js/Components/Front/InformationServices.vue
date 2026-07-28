@@ -67,6 +67,7 @@ const apps = [
         name: 'DATA SEKTORAL',
         slug: 'data-sektoral',
         logo: '/services/sektoral.svg',
+        url: '/data-sektoral',
     },
     {
         name: 'Makanan Bergizi Gratis',
@@ -220,7 +221,7 @@ onUnmounted(() => {
                             <Link
                                 v-for="(app, index) in apps"
                                 :key="app.name"
-                                :href="isAuthenticated ? '/layanan/' + app.slug : '/login'"
+                                :href="isAuthenticated ? (app.url || '/layanan/' + app.slug) : '/login'"
                                 class="group w-full md:w-[180px] flex-shrink-0 transition-all duration-300"
                             >
                                 <div 

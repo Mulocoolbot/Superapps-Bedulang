@@ -65,7 +65,7 @@ const infoServices = [
     { name: 'Kepegawaian', id: 'kepegawaian' },
     { name: 'Informasi Publik', id: 'informasi-publik' },
     { name: 'Pariwisata', id: 'pariwisata' },
-    { name: 'Data Sektoral', id: 'data-sektoral' },
+    { name: 'Data Sektoral', id: 'data-sektoral', url: '/data-sektoral' },
     { name: 'Makanan Bergizi Gratis', id: 'makanan-bergizi-gratis' },
 ]
 
@@ -335,7 +335,7 @@ const toggleDarkMode = () => {
                                 <Link 
                                     v-for="app in infoServices" 
                                     :key="app.name" 
-                                    :href="authUser ? '/layanan/' + app.id : '/login'"
+                                    :href="authUser ? (app.url || '/layanan/' + app.id) : '/login'"
                                     class="px-5 py-2.5 hover:bg-blue-50 dark:hover:bg-gray-700 text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center justify-between"
                                 >
                                     <span>{{ app.name }}</span>

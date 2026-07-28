@@ -12,6 +12,7 @@ use App\Http\Controllers\PimpinanDashboardController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\KubernetesController;
+use App\Http\Controllers\DataSektoralController;
 /*
 |--------------------------------------------------------------------------
 | Kubernetes
@@ -151,6 +152,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/layanan/kdmp/kecamatan/{nama}', [InformationServiceController::class, 'showKdmpKecamatan'])
         ->name('layanan.kdmp.kecamatan');
 
+    Route::get('/layanan/data-sektoral', function () {
+        return redirect()->route('data-sektoral.index');
+    });
+
     Route::get('/layanan/{slug}', [InformationServiceController::class, 'show'])
         ->name('layanan.show');
 
@@ -172,6 +177,20 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/notifications/read-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])
         ->name('notifications.read-all');
+
+    // Data Sektoral
+    Route::get('/data-sektoral', [DataSektoralController::class, 'index'])
+        ->name('data-sektoral.index');
+    Route::get('/api/data-sektoral/urusan', [DataSektoralController::class, 'getUrusan'])
+        ->name('data-sektoral.urusan');
+    Route::get('/api/data-sektoral/sub-urusan/{urusan}', [DataSektoralController::class, 'getSubUrusan'])
+        ->name('data-sektoral.sub-urusan');
+    Route::get('/api/data-sektoral/indikator/{urusan}/{subUrusan}', [DataSektoralController::class, 'getIndikator'])
+        ->name('data-sektoral.indikator');
+    Route::get('/api/data-sektoral/data/{urusan}/{subUrusan}/{indikator}/{tahunAwal}/{tahunAkhir}', [DataSektoralController::class, 'getData'])
+        ->name('data-sektoral.data');
+    Route::get('/api/data-sektoral/download-pdf/{urusan}/{subUrusan}/{indikator}/{tahunAwal}/{tahunAkhir}', [DataSektoralController::class, 'downloadPdf'])
+        ->name('data-sektoral.download-pdf');
 
     Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile.edit');
