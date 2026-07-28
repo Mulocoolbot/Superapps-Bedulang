@@ -7,6 +7,9 @@ import TextInput from '@/Components/TextInput.vue'
 import InputLabel from '@/Components/InputLabel.vue'
 import InputError from '@/Components/InputError.vue'
 import Pagination from '@/Components/Pagination.vue'
+import Modal from '@/Components/Modal.vue'
+import SecondaryButton from '@/Components/SecondaryButton.vue'
+import DangerButton from '@/Components/DangerButton.vue'
 
 const props = defineProps({
     kmpAdmins: Object,
@@ -25,8 +28,48 @@ const submitAdmin = () => {
     })
 }
 
+// Edit Logic
+const editingAdmin = ref(null)
+const editForm = useForm({
+    name: '',
+    email: '',
+    password: '',
+})
 
+const openEditModal = (admin) => {
+    editingAdmin.value = admin
+    editForm.name = admin.name
+    editForm.email = admin.email
+    editForm.password = ''
+}
 
+const closeEditModal = () => {
+    editingAdmin.value = null
+    editForm.reset()
+}
+
+const submitEdit = () => {
+    editForm.put(route('admin.kdmp.kecamatan.update_admin', editingAdmin.value.id), {
+        onSuccess: () => closeEditModal(),
+    })
+}
+
+// Delete Logic
+const deletingAdmin = ref(null)
+
+const confirmDelete = (admin) => {
+    deletingAdmin.value = admin
+}
+
+const closeDeleteModal = () => {
+    deletingAdmin.value = null
+}
+
+const submitDelete = () => {
+    router.delete(route('admin.kdmp.kecamatan.destroy_admin', deletingAdmin.value.id), {
+        onSuccess: () => closeDeleteModal(),
+    })
+}
 </script>
 
 <template>
@@ -105,17 +148,30 @@ const submitAdmin = () => {
                                 <tr>
                                     <th class="px-6 py-3">Nama</th>
                                     <th class="px-6 py-3">Email</th>
+                                    <th class="px-6 py-3">Status</th>
                                     <th class="px-6 py-3">Terdaftar Pada</th>
+                                    <th class="px-6 py-3 text-right">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="admin in kmpAdmins.data" :key="admin.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                                     <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ admin.name }}</td>
                                     <td class="px-6 py-4">{{ admin.email }}</td>
+                                    <td class="px-6 py-4">
+                                        <span v-if="admin.kdmp_admin_status === 'pending'" class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-md text-xs font-semibold">Pending</span>
+                                        <span v-else-if="admin.kdmp_admin_status === 'approved'" class="px-2 py-1 bg-green-100 text-green-800 rounded-md text-xs font-semibold">Disetujui</span>
+                                        <span v-else class="px-2 py-1 bg-red-100 text-red-800 rounded-md text-xs font-semibold">Ditolak</span>
+                                    </td>
                                     <td class="px-6 py-4">{{ new Date(admin.created_at).toLocaleDateString('id-ID') }}</td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="flex justify-end gap-2">
+                                            <button @click="openEditModal(admin)" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit</button>
+                                            <button @click="confirmDelete(admin)" class="font-medium text-red-600 dark:text-red-500 hover:underline ml-2">Hapus</button>
+                                        </div>
+                                    </td>
                                 </tr>
                                 <tr v-if="kmpAdmins.data.length === 0">
-                                    <td colspan="3" class="px-6 py-4 text-center">Belum ada Admin KMP.</td>
+                                    <td colspan="5" class="px-6 py-4 text-center">Belum ada Admin KMP.</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -127,7 +183,59 @@ const submitAdmin = () => {
                     </div>
                 </div>
 
+                <!-- Edit Modal -->
+                <Modal :show="editingAdmin !== null" @close="closeEditModal">
+                    <div class="p-6">
+                        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                            Edit Akun Admin KMP
+                        </h2>
+                        
+                        <form @submit.prevent="submitEdit" class="mt-6 space-y-6">
+                            <div>
+                                <InputLabel for="edit_name" value="Nama" />
+                                <TextInput id="edit_name" v-model="editForm.name" type="text" class="mt-1 block w-full" required />
+                                <InputError :message="editForm.errors.name" class="mt-2" />
+                            </div>
+                            
+                            <div>
+                                <InputLabel for="edit_email" value="Email" />
+                                <TextInput id="edit_email" v-model="editForm.email" type="email" class="mt-1 block w-full" required />
+                                <InputError :message="editForm.errors.email" class="mt-2" />
+                            </div>
 
+                            <div>
+                                <InputLabel for="edit_password" value="Password (Kosongkan jika tidak ingin mengubah)" />
+                                <TextInput id="edit_password" v-model="editForm.password" type="password" class="mt-1 block w-full" />
+                                <InputError :message="editForm.errors.password" class="mt-2" />
+                            </div>
+                            
+                            <div class="mt-6 flex justify-end">
+                                <SecondaryButton @click="closeEditModal"> Batal </SecondaryButton>
+                                <PrimaryButton class="ml-3" :class="{ 'opacity-25': editForm.processing }" :disabled="editForm.processing">
+                                    Simpan
+                                </PrimaryButton>
+                            </div>
+                        </form>
+                    </div>
+                </Modal>
+
+                <!-- Delete Confirmation Modal -->
+                <Modal :show="deletingAdmin !== null" @close="closeDeleteModal">
+                    <div class="p-6">
+                        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                            Konfirmasi Hapus Akun
+                        </h2>
+                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                            Apakah Anda yakin ingin menghapus akun {{ deletingAdmin?.name }}? Tindakan ini tidak dapat dibatalkan.
+                        </p>
+                        <div class="mt-6 flex justify-end">
+                            <SecondaryButton @click="closeDeleteModal"> Batal </SecondaryButton>
+                            <DangerButton class="ml-3" @click="submitDelete">
+                                Hapus
+                            </DangerButton>
+                        </div>
+                    </div>
+                </Modal>
 
             </div>
         </div>

@@ -16,19 +16,23 @@ class AdminKdmpController extends Controller
         $query = User::where('service_slug', 'kdmp')
             ->whereIn('kdmp_role', ['admin_kecamatan', 'admin_kmp']);
 
-        if ($request->has('role') && $request->role !== '') {
+        if ($request->filled('role')) {
             $query->where('kdmp_role', $request->role);
         }
         
-        if ($request->has('kecamatan') && $request->kecamatan !== '') {
+        if ($request->filled('kecamatan')) {
             $query->where('kdmp_kecamatan', $request->kecamatan);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('kdmp_admin_status', $request->status);
         }
 
         $admins = $query->paginate(10)->withQueryString();
 
         return Inertia::render('Kdmp/Admin/Dashboard', [
             'admins' => $admins,
-            'filters' => $request->only(['role', 'kecamatan']),
+            'filters' => $request->only(['role', 'kecamatan', 'status']),
         ]);
     }
 
@@ -36,7 +40,7 @@ class AdminKdmpController extends Controller
     {
         $query = KmpHistoryLog::with(['user', 'kmp']);
 
-        if ($request->has('kecamatan') && $request->kecamatan !== '') {
+        if ($request->filled('kecamatan')) {
             $query->whereHas('user', function ($q) use ($request) {
                 $q->where('kdmp_kecamatan', $request->kecamatan);
             });
@@ -71,5 +75,45 @@ class AdminKdmpController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Admin KDMP berhasil ditambahkan.');
+    }
+
+    public function updateAdmin(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
+            'password' => 'nullable|string|min:8',
+            'kdmp_role' => 'required|in:admin_kecamatan,admin_kmp',
+            'kdmp_kecamatan' => 'nullable|string|required_if:kdmp_role,admin_kecamatan',
+        ]);
+
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+        if (!empty($validated['password'])) {
+            $user->password = Hash::make($validated['password']);
+        }
+        $user->kdmp_role = $validated['kdmp_role'];
+        $user->kdmp_kecamatan = $validated['kdmp_kecamatan'] ?? null;
+        $user->save();
+
+        return redirect()->back()->with('success', 'Admin KDMP berhasil diperbarui.');
+    }
+
+    public function destroyAdmin(User $user)
+    {
+        $user->delete();
+        return redirect()->back()->with('success', 'Admin KDMP berhasil dihapus.');
+    }
+
+    public function verifyAdminKmp(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'action' => 'required|in:verify,reject',
+        ]);
+        
+        $user->kdmp_admin_status = $validated['action'] === 'verify' ? 'approved' : 'rejected';
+        $user->save();
+        
+        return redirect()->back()->with('success', 'Status Admin KMP berhasil diubah.');
     }
 }

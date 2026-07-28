@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\KdmpApprovalNotification;
 
 class AdminKecamatanController extends Controller
 {
@@ -34,13 +36,13 @@ class AdminKecamatanController extends Controller
         
         $query = Kmp::where('kecamatan', $user->kdmp_kecamatan)->with('user');
 
-        if ($request->has('status') && $request->status !== 'semua') {
+        if ($request->filled('status') && $request->status !== 'semua') {
             if (in_array($request->status, ['pending_verification', 'verified', 'rejected'])) {
                 $query->where('status_pembentukan', $request->status);
             }
         }
 
-        if ($request->has('sort') && $request->sort === 'terlama') {
+        if ($request->filled('sort') && $request->sort === 'terlama') {
             $query->oldest();
         } else {
             $query->latest();
@@ -66,7 +68,7 @@ class AdminKecamatanController extends Controller
             $q->where('kecamatan', $user->kdmp_kecamatan);
         })->with(['kmp', 'user'])->where('status', 'pending');
 
-        if ($request->has('sort') && $request->sort === 'terlama') {
+        if ($request->filled('sort') && $request->sort === 'terlama') {
             $query->oldest();
         } else {
             $query->latest();
@@ -107,7 +109,7 @@ class AdminKecamatanController extends Controller
             'password' => 'required|string|min:8',
         ]);
 
-        User::create([
+        $newUser = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
@@ -115,9 +117,40 @@ class AdminKecamatanController extends Controller
             'service_slug' => 'kdmp',
             'kdmp_role' => 'admin_kmp',
             'kdmp_kecamatan' => $user->kdmp_kecamatan,
+            'kdmp_admin_status' => 'pending',
         ]);
 
-        return redirect()->back()->with('success', 'Admin KMP berhasil ditambahkan.');
+        $adminKdmps = User::where('kdmp_role', 'admin_kdmp')->orWhere('role', 'super_admin')->get();
+        Notification::send($adminKdmps, new KdmpApprovalNotification(
+            "Akun Admin KMP baru ({$newUser->name}) dibuat oleh Admin Kecamatan {$user->kdmp_kecamatan} dan menunggu verifikasi.",
+            "info"
+        ));
+
+        return redirect()->back()->with('success', 'Admin KMP berhasil ditambahkan dan menunggu verifikasi admin pusat.');
+    }
+
+    public function updateAdmin(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
+            'password' => 'nullable|string|min:8',
+        ]);
+
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+        if (!empty($validated['password'])) {
+            $user->password = Hash::make($validated['password']);
+        }
+        $user->save();
+
+        return redirect()->back()->with('success', 'Admin KMP berhasil diperbarui.');
+    }
+
+    public function destroyAdmin(User $user)
+    {
+        $user->delete();
+        return redirect()->back()->with('success', 'Admin KMP berhasil dihapus.');
     }
 
     public function verifyPembentukan(Kmp $kmp, Request $request)
@@ -135,6 +168,13 @@ class AdminKecamatanController extends Controller
             'action' => 'verify_pembentukan',
             'description' => "Admin Kecamatan " . ($validated['action'] === 'verify' ? 'menyetujui' : 'menolak') . " pembentukan KMP.",
         ]);
+
+        $adminKdmps = User::where('kdmp_role', 'admin_kdmp')->orWhere('role', 'super_admin')->get();
+        $statusText = $validated['action'] === 'verify' ? 'disetujui' : 'ditolak';
+        Notification::send($adminKdmps, new KdmpApprovalNotification(
+            "Pembentukan KMP {$kmp->nama} telah {$statusText} oleh Admin Kecamatan.",
+            $validated['action'] === 'verify' ? "success" : "warning"
+        ));
 
         return redirect()->back()->with('success', 'Status pembentukan KMP berhasil diubah.');
     }
@@ -154,6 +194,13 @@ class AdminKecamatanController extends Controller
             'action' => 'verify_sertifikat',
             'description' => "Admin Kecamatan " . ($validated['action'] === 'verify' ? 'menyetujui' : 'menolak') . " sertifikat KMP.",
         ]);
+
+        $adminKdmps = User::where('kdmp_role', 'admin_kdmp')->orWhere('role', 'super_admin')->get();
+        $statusText = $validated['action'] === 'verify' ? 'disetujui' : 'ditolak';
+        Notification::send($adminKdmps, new KdmpApprovalNotification(
+            "Sertifikat KMP {$kmp->nama} telah {$statusText} oleh Admin Kecamatan.",
+            $validated['action'] === 'verify' ? "success" : "warning"
+        ));
 
         return redirect()->back()->with('success', 'Status sertifikat KMP berhasil diubah.');
     }
@@ -190,6 +237,14 @@ class AdminKecamatanController extends Controller
                 'description' => "Admin Kecamatan menolak perubahan data KMP: " . $validated['rejection_reason'],
             ]);
         }
+
+        $adminKdmps = User::where('kdmp_role', 'admin_kdmp')->orWhere('role', 'super_admin')->get();
+        $statusText = $validated['action'] === 'approve' ? 'disetujui' : 'ditolak';
+        $kmpName = $editRequest->kmp->nama ?? 'Unknown';
+        Notification::send($adminKdmps, new KdmpApprovalNotification(
+            "Pengajuan perubahan data KMP {$kmpName} telah {$statusText} oleh Admin Kecamatan.",
+            $validated['action'] === 'approve' ? "success" : "warning"
+        ));
 
         return redirect()->back()->with('success', 'Status perubahan data KMP berhasil diubah.');
     }

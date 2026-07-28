@@ -26,6 +26,7 @@ class User extends Authenticatable
         'service_slug',
         'kdmp_role',
         'kdmp_kecamatan',
+        'kdmp_admin_status',
     ];
 
     /**

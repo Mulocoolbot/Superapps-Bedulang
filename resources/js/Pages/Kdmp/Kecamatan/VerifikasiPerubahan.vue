@@ -13,9 +13,12 @@ const props = defineProps({
 const sortFilter = ref(props.filters?.sort || 'terbaru')
 
 const filterData = () => {
+    const params = {}
+    if (sortFilter.value && sortFilter.value !== 'terbaru') params.sort = sortFilter.value
+
     router.get(
         route('admin.kdmp.kecamatan.verifikasi_perubahan_page'),
-        { sort: sortFilter.value },
+        params,
         { preserveState: true, preserveScroll: true, replace: true }
     )
 }

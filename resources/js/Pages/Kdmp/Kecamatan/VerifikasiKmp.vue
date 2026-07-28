@@ -15,9 +15,13 @@ const statusFilter = ref(props.filters?.status || 'semua')
 const sortFilter = ref(props.filters?.sort || 'terbaru')
 
 const filterData = () => {
+    const params = {}
+    if (statusFilter.value && statusFilter.value !== 'semua') params.status = statusFilter.value
+    if (sortFilter.value && sortFilter.value !== 'terbaru') params.sort = sortFilter.value
+
     router.get(
         route('admin.kdmp.kecamatan.verifikasi_kmp_page'),
-        { status: statusFilter.value, sort: sortFilter.value },
+        params,
         { preserveState: true, preserveScroll: true, replace: true }
     )
 }

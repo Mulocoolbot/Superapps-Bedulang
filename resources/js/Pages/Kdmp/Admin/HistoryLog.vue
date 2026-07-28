@@ -15,9 +15,12 @@ const kecamatans = ['Koba', 'Pangkalan Baru', 'Namang', 'Lubuk Besar', 'Simpang 
 const filterKecamatan = ref(props.filters?.kecamatan || '')
 
 const filterData = () => {
+    const params = {}
+    if (filterKecamatan.value) params.kecamatan = filterKecamatan.value
+
     router.get(
         route('admin.kdmp.history'),
-        { kecamatan: filterKecamatan.value },
+        params,
         { preserveState: true, preserveScroll: true, replace: true }
     )
 }

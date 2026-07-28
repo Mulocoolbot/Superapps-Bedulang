@@ -102,6 +102,9 @@ Route::middleware('auth')->group(function () {
     // KDMP Admin Keseluruhan
     Route::get('/admin/kdmp', [\App\Http\Controllers\Kdmp\AdminKdmpController::class, 'dashboard'])->name('admin.kdmp.dashboard');
     Route::post('/admin/kdmp/admin', [\App\Http\Controllers\Kdmp\AdminKdmpController::class, 'storeAdmin'])->name('admin.kdmp.store_admin');
+    Route::put('/admin/kdmp/admin/{user}', [\App\Http\Controllers\Kdmp\AdminKdmpController::class, 'updateAdmin'])->name('admin.kdmp.update_admin');
+    Route::delete('/admin/kdmp/admin/{user}', [\App\Http\Controllers\Kdmp\AdminKdmpController::class, 'destroyAdmin'])->name('admin.kdmp.destroy_admin');
+    Route::post('/admin/kdmp/admin/{user}/verify', [\App\Http\Controllers\Kdmp\AdminKdmpController::class, 'verifyAdminKmp'])->name('admin.kdmp.verify_admin');
     Route::get('/admin/kdmp/history', [\App\Http\Controllers\Kdmp\AdminKdmpController::class, 'historyLog'])->name('admin.kdmp.history');
 
     // KDMP Admin Kecamatan
@@ -109,6 +112,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/kdmp/kecamatan/verifikasi-kmp', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'verifikasiKmp'])->name('admin.kdmp.kecamatan.verifikasi_kmp_page');
     Route::get('/admin/kdmp/kecamatan/verifikasi-perubahan', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'verifikasiPerubahan'])->name('admin.kdmp.kecamatan.verifikasi_perubahan_page');
     Route::post('/admin/kdmp/kecamatan/admin-kmp', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'storeKmpAdmin'])->name('admin.kdmp.kecamatan.store_admin');
+    Route::put('/admin/kdmp/kecamatan/admin-kmp/{user}', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'updateAdmin'])->name('admin.kdmp.kecamatan.update_admin');
+    Route::delete('/admin/kdmp/kecamatan/admin-kmp/{user}', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'destroyAdmin'])->name('admin.kdmp.kecamatan.destroy_admin');
     Route::post('/admin/kdmp/kecamatan/kmp/{kmp}/verify-pembentukan', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'verifyPembentukan'])->name('admin.kdmp.kecamatan.verify_pembentukan');
     Route::post('/admin/kdmp/kecamatan/kmp/{kmp}/verify-sertifikat', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'verifySertifikat'])->name('admin.kdmp.kecamatan.verify_sertifikat');
     Route::post('/admin/kdmp/kecamatan/kmp-edit/{editRequest}/verify', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'verifyEditRequest'])->name('admin.kdmp.kecamatan.verify_edit');
