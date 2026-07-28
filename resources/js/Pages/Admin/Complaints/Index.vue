@@ -1,22 +1,26 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { Head, Link, router } from '@inertiajs/vue3'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
+import { useSlidingPagination } from '@/Composables/useSlidingPagination'
 
 const props = defineProps({
     complaints: { type: Object, required: true },
     stats: {
         type: Object,
-        default: () => ({ total: 0, pending: 0, processing: 0, resolved: 0, rejected: 0, cancelled: 0 })
+        default: () => ({ total: 0, pending: 0, processing: 0, resolved: 0, rejected: 0, cancelled: 0, terkirim: 0 })
     },
     services: { type: Array, default: () => [] },
-    filters: { type: Object, default: () => ({ status: 'all', service: '', search: '' }) },
+    filters: { type: Object, default: () => ({ status: 'all', service: '', search: '', type: 'all' }) },
     userDomain: { type: String, default: null },
     isSuperAdmin: { type: Boolean, default: true },
 })
 
+const { visiblePageLinks: visiblePaginationLinks, prevLink, nextLink, hasPagination } = useSlidingPagination(() => props.complaints)
+
 const statusLabel = {
     pending: 'Menunggu',
+    terkirim: 'Terkirim',
     processing: 'Diproses',
     resolved: 'Selesai',
     rejected: 'Ditolak',
@@ -25,6 +29,7 @@ const statusLabel = {
 
 const statusClass = (status) => ({
     pending: 'bg-amber-100 text-amber-800 border-amber-200',
+    terkirim: 'bg-indigo-100 text-indigo-800 border-indigo-200',
     processing: 'bg-blue-100 text-blue-800 border-blue-200',
     resolved: 'bg-emerald-100 text-emerald-800 border-emerald-200',
     rejected: 'bg-rose-100 text-rose-800 border-rose-200',
@@ -34,6 +39,7 @@ const statusClass = (status) => ({
 const searchInput = ref(props.filters.search ?? '')
 const selectedStatus = ref(props.filters.status ?? 'all')
 const selectedService = ref(props.filters.service ?? '')
+const selectedType = ref(props.filters.type ?? 'all')
 
 const applyFilters = () => {
     router.get(
@@ -42,6 +48,7 @@ const applyFilters = () => {
             status: selectedStatus.value,
             service: selectedService.value,
             search: searchInput.value,
+            type: selectedType.value,
         },
         { preserveState: true, replace: true }
     )
@@ -56,13 +63,14 @@ const resetFilters = () => {
     searchInput.value = ''
     selectedStatus.value = 'all'
     selectedService.value = ''
+    selectedType.value = 'all'
     applyFilters()
 }
 </script>
 
 <template>
     <AdminLayout>
-        <Head title="Monitoring Pengaduan" />
+        <Head title="Monitoring Pengaduan"></Head>
 
         <div class="mx-auto max-w-7xl space-y-6">
             <!-- Header section -->
@@ -83,8 +91,8 @@ const resetFilters = () => {
                 </div>
             </div>
 
-            <!-- Summary Statistics Cards (6 Cards) -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            <!-- Summary Statistics Cards (7 Cards) -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-4">
                 <!-- Total Pengaduan -->
                 <button
                     @click="filterByStatus('all')"
@@ -117,6 +125,23 @@ const resetFilters = () => {
                         <h2 class="text-2xl font-extrabold text-amber-600">{{ stats.pending }}</h2>
                     </div>
                     <p class="text-xs font-semibold text-amber-600 uppercase tracking-wider">Menunggu</p>
+                </button>
+
+                <!-- Terkirim (Terkirim) -->
+                <button
+                    @click="filterByStatus('terkirim')"
+                    class="bg-white rounded-2xl p-4 shadow-sm border text-left transition hover:shadow-md cursor-pointer space-y-2"
+                    :class="selectedStatus === 'terkirim' ? 'border-indigo-500 ring-2 ring-indigo-500' : 'border-slate-200/80'"
+                >
+                    <div class="flex items-center justify-between">
+                        <div class="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                            </svg>
+                        </div>
+                        <h2 class="text-2xl font-extrabold text-indigo-600">{{ stats.terkirim || 0 }}</h2>
+                    </div>
+                    <p class="text-xs font-semibold text-indigo-600 uppercase tracking-wider">Terkirim</p>
                 </button>
 
                 <!-- Sedang Diproses (Processing) -->
@@ -190,7 +215,7 @@ const resetFilters = () => {
 
             <!-- Filter Controls Bar -->
             <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200/80 space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
                     <!-- Search Input -->
                     <div class="md:col-span-2">
                         <label class="block text-xs font-medium text-slate-500 mb-1">Cari Pengaduan</label>
@@ -220,10 +245,25 @@ const resetFilters = () => {
                         >
                             <option value="all">Semua Status</option>
                             <option value="pending">Menunggu</option>
+                            <option value="terkirim">Terkirim</option>
                             <option value="processing">Diproses</option>
                             <option value="resolved">Selesai</option>
                             <option value="rejected">Ditolak</option>
                             <option value="cancelled">Dibatalkan</option>
+                        </select>
+                    </div>
+
+                    <!-- Tipe Pengaduan Filter -->
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 mb-1">Tipe Pengaduan</label>
+                        <select
+                            v-model="selectedType"
+                            @change="applyFilters"
+                            class="w-full rounded-xl border-slate-200 text-sm focus:border-blue-500 focus:ring-blue-500"
+                        >
+                            <option value="all">Semua Tipe</option>
+                            <option value="bedulang">Pengaduan Bedulang</option>
+                            <option value="layanan_info">Informasi & Data</option>
                         </select>
                     </div>
 
@@ -293,7 +333,7 @@ const resetFilters = () => {
                             :href="`/admin/complaints/${complaint.id}`"
                             class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white text-xs font-semibold transition shrink-0 self-start md:self-center"
                         >
-                            <span>Tindak Lanjut & Detail</span>
+                            <span>{{ $page.props.auth.user.role === 'pimpinan' ? 'Detail Pengaduan' : 'Tindak Lanjut & Detail' }}</span>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                             </svg>
@@ -301,21 +341,63 @@ const resetFilters = () => {
                     </div>
                 </div>
 
-                <!-- Pagination links if available -->
-                <div v-if="complaints.links && complaints.links.length > 3" class="p-4 border-t border-slate-100 flex items-center justify-between">
-                    <div class="flex flex-wrap gap-1">
+                <!-- Pagination Controls (Sliding Window 5 Bubbles) -->
+                <div v-if="hasPagination" class="p-4 border-t border-slate-100 flex items-center justify-between">
+                    <div class="text-xs text-slate-500">
+                        Halaman <span class="font-bold text-slate-900 font-mono">{{ complaints.current_page }}</span>
+                        dari <span class="font-bold text-slate-900 font-mono">{{ complaints.last_page }}</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <!-- Prev Arrow -->
                         <Link
-                            v-for="(link, k) in complaints.links"
-                            :key="k"
-                            :href="link.url || '#'"
-                            v-html="link.label"
-                            class="px-3 py-1.5 rounded-lg text-xs font-medium transition"
-                            :class="{
-                                'bg-blue-600 text-white': link.active,
-                                'text-slate-600 hover:bg-slate-100': !link.active && link.url,
-                                'text-slate-300 cursor-not-allowed': !link.url
-                            }"
-                        />
+                            v-if="prevLink?.url"
+                            :href="prevLink.url"
+                            class="w-8 h-8 rounded-lg flex items-center justify-center bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 transition-all duration-200 transform hover:scale-105 shadow-xs"
+                            aria-label="Previous Page"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                            </svg>
+                        </Link>
+                        <span v-else class="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-50 text-slate-300 opacity-50 cursor-not-allowed">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                            </svg>
+                        </span>
+
+                        <!-- Numeric Page Bubbles -->
+                        <template v-for="(link, k) in visiblePaginationLinks" :key="k">
+                            <Link
+                                v-if="link.url"
+                                :href="link.url"
+                                class="w-8 h-8 rounded-lg text-xs font-bold flex items-center justify-center transition-all duration-200 transform hover:scale-105"
+                                :class="link.active
+                                    ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                                    : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'"
+                            >
+                                {{ link.label }}
+                            </Link>
+                            <span v-else class="w-8 h-8 rounded-lg text-xs font-bold flex items-center justify-center bg-slate-50 text-slate-400">
+                                {{ link.label }}
+                            </span>
+                        </template>
+
+                        <!-- Next Arrow -->
+                        <Link
+                            v-if="nextLink?.url"
+                            :href="nextLink.url"
+                            class="w-8 h-8 rounded-lg flex items-center justify-center bg-white border border-slate-200 text-slate-600 hover:bg-slate-100 transition-all duration-200 transform hover:scale-105 shadow-xs"
+                            aria-label="Next Page"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                            </svg>
+                        </Link>
+                        <span v-else class="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-50 text-slate-300 opacity-50 cursor-not-allowed">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                            </svg>
+                        </span>
                     </div>
                 </div>
             </div>

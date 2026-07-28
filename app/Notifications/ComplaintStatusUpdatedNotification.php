@@ -43,6 +43,7 @@ class ComplaintStatusUpdatedNotification extends Notification
     {
         $labels = [
             'pending' => 'Menunggu',
+            'terkirim' => 'Terkirim',
             'processing' => 'Diproses',
             'resolved' => 'Selesai',
             'rejected' => 'Ditolak',

@@ -1,11 +1,20 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { Link, usePage, router } from '@inertiajs/vue3'
+
+const notificationDropdownRef = ref(null)
+const notificationBellRef = ref(null)
 import Footer from '@/Components/Front/Footer.vue'
 
 const page = usePage()
 const notificationsOpen = ref(false)
 const activeNotificationTab = ref('unread')
+
+const markAllAsRead = () => {
+    router.post('/notifications/read-all', {}, {
+        preserveScroll: true,
+    })
+}
 
 const authUser = computed(() => page.props.auth?.user)
 const notifications = computed(() => authUser.value?.notifications || [])
@@ -25,7 +34,7 @@ const markAsRead = (notification) => {
     })
 }
 
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, onBeforeUnmount } from 'vue'
 import { NotificationService } from '@/Services/NotificationService'
 
 let pollTimer = null
@@ -39,7 +48,21 @@ const triggerBellRing = () => {
     }, 1000)
 }
 
+const handleClickOutside = (e) => {
+    if (
+        notificationsOpen.value &&
+        notificationDropdownRef.value &&
+        !notificationDropdownRef.value.contains(e.target) &&
+        notificationBellRef.value &&
+        !notificationBellRef.value.contains(e.target)
+    ) {
+        notificationsOpen.value = false
+    }
+}
+
 onMounted(() => {
+    document.addEventListener('mousedown', handleClickOutside)
+
     if (authUser.value) {
         NotificationService.requestPermission()
         notifications.value.forEach(n => seenIdsSet.add(n.id))
@@ -61,6 +84,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+    document.removeEventListener('mousedown', handleClickOutside)
     if (pollTimer) {
         clearInterval(pollTimer)
     }
@@ -77,17 +101,17 @@ onUnmounted(() => {
                     <Link href="/">
                         <img
                             src="/services/logobateng3.png"
-                            class="w-24 h-auto mx-auto object-contain transition-transform hover:scale-105"
+                            class="w-24 h-auto object-contain hover:scale-105 transition duration-300"
                             alt="Logo Bangka Tengah"
-                        >
+                        />
                     </Link>
                 </div>
 
                 <nav class="p-4 space-y-2">
                     <Link
-                        href="/admin"
+                        :href="$page.props.auth?.user?.role === 'pimpinan' ? '/pimpinan' : '/admin'"
                         class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition"
-                        :class="page.url === '/admin' ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'"
+                        :class="(page.url === '/admin' || page.url === '/pimpinan') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
@@ -137,7 +161,25 @@ onUnmounted(() => {
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6 0 3.375 3.375 0 0 1 6 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
                         </svg>
-                        <span>Kelola Admin</span>
+                        <span>Kelola Admin Sistem</span>
+                    </Link>
+
+                    <!-- Kelola KDMP Khusus Admin KDMP -->
+                    <Link
+                        v-if="$page.props.auth?.user && ['admin_kdmp', 'admin_kecamatan', 'admin_kmp'].includes($page.props.auth.user.kdmp_role)"
+                        :href="(() => {
+                            if ($page.props.auth.user.kdmp_role === 'admin_kdmp') return '/admin/kdmp';
+                            if ($page.props.auth.user.kdmp_role === 'admin_kecamatan') return '/admin/kdmp/kecamatan';
+                            if ($page.props.auth.user.kdmp_role === 'admin_kmp') return '/admin/kdmp/kmp';
+                            return '#';
+                        })()"
+                        class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition"
+                        :class="page.url.startsWith('/admin/kdmp') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                        <span>Kelola KDMP</span>
                     </Link>
                 </nav>
             </div>
@@ -166,12 +208,13 @@ onUnmounted(() => {
             <!-- Navbar Header -->
             <header class="bg-white shadow px-8 py-4 flex justify-between items-center relative">
                 <h1 class="font-bold text-xl text-gray-800">
-                    Admin Panel
+                    {{ $page.props.auth?.user?.role === 'pimpinan' ? 'Dashboard Pimpinan' : 'Admin Panel' }}
                 </h1>
 
                 <!-- Admin Notification Bell Component -->
                 <div v-if="authUser" class="relative">
                     <button
+                        ref="notificationBellRef"
                         @click="notificationsOpen = !notificationsOpen"
                         class="relative inline-flex items-center justify-center rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 p-2.5 transition cursor-pointer"
                         :class="{ 'animate-bell-ring text-rose-600': isBellRinging }"
@@ -200,6 +243,7 @@ onUnmounted(() => {
                         leave-to-class="transform opacity-0 scale-95 -translate-y-2"
                     >
                         <div
+                            ref="notificationDropdownRef"
                             v-show="notificationsOpen"
                             class="absolute right-0 mt-3 w-80 sm:w-96 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl z-50 transition-all"
                         >
@@ -326,7 +370,7 @@ onUnmounted(() => {
     </div>
 
     <!-- Homepage Footer at bottom -->
-    <Footer />
+    <Footer ></Footer>
 </div>
 </template>
 

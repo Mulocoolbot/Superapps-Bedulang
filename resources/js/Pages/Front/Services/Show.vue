@@ -8,7 +8,10 @@ import Footer from '@/Components/Front/Footer.vue'
 // Import Segmented Dashboard components
 import PerindagkopDashboard from './Dashboards/PerindagkopDashboard.vue'
 import MbgDashboard from './Dashboards/MbgDashboard.vue'
-import DkpDashboard from './Dashboards/DkpDashboard.vue'
+import KepegawaianDashboard from './Dashboards/KepegawaianDashboard.vue'
+import PertanianDashboard from './Dashboards/PertanianDashboard.vue'
+import InformasiPublikDashboard from './Dashboards/InformasiPublikDashboard.vue'
+import KdmpDashboard from './Dashboards/KdmpDashboard.vue'
 import DefaultDashboard from './Dashboards/DefaultDashboard.vue'
 
 const isComplaintModalOpen = ref(false)
@@ -31,8 +34,14 @@ const dashboardComponent = computed(() => {
             return PerindagkopDashboard
         case 'makanan-bergizi-gratis':
             return MbgDashboard
-        case 'lingkungan':
-            return DkpDashboard
+        case 'kepegawaian':
+            return KepegawaianDashboard
+        case 'pertanian':
+            return PertanianDashboard
+        case 'informasi-publik':
+            return InformasiPublikDashboard
+        case 'kdmp':
+            return KdmpDashboard
         default:
             return DefaultDashboard
     }
@@ -48,6 +57,12 @@ const serviceSourceUrl = computed(() => {
             return 'https://disperindagkop-ukm.bangkatengahkab.go.id/'
         case 'makanan-bergizi-gratis':
             return 'https://mbg.pdm.kemendikdasmen.go.id/portal'
+        case 'pertanian':
+            return 'https://dpkp.bangkatengahkab.go.id/'
+        case 'informasi-publik':
+            return 'https://bangkatengahkab.go.id/'
+        case 'kepegawaian':
+            return 'https://bkpsdmd.bangkatengahkab.go.id/'
         default:
             return props.dashboard?.metadata?.source_url || ''
     }
@@ -59,6 +74,12 @@ const serviceSourceLabel = computed(() => {
             return 'disperindagkop-ukm.bangkatengahkab.go.id'
         case 'makanan-bergizi-gratis':
             return 'mbg.pdm.kemendikdasmen.go.id/portal'
+        case 'pertanian':
+            return 'dpkp.bangkatengahkab.go.id'
+        case 'informasi-publik':
+            return 'bangkatengahkab.go.id'
+        case 'kepegawaian':
+            return 'bkpsdmd.bangkatengahkab.go.id'
         default:
             return props.dashboard?.metadata?.source || 'Portal Satu Data Bangka Tengah'
     }
@@ -67,7 +88,7 @@ const serviceSourceLabel = computed(() => {
 
 <template>
     <FrontLayout>
-        <Head :title="title" />
+        <Head :title="title"></Head>
 
         <div class="mx-auto max-w-7xl px-4 pt-24 pb-6 sm:px-6 lg:px-8 lg:pt-28 lg:pb-10">
 
@@ -107,7 +128,7 @@ const serviceSourceLabel = computed(() => {
                     </div>
 
                     <!-- Complaint Action Button -->
-                    <div class="flex shrink-0 items-center">
+                    <div class="flex shrink-0 items-center" v-if="$page.props.auth.user && $page.props.auth.user.role === 'pimpinan' && $page.props.auth.user.service_slug === service.slug">
                         <button
                             @click="isComplaintModalOpen = true"
                             class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 shadow-md shadow-blue-500/10 hover:shadow-lg hover:shadow-blue-500/20 cursor-pointer"
@@ -128,15 +149,18 @@ const serviceSourceLabel = computed(() => {
                 </div>
             </div>
 
-            <!-- Dynamically Rendered Segmented Dashboard -->
-            <component 
-                :is="dashboardComponent" 
-                :service="service" 
-                :dashboard="dashboard" 
-            />
+            <!-- Dynamically Rendered Segmented Dashboard with Smooth Transition -->
+            <Transition name="page-fade" mode="out-in">
+                <component 
+                    :is="dashboardComponent" 
+                    :key="service?.slug"
+                    :service="service" 
+                    :dashboard="dashboard" 
+                />
+            </Transition>
 
-            <!-- Sumber Data Section (Footer data note inside page margin) -->
-            <div class="mt-12 pt-6 border-t border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+            <!-- Sumber Data Section (Footer data note inside page margin - Hidden for Informasi Publik as each tab manages its own source) -->
+            <div v-if="service?.slug !== 'informasi-publik'" class="mt-12 pt-6 border-t border-slate-200 dark:border-slate-800/80 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                 <div class="flex items-center gap-1.5">
                     <span>Sumber Data:</span>
                     <a 
@@ -163,15 +187,14 @@ const serviceSourceLabel = computed(() => {
         </div>
 
         <!-- Footer component from main page -->
-        <Footer />
+        <Footer ></Footer>
 
         <!-- Complaint Modal -->
         <ComplaintModal
             :is-open="isComplaintModalOpen"
             :service-name="service.name"
             :service-slug="service.slug"
-            @close="isComplaintModalOpen = false"
-        />
+            @close="isComplaintModalOpen = false"></ComplaintModal>
     </FrontLayout>
 </template>
 
@@ -201,6 +224,22 @@ const serviceSourceLabel = computed(() => {
 
 .animate-fade-in-up {
     animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Page / Dashboard Transition Animations */
+.page-fade-enter-active,
+.page-fade-leave-active {
+    transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-fade-enter-from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.99);
+}
+
+.page-fade-leave-to {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.99);
 }
 
 .animate-grow-width {

@@ -38,6 +38,8 @@ class HandleInertiaRequests extends Middleware
                     'email' => $request->user()->email,
                     'role' => $request->user()->role,
                     'service_slug' => $request->user()->service_slug,
+                    'kdmp_role' => $request->user()->kdmp_role,
+                    'kdmp_kecamatan' => $request->user()->kdmp_kecamatan,
                     'notifications' => $request->user()->notifications()->latest()->take(30)->get(),
                     'unread_notifications_count' => $request->user()->unreadNotifications()->count(),
                 ] : null,
@@ -45,6 +47,11 @@ class HandleInertiaRequests extends Middleware
             'csrf_token' => fn () => csrf_token(),
             'whatsapp' => [
                 'complaint_phone' => config('services.whatsapp.complaint_phone', '6283128848371'),
+            ],
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'warning' => fn () => $request->session()->get('warning'),
+                'error' => fn () => $request->session()->get('error'),
             ],
         ];
     }

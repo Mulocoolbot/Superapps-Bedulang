@@ -11,19 +11,19 @@ import Footer from '@/Components/Front/Footer.vue'
 
 <template>
 
-    <Head title="Beranda" />
+    <Head title="Beranda"></Head>
 
     <FrontLayout>
 
-        <VideoHero />
+        <VideoHero></VideoHero>
 
-        <Hero />
+        <Hero></Hero>
 
-        <InformationServices />
+        <InformationServices></InformationServices>
         
-        <AppLauncher />
+        <AppLauncher></AppLauncher>
 
-        <Footer />
+        <Footer></Footer>
 
     </FrontLayout>
 

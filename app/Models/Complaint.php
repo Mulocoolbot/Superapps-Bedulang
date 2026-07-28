@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Complaint extends Model
 {
+    use HasFactory;
+
     protected $appends = [
         'service_name',
     ];
@@ -26,10 +29,18 @@ class Complaint extends Model
         'whatsapp_sent_at',
         'whatsapp_message_id',
         'notes',
+
+        //Bedulang
+        'followup_image',
+        'followup_image_uploaded_at',
+        'rating',
+        'review',
     ];
 
     protected $casts = [
         'whatsapp_sent_at' => 'datetime',
+        'followup_image_uploaded_at' => 'datetime',
+        'rating' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -45,7 +56,7 @@ class Complaint extends Model
     /**
      * Get the progress history logs for this complaint
      */
-    public function progressLogs(): HasMany
+    public function progressLogs()
     {
         return $this->hasMany(ComplaintProgressLog::class, 'complaint_id')->orderBy('created_at', 'desc');
     }
@@ -64,10 +75,12 @@ class Complaint extends Model
             'sosial' => 'SOSIAL',
             'kependudukan' => 'KEPENDUDUKAN',
             'kepegawaian' => 'KEPEGAWAIAN',
-            'lingkungan' => 'LINGKUNGAN',
+            'pertanian' => 'PERTANIAN',
+            'informasi-publik' => 'INFORMASI PUBLIK',
             'pariwisata' => 'PARIWISATA',
             'data-sektoral' => 'DATA SEKTORAL',
             'makanan-bergizi-gratis' => 'MAKANAN BERGIZI GRATIS',
+            'pengaduan-bedulang' => 'PENGADUAN BEDULANG',
         ];
 
         return $services[$this->service_slug] ?? ucfirst($this->service_slug);

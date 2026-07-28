@@ -72,8 +72,7 @@ const closeModal = () => {
                     <InputLabel
                         for="password"
                         value="Password"
-                        class="sr-only"
-                    />
+                        class="sr-only"></InputLabel>
 
                     <TextInput
                         id="password"
@@ -82,10 +81,9 @@ const closeModal = () => {
                         type="password"
                         class="mt-1 block w-3/4"
                         placeholder="Password"
-                        @keyup.enter="deleteUser"
-                    />
+                        @keyup.enter="deleteUser"></TextInput>
 
-                    <InputError :message="form.errors.password" class="mt-2" />
+                    <InputError :message="form.errors.password" class="mt-2"></InputError>
                 </div>
 
                 <div class="mt-6 flex justify-end">
