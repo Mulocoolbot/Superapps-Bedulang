@@ -674,6 +674,21 @@ fetchUrusan()
                             </div>
                         </div>
 
+                        <!-- Sumber Data -->
+                        <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                            <div class="flex items-center gap-1.5">
+                                <span>Sumber Data:</span>
+                                <a 
+                                    href="https://sikokdata.bangkatengahkab.go.id/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 underline"
+                                >
+                                    Sikokdata Bangka Tengah
+                                </a>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
