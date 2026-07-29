@@ -19,10 +19,10 @@ const selectedUrusan = ref(null)
 const selectedSubUrusan = ref(null)
 const selectedIndikator = ref(null)
 
-// Default year range: current year to 4 years prior (e.g. 2026 to 2022)
+// Default year range: tahunAwal is newest year (currentYear), tahunAkhir is oldest year (currentYear - 4)
 const currentYear = new Date().getFullYear()
-const tahunAkhir = ref(currentYear)
-const tahunAwal = ref(currentYear - 4)
+const tahunAwal = ref(currentYear)
+const tahunAkhir = ref(currentYear - 4)
 
 // Pagination states
 const currentPage = ref(1)
@@ -178,7 +178,7 @@ async function fetchData() {
 
 // Watch automatic year changes
 watch([tahunAwal, tahunAkhir], () => {
-    if (currentStep.value === 4 && tahunAwal.value <= tahunAkhir.value) {
+    if (currentStep.value === 4 && tahunAwal.value && tahunAkhir.value) {
         fetchData()
     }
 })
@@ -275,6 +275,11 @@ const handleBack = () => {
 const filteredTableData = computed(() => {
     if (!sektoralData.value?.data) return []
     return sektoralData.value.data
+})
+
+const pdfDownloadUrl = computed(() => {
+    if (!selectedUrusan.value || !selectedSubUrusan.value || !selectedIndikator.value) return '#'
+    return `https://sikokdata.bangkatengahkab.go.id/report/${encodeURIComponent(selectedUrusan.value)}/${encodeURIComponent(selectedSubUrusan.value)}/${encodeURIComponent(selectedIndikator.value)}/${tahunAwal.value}/${tahunAkhir.value}`
 })
 
 // ==========================================
@@ -382,9 +387,9 @@ const groupedData = computed(() => {
         return 0
     })
 
-    // Step 6: Sort rows within each group by year
+    // Step 6: Sort rows within each group by year (newest first, descending)
     result.forEach(group => {
-        group.rows.sort((a, b) => (a.tahun || 0) - (b.tahun || 0))
+        group.rows.sort((a, b) => (b.tahun || 0) - (a.tahun || 0))
     })
 
     return result
@@ -597,7 +602,7 @@ fetchUrusan()
                             </p>
                         </div>
                         
-                        <!-- Automatic Filter Controls Bar (Year Range & Sub-Indicator Dropdowns) -->
+                        <!-- Automatic Filter Controls Bar (Year Range & Download PDF) -->
                         <div class="mb-8 flex flex-wrap items-center justify-between gap-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700">
                             <!-- Year Inputs (Automatic fetch on change) -->
                             <div class="flex items-center gap-3">
@@ -620,6 +625,20 @@ fetchUrusan()
                                         class="w-24 rounded-lg border-gray-300 py-1.5 text-sm font-semibold dark:bg-gray-800 dark:border-gray-600 dark:text-white"
                                     >
                                 </div>
+                            </div>
+
+                            <!-- PDF Download Button -->
+                            <div>
+                                <a 
+                                    :href="pdfDownloadUrl"
+                                    target="_blank"
+                                    class="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-red-700 hover:shadow-md dark:bg-red-500 dark:hover:bg-red-600 cursor-pointer"
+                                >
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    Unduh PDF
+                                </a>
                             </div>
 
                         </div>

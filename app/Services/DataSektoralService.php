@@ -70,15 +70,18 @@ class DataSektoralService
      */
     public function getData(string $urusan, string $subUrusan, string $indikator, int $tahunAwal, int $tahunAkhir): array
     {
-        $cacheKey = 'data_sektoral_data_' . md5(implode('_', [$urusan, $subUrusan, $indikator, $tahunAwal, $tahunAkhir]));
+        $startYear = min((int) $tahunAwal, (int) $tahunAkhir);
+        $endYear = max((int) $tahunAwal, (int) $tahunAkhir);
 
-        return Cache::remember($cacheKey, 1800, function () use ($urusan, $subUrusan, $indikator, $tahunAwal, $tahunAkhir) {
+        $cacheKey = 'data_sektoral_data_' . md5(implode('_', [$urusan, $subUrusan, $indikator, $startYear, $endYear]));
+
+        return Cache::remember($cacheKey, 1800, function () use ($urusan, $subUrusan, $indikator, $startYear, $endYear) {
             $url = $this->baseUrl . '/'
                 . rawurlencode($urusan) . '/'
                 . rawurlencode($subUrusan) . '/'
                 . rawurlencode($indikator) . '/'
-                . $tahunAwal . '/'
-                . $tahunAkhir;
+                . $startYear . '/'
+                . $endYear;
 
             return $this->fetchFromApi($url, true) ?? [];
         });
