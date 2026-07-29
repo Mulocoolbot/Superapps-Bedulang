@@ -87,13 +87,26 @@ class DataSektoralController extends Controller
      */
     public function getData(string $urusan, string $subUrusan, string $indikator, int $tahunAwal, int $tahunAkhir): JsonResponse
     {
-        $minYear = min((int) $tahunAwal, (int) $tahunAkhir);
-        $maxYear = max((int) $tahunAwal, (int) $tahunAkhir);
+        $currentYear = (int) date('Y');
 
-        if ($minYear < 2000 || $maxYear > (int) date('Y') + 1) {
+        if ($tahunAwal > $currentYear) {
             return response()->json([
                 'success' => false,
-                'message' => 'Rentang tahun tidak valid.',
+                'message' => 'Tahun awal tidak boleh lebih dari tahun terkini (' . $currentYear . ').',
+            ], 422);
+        }
+
+        if ($tahunAwal <= $tahunAkhir) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tahun awal tidak boleh kurang dari atau sama dengan tahun akhir.',
+            ], 422);
+        }
+
+        if ($tahunAkhir >= $tahunAwal) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tahun akhir tidak boleh lebih dari atau sama dengan tahun awal.',
             ], 422);
         }
 

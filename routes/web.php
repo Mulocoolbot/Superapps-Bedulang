@@ -117,6 +117,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/admin/kdmp/kecamatan/admin-kmp/{user}', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'destroyAdmin'])->name('admin.kdmp.kecamatan.destroy_admin');
     Route::post('/admin/kdmp/kecamatan/kmp/{kmp}/verify-pembentukan', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'verifyPembentukan'])->name('admin.kdmp.kecamatan.verify_pembentukan');
     Route::post('/admin/kdmp/kecamatan/kmp/{kmp}/verify-sertifikat', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'verifySertifikat'])->name('admin.kdmp.kecamatan.verify_sertifikat');
+    Route::post('/admin/kdmp/kecamatan/kmp/{kmp}/verify-pelatihan', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'verifyPelatihan'])->name('admin.kdmp.kecamatan.verify_pelatihan');
     Route::post('/admin/kdmp/kecamatan/kmp-edit/{editRequest}/verify', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'verifyEditRequest'])->name('admin.kdmp.kecamatan.verify_edit');
     Route::get('/admin/kdmp/kecamatan/history', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'historyLog'])->name('admin.kdmp.kecamatan.history');
 
@@ -125,6 +126,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/kdmp/kmp', [\App\Http\Controllers\Kdmp\AdminKmpController::class, 'storeKmp'])->name('admin.kdmp.kmp.store');
     Route::post('/admin/kdmp/kmp/edit', [\App\Http\Controllers\Kdmp\AdminKmpController::class, 'requestEdit'])->name('admin.kdmp.kmp.request_edit');
     Route::post('/admin/kdmp/kmp/sertifikat', [\App\Http\Controllers\Kdmp\AdminKmpController::class, 'uploadSertifikat'])->name('admin.kdmp.kmp.upload_sertifikat');
+    Route::post('/admin/kdmp/kmp/pelatihan', [\App\Http\Controllers\Kdmp\AdminKmpController::class, 'uploadPelatihan'])->name('admin.kdmp.kmp.upload_pelatihan');
     Route::post('/admin/kdmp/kmp/management', [\App\Http\Controllers\Kdmp\AdminKmpController::class, 'updateManagement'])->name('admin.kdmp.kmp.update_management');
     Route::get('/admin/kdmp/kmp/history', [\App\Http\Controllers\Kdmp\AdminKmpController::class, 'historyLog'])->name('admin.kdmp.kmp.history');
 

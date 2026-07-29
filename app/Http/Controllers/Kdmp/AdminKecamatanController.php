@@ -205,6 +205,32 @@ class AdminKecamatanController extends Controller
         return redirect()->back()->with('success', 'Status sertifikat KMP berhasil diubah.');
     }
 
+    public function verifyPelatihan(Kmp $kmp, Request $request)
+    {
+        $validated = $request->validate([
+            'action' => 'required|in:verify,reject',
+        ]);
+
+        $kmp->status_pelatihan = $validated['action'] === 'verify' ? 'verified' : 'rejected';
+        $kmp->save();
+
+        KmpHistoryLog::create([
+            'kmp_id' => $kmp->id,
+            'user_id' => Auth::id(),
+            'action' => 'verify_pelatihan',
+            'description' => "Admin Kecamatan " . ($validated['action'] === 'verify' ? 'menyetujui' : 'menolak') . " bukti pelatihan KMP.",
+        ]);
+
+        $adminKdmps = User::where('kdmp_role', 'admin_kdmp')->orWhere('role', 'super_admin')->get();
+        $statusText = $validated['action'] === 'verify' ? 'disetujui' : 'ditolak';
+        Notification::send($adminKdmps, new KdmpApprovalNotification(
+            "Bukti Pelaksanaan Pelatihan KMP {$kmp->nama} telah {$statusText} oleh Admin Kecamatan.",
+            $validated['action'] === 'verify' ? "success" : "warning"
+        ));
+
+        return redirect()->back()->with('success', 'Status pelatihan KMP berhasil diubah.');
+    }
+
     public function verifyEditRequest(KmpEditRequest $editRequest, Request $request)
     {
         $validated = $request->validate([

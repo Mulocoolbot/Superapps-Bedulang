@@ -132,8 +132,9 @@ class KdmpService implements InformationServiceInterface
             'telp' => $kmp->telp ?? '-',
             'operasional' => $kmp->status_operasional ? 'Sudah' : 'Belum',
             'sertifikat' => $kmp->status_sertifikat === 'verified' ? 'Sudah' : 'Belum',
-            'pelatihan' => $kmp->status_pelatihan ? 'Sudah' : 'Belum',
+            'pelatihan' => $kmp->status_pelatihan === 'verified' ? 'Sudah' : 'Belum',
             'file_sertifikat' => $kmp->file_sertifikat,
+            'file_pelatihan' => $kmp->file_pelatihan,
             'pengurus' => [
                 'kepala' => ['nama' => $kmp->ketua_nama ?? 'Belum ada data', 'foto' => $kmp->ketua_foto],
                 'sekretaris' => ['nama' => $kmp->sekretaris_nama ?? 'Belum ada data', 'foto' => $kmp->sekretaris_foto],

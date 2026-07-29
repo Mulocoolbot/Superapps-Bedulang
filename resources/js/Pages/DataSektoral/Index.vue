@@ -30,6 +30,28 @@ const itemsPerPage = 10
 
 const isLoading = ref(false)
 const errorMessage = ref('')
+const yearValidationError = ref('')
+
+const validateYearFilter = () => {
+    yearValidationError.value = ''
+    if (!tahunAwal.value || !tahunAkhir.value) {
+        yearValidationError.value = 'Tahun awal dan tahun akhir harus diisi.'
+        return false
+    }
+    if (tahunAwal.value > currentYear) {
+        yearValidationError.value = `Tahun awal tidak boleh lebih dari tahun terkini (${currentYear}).`
+        return false
+    }
+    if (tahunAwal.value <= tahunAkhir.value) {
+        yearValidationError.value = 'Tahun awal tidak boleh kurang dari atau sama dengan tahun akhir.'
+        return false
+    }
+    if (tahunAkhir.value >= tahunAwal.value) {
+        yearValidationError.value = 'Tahun akhir tidak boleh lebih dari atau sama dengan tahun awal.'
+        return false
+    }
+    return true
+}
 
 // ==========================================
 // Animation & Transition States
@@ -158,6 +180,11 @@ async function fetchIndikator(urusan, subUrusan) {
 
 async function fetchData() {
     if (!selectedUrusan.value || !selectedSubUrusan.value || !selectedIndikator.value) return
+    if (!validateYearFilter()) {
+        sektoralData.value = null
+        return
+    }
+
     isLoading.value = true
     sektoralData.value = null
     currentPage.value = 1
@@ -168,6 +195,8 @@ async function fetchData() {
         const json = await res.json()
         if (json.success) {
             sektoralData.value = json.data
+        } else {
+            yearValidationError.value = json.message || 'Gagal memuat data sektoral'
         }
     } catch (e) {
         errorMessage.value = 'Gagal memuat data sektoral'
@@ -641,6 +670,14 @@ fetchUrusan()
                                 </a>
                             </div>
 
+                        </div>
+
+                        <!-- Year Filter Validation Error Alert -->
+                        <div v-if="yearValidationError" class="mb-6 p-4 rounded-xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-sm text-red-600 dark:text-red-400 font-semibold flex items-center gap-2">
+                            <svg class="h-5 w-5 shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <span>{{ yearValidationError }}</span>
                         </div>
 
                         <!-- Grouped Tables -->
