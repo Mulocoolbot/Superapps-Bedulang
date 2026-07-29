@@ -281,63 +281,113 @@ const filteredTableData = computed(() => {
 // Pagination Logic
 // ==========================================
 const groupedData = computed(() => {
-    if (!filteredTableData.value) return []
-    const sorted = [...filteredTableData.value].sort((a, b) => {
-        const levelsA = [a.sub_indikator_1, a.sub_indikator_2, a.sub_indikator_3, a.sub_indikator_4, a.sub_indikator_5, a.kecamatan].filter(v => v !== null && v !== undefined && v !== '')
-        const levelsB = [b.sub_indikator_1, b.sub_indikator_2, b.sub_indikator_3, b.sub_indikator_4, b.sub_indikator_5, b.kecamatan].filter(v => v !== null && v !== undefined && v !== '')
-        
-        const minLength = Math.min(levelsA.length, levelsB.length)
-        for (let i = 0; i < minLength; i++) {
-            if (levelsA[i] !== levelsB[i]) {
-                return levelsA[i].localeCompare(levelsB[i])
+    if (!filteredTableData.value || filteredTableData.value.length === 0) return []
+
+    const subKeys = ['sub_indikator_1', 'sub_indikator_2', 'sub_indikator_3', 'sub_indikator_4', 'sub_indikator_5']
+
+    // Helper: get clean hierarchy levels for a row (non-empty, non-zero sub_indikator + kecamatan values)
+    const getLevels = (row) => {
+        const levels = []
+        for (const key of subKeys) {
+            const val = row[key]
+            if (val !== null && val !== undefined && val !== '' && val !== 0 && val !== '0') {
+                levels.push(val)
             }
         }
-        
-        if (levelsA.length !== levelsB.length) {
-            return levelsB.length - levelsA.length // Deeper hierarchy first
+        // Include kecamatan as an additional hierarchy level if present
+        const kec = row.kecamatan
+        if (kec !== null && kec !== undefined && kec !== '' && kec !== 0 && kec !== '0') {
+            levels.push(kec)
         }
-        
-        return (a.tahun || 0) - (b.tahun || 0)
+        return levels
+    }
+
+    // Step 1: Find the deepest level that has variation for each parent prefix.
+    // We build a tree to find where branching happens.
+    const allRows = filteredTableData.value.map(row => ({
+        ...row,
+        _levels: getLevels(row)
+    }))
+
+    // Step 2: Group rows by their FULL path (all non-empty sub-indicator levels).
+    // Then find the correct parent grouping by detecting where the last branch occurs.
+    const fullPathMap = new Map()
+    allRows.forEach(row => {
+        const fullKey = row._levels.join('|')
+        if (!fullPathMap.has(fullKey)) {
+            fullPathMap.set(fullKey, {
+                levels: [...row._levels],
+                rows: []
+            })
+        }
+        fullPathMap.get(fullKey).rows.push(row)
     })
 
-    const groupsMap = new Map()
+    // Step 3: For each unique full path, determine the correct parent/leaf split.
+    // The parent is all levels except the last one. The leaf is the last level.
+    // But we need to merge paths that share the same parent into one group.
+    const parentGroupMap = new Map()
 
-    sorted.forEach(row => {
-        const levels = [
-            row.sub_indikator_1, 
-            row.sub_indikator_2, 
-            row.sub_indikator_3, 
-            row.sub_indikator_4, 
-            row.sub_indikator_5, 
-            row.kecamatan
-        ].filter(v => v !== null && v !== undefined && v !== '')
-        
-        let parentHierarchy = []
-        let leaf = '-'
-        
-        if (levels.length > 0) {
+    fullPathMap.forEach((pathData) => {
+        const levels = pathData.levels
+        let parentHierarchy, leaf
+
+        if (levels.length === 0) {
+            parentHierarchy = []
+            leaf = '-'
+        } else if (levels.length === 1) {
+            // Only one level: it becomes the hierarchy label, leaf is the data itself
+            parentHierarchy = []
+            leaf = levels[0]
+        } else {
             parentHierarchy = levels.slice(0, -1)
             leaf = levels[levels.length - 1]
         }
 
         const parentKey = parentHierarchy.join('|')
 
-        if (!groupsMap.has(parentKey)) {
-            groupsMap.set(parentKey, {
+        if (!parentGroupMap.has(parentKey)) {
+            parentGroupMap.set(parentKey, {
                 key: parentKey,
                 hierarchy: parentHierarchy,
                 rows: []
             })
         }
-        
-        const group = groupsMap.get(parentKey)
-        group.rows.push({
-            ...row,
-            leafName: leaf
+
+        const group = parentGroupMap.get(parentKey)
+        pathData.rows.forEach(row => {
+            group.rows.push({
+                ...row,
+                leafName: leaf
+            })
         })
     })
 
-    return Array.from(groupsMap.values())
+    // Step 4: Deduplicate — if a group has only ONE unique leaf, and another group exists
+    // where that leaf is part of its hierarchy, merge them or skip the redundant one.
+    const result = Array.from(parentGroupMap.values())
+
+    // Step 5: Sort groups by hierarchy depth (deepest first) then alphabetically
+    result.sort((a, b) => {
+        const minLen = Math.min(a.hierarchy.length, b.hierarchy.length)
+        for (let i = 0; i < minLen; i++) {
+            if (a.hierarchy[i] !== b.hierarchy[i]) {
+                return a.hierarchy[i].localeCompare(b.hierarchy[i])
+            }
+        }
+        // Deeper hierarchy first
+        if (a.hierarchy.length !== b.hierarchy.length) {
+            return b.hierarchy.length - a.hierarchy.length
+        }
+        return 0
+    })
+
+    // Step 6: Sort rows within each group by year
+    result.forEach(group => {
+        group.rows.sort((a, b) => (a.tahun || 0) - (b.tahun || 0))
+    })
+
+    return result
 })
 
 const selectedLeaves = ref({})
@@ -609,23 +659,23 @@ fetchUrusan()
                                 
                                 <!-- Group Table -->
                                 <div class="overflow-x-auto rounded-lg border border-[#c2dfbc] dark:border-gray-700 shadow-sm">
-                                    <table class="w-full text-left text-sm whitespace-nowrap">
+                                    <table class="w-full text-left text-sm table-fixed">
                                         <thead class="bg-[#d5ebd1] text-gray-900 dark:bg-gray-700/50 dark:text-gray-200 uppercase font-bold text-[11px] tracking-wider">
                                             <tr>
-                                                <th class="px-4 py-3 border-r border-[#c2dfbc] dark:border-gray-600 w-24">TAHUN</th>
-                                                <th class="px-4 py-3 border-r border-[#c2dfbc] dark:border-gray-600">DATA</th>
-                                                <th class="px-4 py-3 border-r border-[#c2dfbc] dark:border-gray-600 w-32">SATUAN</th>
-                                                <th class="px-4 py-3 border-r border-[#c2dfbc] dark:border-gray-600">SUMBER DATA</th>
-                                                <th class="px-4 py-3">KETERANGAN</th>
+                                                <th class="px-4 py-3 border-r border-[#c2dfbc] dark:border-gray-600 w-[10%]">TAHUN</th>
+                                                <th class="px-4 py-3 border-r border-[#c2dfbc] dark:border-gray-600 w-[25%]">DATA</th>
+                                                <th class="px-4 py-3 border-r border-[#c2dfbc] dark:border-gray-600 w-[12%]">SATUAN</th>
+                                                <th class="px-4 py-3 border-r border-[#c2dfbc] dark:border-gray-600 w-[28%]">SUMBER DATA</th>
+                                                <th class="px-4 py-3 w-[25%]">OPD</th>
                                             </tr>
                                         </thead>
                                         <tbody class="divide-y divide-[#c2dfbc] dark:divide-gray-700 bg-white dark:bg-gray-800">
                                             <tr v-for="(row, rIdx) in getGroupRows(group)" :key="rIdx" class="hover:bg-[#f2f8f0] dark:hover:bg-gray-700/50 transition">
                                                 <td class="px-4 py-3 border-r border-[#c2dfbc] dark:border-gray-700 font-semibold">{{ row.tahun || '-' }}</td>
-                                                <td class="px-4 py-3 border-r border-[#c2dfbc] dark:border-gray-700">{{ row.dataset || '0' }}</td>
+                                                <td class="px-4 py-3 border-r border-[#c2dfbc] dark:border-gray-700 break-words">{{ row.dataset || '0' }}</td>
                                                 <td class="px-4 py-3 border-r border-[#c2dfbc] dark:border-gray-700">{{ row.satuan || '-' }}</td>
-                                                <td class="px-4 py-3 border-r border-[#c2dfbc] dark:border-gray-700">{{ row.sumber_data || '-' }}</td>
-                                                <td class="px-4 py-3">{{ row.keterangan || '--' }}</td>
+                                                <td class="px-4 py-3 border-r border-[#c2dfbc] dark:border-gray-700 break-words">{{ row.sumberdata || '-' }}</td>
+                                                <td class="px-4 py-3 break-words">{{ row.opd || '-' }}</td>
                                             </tr>
                                         </tbody>
                                     </table>
