@@ -158,9 +158,6 @@ defineProps({
                 <div class="flex items-start justify-between">
                     <div>
                         <div class="flex items-center gap-2 mb-1">
-                            <span class="px-2 py-0.5 rounded-md text-xs font-semibold bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400">
-                                PAD
-                            </span>
                         </div>
                         <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Realisasi Anggaran Daerah Terbaru</p>
                         <h3 class="text-3xl font-bold text-slate-800 dark:text-white mt-1">

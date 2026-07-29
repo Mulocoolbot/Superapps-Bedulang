@@ -104,7 +104,7 @@ const handleTabChange = (tabId) => {
 
         <!-- Page background with bg layanan.svg -->
         <div 
-            class="relative bg-no-repeat bg-bottom bg-[length:100%_auto] min-h-screen"
+            class="relative bg-cover bg-center bg-no-repeat min-h-screen"
             style="background-image: url('/services/bg layanan.svg');"
         >
 

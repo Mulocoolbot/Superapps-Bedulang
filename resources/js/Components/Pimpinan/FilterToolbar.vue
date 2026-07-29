@@ -103,15 +103,7 @@ const handleStatusChange = (event) => {
 
     <!-- Actions group -->
     <div class="flex items-center">
-      <!-- Export PDF button -->
-      <button
-        @click="exportDashboard"
-        class="inline-flex items-center gap-2 px-4 py-1.5 rounded-xl bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-gray-700 font-semibold shadow-sm transition text-sm cursor-pointer"
-        title="Cetak/Simpan Laporan PDF"
-      >
-        <FileText class="w-4 h-4 text-emerald-500" />
-        <span>Ekspor PDF</span>
-      </button>
+    
     </div>
   </div>
 </template>
