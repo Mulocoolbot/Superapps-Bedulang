@@ -83,18 +83,18 @@ const confirmSent = async () => {
     <FrontLayout>
         <Head title="Layanan Pengaduan Bedulang" />
 
-        <div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/10 to-indigo-50/20 dark:from-gray-950 dark:via-gray-900 dark:to-slate-900 py-12 transition-colors duration-300">
+        <div class="min-h-screen bg-gradient-to-b from-[#0F3D77] via-[#0F3D77]/95 to-[#0b2b52] py-12 transition-colors duration-300">
             <section class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
                 <!-- Back Link -->
                 <div class="mb-8">
                     <Link
-                        href="/#layanan"
-                        class="inline-flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 transition"
+                        href="/"
+                        class="inline-flex items-center gap-2 text-sm font-semibold text-blue-100 hover:text-white transition"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
                         </svg>
-                        <span>Kembali ke Beranda</span>
+                        <span>Kembali</span>
                     </Link>
                 </div>
 

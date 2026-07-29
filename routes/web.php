@@ -117,15 +117,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/my-complaints/{complaint}/review', [\App\Http\Controllers\UserComplaintController::class, 'storeReview'])
         ->name('user.complaints.review');
 
-    Route::get('/layanan/{slug}', [InformationServiceController::class, 'show'])
-        ->name('layanan.show');
-
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
 
     Route::get('/pimpinan', [PimpinanDashboardController::class, 'index'])
         ->name('pimpinan.dashboard');
+
+    Route::get('/dashboard/pad', [PimpinanDashboardController::class, 'pad'])
+        ->name('pimpinan.pad');
 
     Route::get('/my-complaints', [\App\Http\Controllers\UserComplaintController::class, 'index'])
         ->name('user.complaints.index');
@@ -149,6 +149,10 @@ Route::middleware('auth')->group(function () {
         ->name('profile.destroy');
 
 });
+
+Route::get('/layanan/{slug}', [InformationServiceController::class, 'show'])
+    ->name('layanan.show');
+
 
 require __DIR__.'/auth.php';
 

@@ -31,6 +31,10 @@ class InformationServiceController extends Controller
             abort(404);
         }
 
+        if ($slug !== 'pertanian' && $slug !== 'desa' && !auth()->check()) {
+            return redirect()->guest(route('login'));
+        }
+
         $service = $this->registry->resolve($slug);
         
         $metadata = $service->getMetadata();

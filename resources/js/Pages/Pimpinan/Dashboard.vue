@@ -1,10 +1,10 @@
 <script setup>
-import { Head, Link } from '@inertiajs/vue3'
+import { Head, Link, router } from '@inertiajs/vue3'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
-import { ref, onMounted, onBeforeUnmount, nextTick } from 'vue'
-import Hls from 'hls.js'
+import ExecutiveSummaryCard from '@/Components/Pimpinan/ExecutiveSummaryCard.vue'
+import CCTVGridCard from '@/Components/CCTVGridCard.vue'
 
-const props = defineProps({
+defineProps({
     cctvs: {
         type: Array,
         default: () => []
@@ -20,50 +20,6 @@ const props = defineProps({
     userDomain: {
         type: String,
         default: ''
-    }
-})
-
-const videoRef = ref(null)
-const selectedCCTV = ref(props.cctvs && props.cctvs.length > 0 ? props.cctvs[0] : null)
-
-let hls = null
-
-const playCCTV = (cctv) => {
-    selectedCCTV.value = cctv
-    nextTick(() => {
-        if (!cctv || !videoRef.value) return
-        const streamUrl = cctv.stream
-
-        if (hls) {
-            hls.destroy()
-        }
-
-        if (Hls.isSupported()) {
-            hls = new Hls()
-            hls.loadSource(streamUrl)
-            hls.attachMedia(videoRef.value)
-            hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                videoRef.value.play().catch(() => {})
-            })
-        } else if (videoRef.value.canPlayType('application/vnd.apple.mpegurl')) {
-            videoRef.value.src = streamUrl
-            videoRef.value.addEventListener('loadedmetadata', () => {
-                videoRef.value.play().catch(() => {})
-            })
-        }
-    })
-}
-
-onMounted(() => {
-    if (selectedCCTV.value) {
-        playCCTV(selectedCCTV.value)
-    }
-})
-
-onBeforeUnmount(() => {
-    if (hls) {
-        hls.destroy()
-        hls = null
     }
 })
 </script>
@@ -95,7 +51,7 @@ onBeforeUnmount(() => {
                     </svg>
                 </Link>
             </div>
-
+ 
             <!-- Grand Recap -->
             <div>
                 <h2 class="text-xl font-bold text-gray-800 mb-4">Ringkasan Eksekutif</h2>
@@ -197,6 +153,37 @@ onBeforeUnmount(() => {
                         </div>
                     </Link>
 
+                    <Link href="/dashboard/pad" class="block transition hover:scale-[1.02]">
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-slate-200/60 dark:border-gray-700 h-full">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="px-2 py-0.5 rounded-md text-xs font-semibold bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400">
+                                PAD
+                            </span>
+                        </div>
+                        <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Realisasi Anggaran Daerah Terbaru</p>
+                        <h3 class="text-3xl font-bold text-slate-800 dark:text-white mt-1">
+                            Rp118,23 Miliar
+                        </h3>
+                        <div class="mt-2 flex items-center gap-2">
+                            <span class="px-2 py-0.5 rounded-md text-xs font-semibold bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400">
+                                81.16%
+                            </span>
+                            <span class="text-xs text-slate-500">Target APBD 2025 (Rp145,68 Miliar)</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-2">Update Januari 2026</p>
+                    </div>
+                    <!-- Icon Landmark -->
+                    <div class="p-3 bg-indigo-100 text-indigo-600 rounded-xl dark:bg-indigo-900/30 dark:text-indigo-400 flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.5M4.5 21V10.5M3 21h18M3 9h18" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </Link>
+
                     <!-- UTD Stok Darah -->
                     <Link href="/layanan/informasi-publik?tab=utd" class="block transition hover:scale-[1.02]">
                         <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-slate-200/60 dark:border-gray-700 h-full">
@@ -215,6 +202,28 @@ onBeforeUnmount(() => {
                                 <div class="p-3 bg-red-100 text-red-600 rounded-xl dark:bg-red-900/30 dark:text-red-400">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </Link>
+
+                    <!-- KDMP -->
+                    <Link href="/layanan/hukum" class="block transition hover:scale-[1.02]">
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-slate-200/60 dark:border-gray-700 h-full">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Jumlah KDMP</p>
+                                    <h3 class="text-3xl font-bold text-slate-800 dark:text-white mt-1">
+                                        {{ new Intl.NumberFormat('id-ID').format(recap.kdmp?.total || 1248) }} <span class="text-base font-medium text-slate-500">Dokumen</span>
+                                    </h3>
+                                    <div class="mt-2 flex items-center gap-2">
+                                        <span class="text-xs text-slate-500">Dokumen Hukum & Regulasi</span>
+                                    </div>
+                                </div>
+                                <div class="p-3 bg-teal-100 text-teal-600 rounded-xl dark:bg-teal-900/30 dark:text-teal-400 flex-shrink-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
                                     </svg>
                                 </div>
                             </div>
@@ -304,8 +313,8 @@ onBeforeUnmount(() => {
             </div>
 
             <!-- CCTV Monitor -->
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
-                <div class="flex items-center justify-between">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-6">
+                <div class="flex items-center justify-between border-b pb-4">
                     <div class="flex items-center gap-3">
                         <div class="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
@@ -314,42 +323,22 @@ onBeforeUnmount(() => {
                         </div>
                         <div>
                             <h3 class="font-bold text-gray-800 text-lg">Monitoring CCTV Live</h3>
-                            <p class="text-xs text-gray-500" v-if="selectedCCTV">
-                                Kamera: {{ selectedCCTV.name }}
-                            </p>
+                            <p class="text-xs text-gray-500">Live monitoring kamera CCTV Kabupaten Bangka Tengah</p>
                         </div>
                     </div>
 
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-                        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                        Live Stream
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700">
+                        {{ cctvs.length }} Kamera
                     </span>
                 </div>
 
-                <!-- Direct Video Stream Screen -->
-                <div class="aspect-video bg-black rounded-xl overflow-hidden shadow-inner relative group">
-                    <video
-                        ref="videoRef"
-                        controls
-                        autoplay
-                        muted
-                        class="w-full h-full object-contain"
-                    ></video>
-                </div>
-
-                <!-- Footer options inside CCTV Card -->
-                <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
-                    <div class="flex items-center gap-2" v-if="cctvs.length > 1">
-                        <button
-                            v-for="cctv in cctvs"
-                            :key="cctv.id"
-                            @click="playCCTV(cctv)"
-                            class="px-3 py-1.5 rounded-lg text-xs font-medium transition"
-                            :class="selectedCCTV?.id === cctv.id ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
-                        >
-                            {{ cctv.name }}
-                        </button>
-                    </div>
+                <!-- CCTV Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <CCTVGridCard
+                        v-for="cctv in cctvs"
+                        :key="cctv.id"
+                        :cctv="cctv"
+                    />
                 </div>
             </div>
         </div>

@@ -7,16 +7,7 @@ use InvalidArgumentException;
 class InformationServiceRegistry
 {
     protected array $services = [
-        'pemerintahan' => [
-            'name' => 'Pemerintahan',
-            'icon' => '🏛️',
-            'description' => 'Dashboard informasi Pemerintahan Kabupaten Bangka Tengah.',
-            'filters' => [
-                ['label' => 'Harga Cabe', 'value' => 'harga-cabe'],
-                ['label' => 'Harga Terigu', 'value' => 'harga-terigu'],
-                ['label' => 'Kelahiran', 'value' => 'kelahiran'],
-            ],
-        ],
+        'pemerintahan' => PemerintahanService::class,
         'pendidikan' => [
             'name' => 'Pendidikan',
             'icon' => '🎓',
@@ -70,6 +61,7 @@ class InformationServiceRegistry
         ],
         'kepegawaian' => KepegawaianService::class,
         'pertanian' => PertanianService::class,
+        'desa' => PertanianService::class,
         'informasi-publik' => InformasiPublikService::class,
         'pariwisata' => [
             'name' => 'Pariwisata',

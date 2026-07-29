@@ -1,6 +1,9 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { Link, usePage, router } from '@inertiajs/vue3'
+import ComplaintModal from '@/Components/ComplaintModal.vue'
+
+const isComplaintModalOpen = ref(false)
 
 const notificationDropdownRef = ref(null)
 const notificationBellRef = ref(null)
@@ -189,12 +192,20 @@ onUnmounted(() => {
         <div class="flex-1 flex flex-col min-w-0">
             <!-- Navbar Header -->
             <header class="bg-white shadow px-8 py-4 flex justify-between items-center relative">
-                <h1 class="font-bold text-xl text-gray-800">
-                    {{ $page.props.auth?.user?.role === 'pimpinan' ? 'Dashboard Pimpinan' : 'Admin Panel' }}
-                </h1>
+                <!-- Spacer to keep layout layout intact -->
+                <div></div>
 
-                <!-- Admin Notification Bell Component -->
-                <div v-if="authUser" class="relative">
+                <div class="flex items-center gap-4">
+                    <!-- Ajukan Pengaduan Button -->
+                    <button
+                        @click="isComplaintModalOpen = true"
+                        class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition shadow-sm cursor-pointer shadow-blue-500/10 hover:shadow-md"
+                    >
+                        Ajukan Pengaduan
+                    </button>
+
+                    <!-- Admin Notification Bell Component -->
+                    <div v-if="authUser" class="relative">
                     <button
                         ref="notificationBellRef"
                         @click="notificationsOpen = !notificationsOpen"
@@ -343,6 +354,7 @@ onUnmounted(() => {
                         </div>
                     </Transition>
                 </div>
+                </div>
             </header>
 
             <main class="p-8 flex-1 animate-fade-in-up">
@@ -353,6 +365,10 @@ onUnmounted(() => {
 
     <!-- Homepage Footer at bottom -->
     <Footer ></Footer>
+    <ComplaintModal
+        :is-open="isComplaintModalOpen"
+        @close="isComplaintModalOpen = false"
+    />
 </div>
 </template>
 

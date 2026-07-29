@@ -144,6 +144,51 @@ const save = () => {
     )
 
 }
+
+const OPD_WHATSAPP_NUMBERS = {
+    'pemerintahan': '6281234567801',
+    'pendidikan': '6281234567802',
+    'kesehatan': '6281234567803',
+    'perindagkop-ukm': '6281234567804',
+    'hukum': '6281234567805',
+    'sosial': '6281234567806',
+    'kependudukan': '6281234567807',
+    'kepegawaian': '6281234567808',
+    'pertanian': '6281234567809',
+    'informasi-publik': '6281234567810',
+    'pariwisata': '6281234567811',
+    'data-sektoral': '6281234567812',
+    'makanan-bergizi-gratis': '6281234567813',
+    'pengaduan-bedulang': '6283128848371'
+}
+
+const getFollowUpUrl = (complaint) => {
+    const defaultPhone = '6283128848371'
+    const opdPhone = OPD_WHATSAPP_NUMBERS[complaint.service_slug] || defaultPhone
+    
+    const formattedDate = new Date(complaint.created_at).toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    })
+    
+    const message = `*TINDAK LANJUT PENGADUAN - BEDULANG*
+
+Halo OPD Terkait,
+Berikut adalah laporan pengaduan dari layanan *${complaint.service_name}* yang perlu segera ditindaklanjuti karena statusnya saat ini masih *Menunggu*:
+
+*Detail Laporan Pengaduan:*
+• *Judul:* ${complaint.title}
+• *Kategori:* ${complaint.category || '-'}
+• *Deskripsi:* ${complaint.description}
+• *Pelapor:* ${complaint.contact_person_name} (${complaint.contact_phone || '-'} / ${complaint.contact_email || '-'})
+• *Tanggal:* ${formattedDate}
+• *Status:* Menunggu
+
+*Keterangan:* Laporan pengaduan ini masih menunggu proses and harus segera diproses. Mohon tanggapan dan tindak lanjutnya sesegera mungkin. Terima kasih.`
+
+    return `https://wa.me/${opdPhone}?text=${encodeURIComponent(message)}`
+}
 </script>
 
 <template>
@@ -250,6 +295,29 @@ const save = () => {
                             <dd class="font-medium text-slate-800 mt-0.5">{{ complaint.contact_phone || '-' }}</dd>
                         </div>
                     </dl>
+                </div>
+
+                <!-- Tindak Lanjut Pimpinan Card -->
+                <div v-if="$page.props.auth.user.role === 'pimpinan' && complaint.status === 'pending'" class="rounded-2xl bg-white p-6 shadow-sm border border-slate-200/80 space-y-4">
+                    <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-emerald-600">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                        </svg>
+                        <h2 class="font-bold text-slate-900 text-lg">Tindak Lanjut Pimpinan</h2>
+                    </div>
+                    <p class="text-sm text-slate-600">
+                        Pengaduan ini masih dalam status <strong class="text-amber-600">Menunggu</strong>. Hubungi OPD terkait via WhatsApp untuk segera menindaklanjuti dan memproses pengaduan ini.
+                    </p>
+                    <a
+                        :href="getFollowUpUrl(complaint)"
+                        target="_blank"
+                        class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition text-sm shadow-sm cursor-pointer"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.458L0 24zm6.224-3.826l.409.243c1.6.95 3.791 1.453 6.012 1.454 5.717 0 10.368-4.63 10.371-10.35.002-2.772-1.07-5.378-3.02-7.332-1.951-1.953-4.546-3.029-7.322-3.03C7.03 1.159 2.38 5.789 2.378 11.51c0 2.13.552 4.208 1.6 6.023l.267.461-1.055 3.861 3.96-.104c-.035-.004-.07-.008-.104-.012z"/>
+                        </svg>
+                        <span>Follow Up Pengaduan ke WhatsApp OPD</span>
+                    </a>
                 </div>
 
                 <!-- Update Status / Action Form Card -->

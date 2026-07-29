@@ -49,9 +49,10 @@ const apps = [
         logo: '/services/kepegawaian.svg',
     },
     {
-        name: 'Pertanian dan Ketahanan Pangan',
-        slug: 'pertanian',
-        logo: '/services/pertanian.svg',
+        name: 'DESA.Id',
+        slug: 'desa',
+        logo: '/services/desa.id.svg',
+        allowGuest: true
     },
     {
         name: 'Informasi Publik',
@@ -97,7 +98,7 @@ const publicServices = [
     {
         name: 'PENGADUAN BEDULANG',
         slug: 'layanan-pengaduan-bedulang',
-        logo: '/services/lapor.png',
+        logo: '/services/report.svg',
         url: '/layanan/pengaduan-bedulang'
     },
     {
@@ -150,13 +151,13 @@ onUnmounted(() => {
 <section
     id="layanan"
     data-aos="fade-up"
-    class="py-16 bg-gradient-to-b from-white via-blue-50/20 to-gray-100 dark:from-gray-950 dark:via-gray-900 dark:to-gray-800 transition-colors duration-300">
+    class="py-16 dark:from-gray-950 dark:via-slate-900/40 dark:to-slate-950 transition-colors duration-300">
 
     <div class="w-full max-w-[1400px] mx-auto px-6 lg:px-8">
 
         <!-- Header -->
-        <div class="max-w-2xl mx-auto text-center mb-8">
-            <h2 class="text-5xl font-bold leading-tight text-gray-900 dark:text-white tracking-tight">
+        <div class="max-w-2xl mx-auto text-center mb-12">
+            <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">
                 Layanan <span class="text-blue-600 dark:text-blue-400">Bedulang</span>
             </h2>
         </div>
@@ -192,7 +193,7 @@ onUnmounted(() => {
         </div>
 
         <!-- Main Outer Box Wrapper -->
-        <div class="rounded-3xl border border-gray-200/60 dark:border-gray-700/50 bg-white/40 dark:bg-gray-900/30 backdrop-blur-md shadow-xl p-8 md:p-10 transition duration-300">
+        <div class="rounded-3xl border border-blue-200/50 dark:border-blue-900/30 bg-white/60 dark:bg-slate-900/40 backdrop-blur-md shadow-xl p-8 md:p-10 transition duration-300">
             
             <Transition
                 enter-active-class="transition duration-300 ease-out"
@@ -205,11 +206,11 @@ onUnmounted(() => {
             >
                 <div :key="activeTab">
                     <!-- Dynamic Title & Description -->
-                    <div class="text-center mb-8 border-b border-gray-200/40 dark:border-gray-700/40 pb-6">
-                        <h3 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+                    <div class="text-center mb-8 border-b border-blue-200/20 dark:border-slate-800/40 pb-6">
+                        <h3 class="text-2xl md:text-3xl font-extrabold text-blue-950 dark:text-white">
                             {{ activeTab === 'info' ? 'Layanan Informasi & Data' : 'Layanan Publik' }}
                         </h3>
-                        <p class="mt-2 text-gray-600 dark:text-gray-400">
+                        <p class="mt-2 text-slate-500 dark:text-slate-400 font-semibold text-sm md:text-base">
                             {{ activeTab === 'info' ? 'Pilih kategori untuk melihat informasi dan data Kabupaten Bangka Tengah.' : 'Akses berbagai portal pelayanan publik terpadu Kabupaten Bangka Tengah.' }}
                         </p>
                     </div>
@@ -220,16 +221,16 @@ onUnmounted(() => {
                             <Link
                                 v-for="(app, index) in apps"
                                 :key="app.name"
-                                :href="isAuthenticated ? '/layanan/' + app.slug : '/login'"
+                                :href="isAuthenticated || app.allowGuest ? '/layanan/' + app.slug : '/login'"
                                 class="group w-full md:w-[180px] flex-shrink-0 transition-all duration-300"
                             >
                                 <div 
                                     :id="'layanan-' + app.name.toLowerCase().replace(/[^a-z0-9]/g, '-')"
-                                    class="relative overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-blue-400 dark:hover:border-blue-500"
+                                    class="relative overflow-hidden rounded-2xl border border-blue-100 dark:border-slate-800 bg-white dark:bg-slate-900 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-blue-500 dark:hover:border-blue-400"
                                 >
                                     <!-- Lock Icon Badge for Guest User -->
                                     <div 
-                                        v-if="!isAuthenticated" 
+                                        v-if="!isAuthenticated && !app.allowGuest" 
                                         class="absolute top-2.5 right-2.5 z-10 p-1.5 rounded-full bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30 shadow-xs backdrop-blur-xs flex items-center justify-center"
                                         title="Login diperlukan untuk mengakses pelayanan"
                                     >
@@ -239,12 +240,12 @@ onUnmounted(() => {
                                     </div>
 
                                     <!-- Thumbnail -->
-                                    <div class="h-28 flex items-center justify-center bg-gray-50 dark:bg-gray-900/70 relative">
-                                        <img :src="app.logo" :alt="app.name" class="w-[90%] h-[90%] object-contain transition-transform duration-500 ease-out group-hover:scale-105" :class="{ 'opacity-80': !isAuthenticated }" />
+                                    <div class="h-28 flex items-center justify-center bg-blue-50/40 dark:bg-slate-950/40 relative">
+                                        <img :src="app.logo" :alt="app.name" class="w-[90%] h-[90%] object-contain transition-transform duration-500 ease-out group-hover:scale-105" :class="{ 'opacity-80': !isAuthenticated && !app.allowGuest }" />
                                     </div>
                                     <!-- Footer -->
                                     <div class="flex items-center justify-between px-3.5 py-3.5">
-                                        <h3 class="text-[12px] font-bold uppercase tracking-wider text-gray-900 dark:text-white transition-colors duration-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate">
+                                        <h3 class="text-[11px] md:text-[12px] font-bold uppercase tracking-wider text-slate-900 dark:text-white transition-colors duration-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate">
                                             {{ app.name }}
                                         </h3>
                                         <svg class="w-4 h-4 text-gray-400 transition-all duration-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-1 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
@@ -265,7 +266,7 @@ onUnmounted(() => {
                             >
                                 <div 
                                     :id="'layanan-' + app.name.toLowerCase().replace(/[^a-z0-9]/g, '-')"
-                                    class="relative overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-blue-400 dark:hover:border-blue-500"
+                                    class="relative overflow-hidden rounded-2xl border border-blue-100 dark:border-slate-800 bg-white dark:bg-slate-900 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:border-blue-500 dark:hover:border-blue-400"
                                 >
                                     <!-- Lock Icon Badge for Guest User -->
                                     <div 
@@ -279,12 +280,12 @@ onUnmounted(() => {
                                     </div>
 
                                     <!-- Thumbnail -->
-                                    <div class="h-28 flex items-center justify-center bg-gray-50 dark:bg-gray-900/70 relative">
+                                    <div class="h-28 flex items-center justify-center bg-blue-50/40 dark:bg-slate-950/40 relative">
                                         <img :src="app.logo" :alt="app.name" class="w-[70%] h-[70%] object-contain transition-transform duration-500 ease-out group-hover:scale-105" :class="{ 'opacity-80': !isAuthenticated && !app.allowGuest }" />
                                     </div>
                                     <!-- Footer -->
                                     <div class="flex items-center justify-between px-3.5 py-3.5">
-                                        <h3 class="text-[12px] font-bold uppercase tracking-wider text-gray-900 dark:text-white transition-colors duration-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate">
+                                        <h3 class="text-[11px] md:text-[12px] font-bold uppercase tracking-wider text-slate-900 dark:text-white transition-colors duration-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 truncate">
                                             {{ app.name }}
                                         </h3>
                                         <svg class="w-4 h-4 text-gray-400 transition-all duration-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-1 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">

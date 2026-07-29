@@ -145,60 +145,30 @@ watch(searchQuery, () => {
 <template>
     <div class="mt-8 space-y-8 animate-fade-in-up">
         
-        <!-- 1. FULLY DYNAMIC COLOR HEADER CARD -->
-        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 dark:from-indigo-950/80 dark:via-purple-950/80 dark:to-pink-950/80 border border-indigo-100 dark:border-indigo-900/60 p-6 sm:p-8 text-slate-800 dark:text-white shadow-xl transition-all duration-300">
-            <!-- Background Glow & Pattern Decor -->
-            <div class="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-indigo-400/10 dark:bg-indigo-400/20 blur-3xl" />
-            <div class="absolute -left-16 -bottom-16 h-64 w-64 rounded-full bg-pink-400/10 dark:bg-pink-400/20 blur-3xl" />
 
-            <div class="relative flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                <div class="space-y-3">
-                    <!-- Date badge -->
-                    <div class="inline-flex items-center gap-2 rounded-full bg-indigo-100 text-indigo-800 dark:bg-white/10 dark:text-indigo-200 backdrop-blur-md px-3.5 py-1 text-xs font-semibold tracking-wide border border-indigo-200/70 dark:border-white/10 shadow-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-                        </svg>
-                        <span>📅 {{ displayDate }}</span>
-                    </div>
-
-                    <!-- Main Title -->
-                    <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight font-sans text-slate-900 dark:text-white">
-                        Dashboard Kepegawaian
-                    </h2>
-                    <p class="text-xs sm:text-sm text-slate-600 dark:text-indigo-100/90 max-w-xl font-medium leading-relaxed">
-                        Data sebaran Aparatur Sipil Negara (ASN) di setiap UPD (Unit Perangkat Daerah) Kabupaten Bangka Tengah yang mencakup PNS, PPPK, dan PPPK Paruh Waktu.
-                    </p>
-                </div>
-
-                <!-- Grand Total Highlight Pill -->
-                <div class="flex items-center gap-4 bg-white/80 dark:bg-white/10 backdrop-blur-md border border-indigo-100 dark:border-white/15 p-4 rounded-2xl shrink-0 shadow-md">
-                    <div class="p-3 bg-indigo-600 text-white dark:bg-indigo-500/30 dark:text-indigo-300 rounded-xl shadow-inner">
-                        <span class="text-2xl">👥</span>
-                    </div>
-                    <div>
-                        <div class="text-xs font-bold uppercase tracking-wider text-indigo-700 dark:text-indigo-200">Total Keseluruhan Pegawai</div>
-                        <div class="text-xl sm:text-2xl font-black tracking-tight font-sans text-indigo-950 dark:text-white">
-                            {{ formatNumber(grandTotal) }} <span class="text-xs font-normal text-slate-500 dark:text-indigo-200">Orang</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- 2. SUMMARY STATISTICS: SINGLE MEMANJANG CARD (ALL IN ONE HORIZONTAL ROW) -->
         <div class="animate-fade-in-up [animation-delay:100ms]">
             <div class="overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-md border-t-4 border-t-indigo-600 dark:border-t-indigo-500 transition-all duration-300">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-100 dark:divide-slate-800">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 divide-y sm:divide-y-0 sm:divide-x divide-slate-100 dark:divide-slate-800">
                     
+                    <!-- Box 0: Total Pegawai -->
+                    <div class="p-5 flex items-center gap-4 hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
+                        <div class="space-y-0.5 min-w-0">
+                            <div class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Total Pegawai</div>
+                            <div class="text-2xl font-black text-slate-900 dark:text-white font-sans tracking-tight">
+                                {{ formatNumber(grandTotal) }} <span class="text-xs font-medium text-slate-400">Orang</span>
+                            </div>
+                            <div class="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 truncate">Total Keseluruhan ASN</div>
+                        </div>
+                    </div>
+
                     <!-- Box 1: Total Unit Kerja -->
                     <div class="p-5 flex items-center gap-4 hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors">
-                        <div class="p-3.5 rounded-2xl bg-indigo-100 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 shrink-0 font-bold text-xl shadow-inner">
-                            🏢
-                        </div>
                         <div class="space-y-0.5 min-w-0">
                             <div class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Unit Kerja</div>
                             <div class="text-2xl font-black text-slate-900 dark:text-white font-sans tracking-tight">
-                                {{ records.length }} <span class="text-xs font-medium text-slate-400">UPD</span>
+                                {{ records.length }} <span class="text-xs font-medium text-slate-400">OPD</span>
                             </div>
                             <div class="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 truncate">Badan & Dinas Terdata</div>
                         </div>
@@ -206,9 +176,7 @@ watch(searchQuery, () => {
 
                     <!-- Box 2: Total PNS -->
                     <div class="p-5 flex items-center gap-4 hover:bg-blue-50/40 dark:hover:bg-slate-800/40 transition-colors">
-                        <div class="p-3.5 rounded-2xl bg-blue-100 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 shrink-0 font-bold text-xl shadow-inner">
-                            👔
-                        </div>
+                        
                         <div class="space-y-0.5 min-w-0">
                             <div class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">Total PNS</div>
                             <div class="text-2xl font-black text-blue-600 dark:text-blue-400 font-sans tracking-tight">
@@ -220,9 +188,7 @@ watch(searchQuery, () => {
 
                     <!-- Box 3: Total PPPK (P3K) -->
                     <div class="p-5 flex items-center gap-4 hover:bg-purple-50/40 dark:hover:bg-slate-800/40 transition-colors">
-                        <div class="p-3.5 rounded-2xl bg-purple-100 dark:bg-purple-950/80 text-purple-600 dark:text-purple-400 shrink-0 font-bold text-xl shadow-inner">
-                            📜
-                        </div>
+                        
                         <div class="space-y-0.5 min-w-0">
                             <div class="text-xs font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400">Total PPPK</div>
                             <div class="text-2xl font-black text-purple-600 dark:text-purple-400 font-sans tracking-tight">
@@ -234,9 +200,7 @@ watch(searchQuery, () => {
 
                     <!-- Box 4: Total PPPK PW -->
                     <div class="p-5 flex items-center gap-4 hover:bg-pink-50/40 dark:hover:bg-slate-800/40 transition-colors">
-                        <div class="p-3.5 rounded-2xl bg-pink-100 dark:bg-pink-950/80 text-pink-600 dark:text-pink-400 shrink-0 font-bold text-xl shadow-inner">
-                            ⏳
-                        </div>
+                        
                         <div class="space-y-0.5 min-w-0">
                             <div class="text-xs font-bold uppercase tracking-wider text-pink-600 dark:text-pink-400">Total PPPK PW</div>
                             <div class="text-2xl font-black text-pink-600 dark:text-pink-400 font-sans tracking-tight">
@@ -257,10 +221,10 @@ watch(searchQuery, () => {
                 <div class="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
                         <h3 class="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white font-sans flex items-center gap-2">
-                            <span>🏢</span> Daftar Pegawai Per UPD
+                            <span>🏢</span> Daftar Pegawai Per OPD
                         </h3>
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                            Tabel sebaran data jumlah pegawai per UPD (Unit Perangkat Daerah) Kabupaten Bangka Tengah.
+                            Tabel sebaran data jumlah pegawai per OPD (Organisasi Perangkat Daerah) Kabupaten Bangka Tengah.
                         </p>
                     </div>
 
