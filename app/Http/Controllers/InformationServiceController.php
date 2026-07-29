@@ -48,5 +48,46 @@ class InformationServiceController extends Controller
             'dashboard' => $dashboard,
         ]);
     }
+
+    public function showKdmpKecamatan($nama)
+    {
+        $service = $this->registry->resolve('kdmp');
+        $metadata = $service->getMetadata();
+        
+        $koperasiDetails = app(\App\Services\KdmpService::class)->getKecamatanDetails($nama);
+
+        if (!$koperasiDetails) {
+            abort(404);
+        }
+
+        return Inertia::render('Front/Services/Dashboards/KdmpKecamatanDetails', [
+            'service' => [
+                ...$metadata,
+                'slug' => 'kdmp',
+            ],
+            'kecamatan' => $nama,
+            'koperasiDetails' => $koperasiDetails,
+        ]);
+    }
+
+    public function showKdmpKoperasi($id)
+    {
+        $service = $this->registry->resolve('kdmp');
+        $metadata = $service->getMetadata();
+        
+        $koperasi = app(\App\Services\KdmpService::class)->getKoperasiDetail($id);
+
+        if (!$koperasi) {
+            abort(404);
+        }
+
+        return Inertia::render('Front/Services/Dashboards/KdmpKoperasiDetails', [
+            'service' => [
+                ...$metadata,
+                'slug' => 'kdmp',
+            ],
+            'koperasi' => $koperasi,
+        ]);
+    }
 }
 

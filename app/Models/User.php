@@ -24,6 +24,9 @@ class User extends Authenticatable
         'password',
         'role',
         'service_slug',
+        'kdmp_role',
+        'kdmp_kecamatan',
+        'kdmp_admin_status',
     ];
 
     /**
@@ -89,5 +92,21 @@ class User extends Authenticatable
         }
 
         return $this->service_slug === $serviceSlug;
+    }
+
+    // KDMP Role Helpers
+    public function isKdmpAdmin(): bool
+    {
+        return $this->kdmp_role === 'admin_kdmp' || $this->isSuperAdmin();
+    }
+
+    public function isKdmpKecamatanAdmin(): bool
+    {
+        return $this->kdmp_role === 'admin_kecamatan';
+    }
+
+    public function isKdmpKmpAdmin(): bool
+    {
+        return $this->kdmp_role === 'admin_kmp';
     }
 }

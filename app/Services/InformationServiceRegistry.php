@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Services\KdmpService;
 use InvalidArgumentException;
 
 class InformationServiceRegistry
@@ -29,16 +30,7 @@ class InformationServiceRegistry
             ],
         ],
         'perindagkop-ukm' => PerindagService::class,
-        'hukum' => [
-            'name' => 'Hukum',
-            'icon' => '⚖️',
-            'description' => 'Dashboard informasi Hukum Kabupaten Bangka Tengah.',
-            'filters' => [
-                ['label' => 'Kasus', 'value' => 'kasus'],
-                ['label' => 'Gender', 'value' => 'gender'],
-                ['label' => 'Kematian', 'value' => 'kematian'],
-            ],
-        ],
+        'kdmp' => KdmpService::class,
         'sosial' => [
             'name' => 'Sosial',
             'icon' => '🤝',

@@ -59,14 +59,14 @@ const infoServices = [
     { name: 'Pendidikan', id: 'pendidikan' },
     { name: 'Kesehatan', id: 'kesehatan' },
     { name: 'Perindagkop-UKM', id: 'perindagkop-ukm' },
-    { name: 'Hukum', id: 'hukum' },
+    { name: 'KDMP', id: 'kdmp' },
     { name: 'Sosial', id: 'sosial' },
     { name: 'Kependudukan', id: 'kependudukan' },
     { name: 'Kepegawaian', id: 'kepegawaian' },
     { name: 'Desa', id: 'desa', allowGuest: true },
     { name: 'Informasi Publik', id: 'informasi-publik' },
     { name: 'Pariwisata', id: 'pariwisata' },
-    { name: 'Data Sektoral', id: 'data-sektoral' },
+    { name: 'Data Sektoral', id: 'data-sektoral', url: '/data-sektoral' },
     { name: 'Makanan Bergizi Gratis', id: 'makanan-bergizi-gratis' },
 ]
 
@@ -84,6 +84,8 @@ const publicServices = [
     { name: 'Pelayanan Kesehatan', id: 'pelayanan-kesehatan' },
     { name: 'Pengaduan PPID', id: 'pengaduan-ppid' },
     { name: 'Administrasi Warga', id: 'administrasi-warga' },
+    { name: 'Pengaduan Bedulang', id: 'pengaduan-bedulang' },
+    { name: 'Monitoring CCTV', url: '/admin/cctv' },
 ]
 
 const scrollToAndHighlight = (targetId) => {
@@ -349,7 +351,7 @@ const toggleDarkMode = () => {
                                 <Link 
                                     v-for="app in infoServices" 
                                     :key="app.name" 
-                                    :href="authUser || app.allowGuest ? '/layanan/' + app.id : '/login'"
+                                    :href="authUser || app.allowGuest ? (app.url || '/layanan/' + app.id) : '/login'"
                                     class="px-5 py-2.5 hover:bg-blue-50 dark:hover:bg-gray-700 text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center justify-between"
                                 >
                                     <span>{{ app.name }}</span>
@@ -377,7 +379,7 @@ const toggleDarkMode = () => {
                                 <Link 
                                     v-for="app in publicServices" 
                                     :key="app.name" 
-                                    :href="authUser ? '/layanan/' + app.id : '/login'"
+                                    :href="authUser ? (app.url ? app.url : '/layanan/' + app.id) : '/login'"
                                     class="px-5 py-2.5 hover:bg-blue-50 dark:hover:bg-gray-700 text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center justify-between"
                                 >
                                     <span>{{ app.name }}</span>

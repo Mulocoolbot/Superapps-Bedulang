@@ -30,7 +30,7 @@ const apps = [
     },
     {
         name: 'KDMP',
-        slug: 'hukum',
+        slug: 'kdmp',
         logo: '/services/kdmp.png',
     },
     {
@@ -68,6 +68,7 @@ const apps = [
         name: 'DATA SEKTORAL',
         slug: 'data-sektoral',
         logo: '/services/sektoral.svg',
+        url: '/data-sektoral',
     },
     {
         name: 'Makanan Bergizi Gratis',
@@ -221,7 +222,7 @@ onUnmounted(() => {
                             <Link
                                 v-for="(app, index) in apps"
                                 :key="app.name"
-                                :href="isAuthenticated || app.allowGuest ? '/layanan/' + app.slug : '/login'"
+                                :href="isAuthenticated || app.allowGuest ? (app.url || '/layanan/' + app.slug) : '/login'"
                                 class="group w-full md:w-[180px] flex-shrink-0 transition-all duration-300"
                             >
                                 <div 

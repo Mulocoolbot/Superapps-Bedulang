@@ -38,6 +38,8 @@ class HandleInertiaRequests extends Middleware
                     'email' => $request->user()->email,
                     'role' => $request->user()->role,
                     'service_slug' => $request->user()->service_slug,
+                    'kdmp_role' => $request->user()->kdmp_role,
+                    'kdmp_kecamatan' => $request->user()->kdmp_kecamatan,
                     'notifications' => $request->user()->notifications()->latest()->take(30)->get(),
                     'unread_notifications_count' => $request->user()->unreadNotifications()->count(),
                 ] : null,
