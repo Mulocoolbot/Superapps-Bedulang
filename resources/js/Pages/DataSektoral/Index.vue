@@ -538,37 +538,35 @@ fetchUrusan()
                             </div>
                         </button>
 
-                        <!-- Cards Grid with Smooth Slide Transition -->
-                        <div class="overflow-hidden py-2 w-full relative">
-                            <Transition :name="slideDirection === 'next' ? 'carousel-right' : 'carousel-left'">
+                        <!-- Cards Grid with Individual Card Slot Cascade Animation -->
+                        <div class="overflow-hidden py-2 w-full relative min-h-[240px]">
+                            <TransitionGroup 
+                                :name="slideDirection === 'next' ? 'card-list-next' : 'card-list-prev'" 
+                                tag="div" 
+                                class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 relative"
+                            >
                                 <div 
-                                    :key="slideAnimKey"
-                                    class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
-                                >
-                                    <template v-for="(item, index) in (
+                                    v-for="(item, index) in (
                                         currentStep === 1 ? urusanList : 
                                         currentStep === 2 ? getVisibleCards(subUrusanList) : 
                                         getVisibleCards(indikatorList)
-                                    )" :key="item.label + index">
-                                        
-                                        <div 
-                                            @click="handleCardClick($event, item, currentStep)"
-                                            class="group cursor-pointer rounded-2xl bg-gradient-to-br p-6 shadow-lg transition-all duration-300 hover:-translate-y-3 hover:shadow-2xl flex flex-col justify-between min-h-[220px] border border-white/20"
-                                            :class="[item.colorClass, isCarouselSliding ? '' : 'popup-anim']"
-                                            :style="isCarouselSliding ? '' : `animation-delay: ${0.08 * (index + 1)}s`"
-                                        >
-                                            <div class="text-white/80">
-                                                <svg class="h-10 w-10 mb-4 opacity-80 group-hover:scale-110 transition-transform duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                                                </svg>
-                                            </div>
-                                            <h3 class="text-xl font-bold leading-snug text-white group-hover:text-white/90">
-                                                {{ item.label }}
-                                            </h3>
-                                        </div>
-                                    </template>
+                                    )" 
+                                    :key="item.label"
+                                    @click="handleCardClick($event, item, currentStep)"
+                                    class="group cursor-pointer rounded-2xl bg-gradient-to-br p-6 shadow-lg transition-all duration-300 hover:-translate-y-3 hover:shadow-2xl flex flex-col justify-between min-h-[220px] border border-white/20"
+                                    :class="[item.colorClass, isCarouselSliding ? '' : 'popup-anim']"
+                                    :style="isCarouselSliding ? '' : `animation-delay: ${0.08 * (index + 1)}s`"
+                                >
+                                    <div class="text-white/80">
+                                        <svg class="h-10 w-10 mb-4 opacity-80 group-hover:scale-110 transition-transform duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-xl font-bold leading-snug text-white group-hover:text-white/90">
+                                        {{ item.label }}
+                                    </h3>
                                 </div>
-                            </Transition>
+                            </TransitionGroup>
                         </div>
 
                         <!-- Right Arrow (Tall Vertical Bar, Glassmorphism & Floating) -->
@@ -795,42 +793,45 @@ fetchUrusan()
     opacity: 0;
 }
 
-/* Smooth Carousel Slide Transitions */
-
-/* Right arrow click: cards slide to the RIGHT */
-.carousel-right-enter-active,
-.carousel-right-leave-active {
-    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-.carousel-right-enter-from {
-    transform: translateX(-100%);
-}
-.carousel-right-leave-active {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-}
-.carousel-right-leave-to {
-    transform: translateX(100%);
+/* Card List TransitionGroup (Conveyor Belt / Slot Cascade Animation) */
+.card-list-next-move,
+.card-list-prev-move {
+    transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-/* Left arrow click: cards slide to the LEFT */
-.carousel-left-enter-active,
-.carousel-left-leave-active {
-    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+.card-list-next-enter-active,
+.card-list-next-leave-active,
+.card-list-prev-enter-active,
+.card-list-prev-leave-active {
+    transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
 }
-.carousel-left-enter-from {
-    transform: translateX(100%);
+
+/* Next (Right Arrow Click): Cards shift right */
+.card-list-next-enter-from {
+    opacity: 0;
+    transform: translateX(-100%) scale(0.9);
 }
-.carousel-left-leave-active {
+.card-list-next-leave-to {
+    opacity: 0;
+    transform: translateX(100%) scale(0.9);
+}
+.card-list-next-leave-active {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
+    width: 23%;
 }
-.carousel-left-leave-to {
-    transform: translateX(-100%);
+
+/* Prev (Left Arrow Click): Cards shift left */
+.card-list-prev-enter-from {
+    opacity: 0;
+    transform: translateX(100%) scale(0.9);
+}
+.card-list-prev-leave-to {
+    opacity: 0;
+    transform: translateX(-100%) scale(0.9);
+}
+.card-list-prev-leave-active {
+    position: absolute;
+    width: 23%;
 }
 
 /* Fade transition for back button */
