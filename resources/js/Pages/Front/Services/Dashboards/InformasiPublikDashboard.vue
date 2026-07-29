@@ -339,23 +339,6 @@ const getAvailabilityStatus = (amount) => {
                 <!-- 🛒 SUB-VIEW 1: HARGA PASAR & STOK BAPOK -->
                 <div v-if="activeSidebarTab === 'bapok'" key="bapok" class="space-y-8">
 
-                    <!-- Header Card title matching original Perindagkop dashboard style -->
-                    <div class="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-gradient-to-r from-blue-50 via-indigo-50 to-slate-50 p-6 shadow-sm dark:border-slate-800 dark:from-blue-950/40 dark:via-indigo-950/40 dark:to-slate-900">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            <div>
-                                <span class="text-xs font-extrabold uppercase tracking-wider text-blue-700 dark:text-blue-400 block mb-1">
-                                    Disperindagkop & UKM Kab. Bangka Tengah
-                                </span>
-                                <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                                    Informasi Harga Pasar & Stok Bapok
-                                </h2>
-                                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-xl">
-                                    Pantauan harian tren harga komoditas pangan pokok dan ketersediaan stok bahan pokok di berbagai pasar rakyat Kabupaten Bangka Tengah.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Full Perindagkop Dashboard Component -->
                     <PerindagkopDashboard :service="service" :dashboard="perindagData"></PerindagkopDashboard>
 
@@ -373,23 +356,6 @@ const getAvailabilityStatus = (amount) => {
 
                 <!-- 🌴 SUB-VIEW 2: HARGA SAWIT (TBS PALM OIL) -->
                 <div v-else-if="activeSidebarTab === 'sawit'" key="sawit" class="space-y-8">
-
-                    <!-- Header Card -->
-                    <div class="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-gradient-to-r from-emerald-50 via-teal-50 to-green-50 p-6 shadow-sm dark:border-slate-800 dark:from-emerald-950/40 dark:via-teal-950/40 dark:to-green-950/40">
-                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                            <div class="space-y-2">
-                                <div class="inline-flex items-center gap-2 rounded-full bg-emerald-100 dark:bg-emerald-900/60 px-3 py-1 text-xs font-bold text-emerald-800 dark:text-emerald-300">
-                                    <span>Per tanggal: {{ displayDateSawit }}</span>
-                                </div>
-                                <h2 class="text-xl font-extrabold text-slate-900 dark:text-white">
-                                    Informasi Harga Sawit (Tandan Buah Segar - TBS)
-                                </h2>
-                                <p class="text-xs text-slate-600 dark:text-slate-400 max-w-xl leading-relaxed">
-                                    Data pemantauan harga TBS Kelapa Sawit di tingkat Pabrik Kelapa Sawit (PKS) dan rerata pekebun non-mitra di Kabupaten Bangka Tengah.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- Stats Metric Bar Card -->
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -515,43 +481,6 @@ const getAvailabilityStatus = (amount) => {
                 <!-- 🩸 SUB-VIEW 4: UNIT TRANSFUSI DARAH (UTD) -->
                 <div v-else-if="activeSidebarTab === 'utd'" key="utd" class="space-y-8">
 
-                    <!-- Header Card -->
-                    <div class="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-gradient-to-r from-rose-50 via-red-50 to-pink-50 p-6 shadow-sm dark:border-slate-800 dark:from-rose-950/40 dark:via-red-950/40 dark:to-pink-950/40">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                            <div class="space-y-2">
-                                <span class="text-xs font-extrabold uppercase tracking-wider text-rose-700 dark:text-rose-400 block mb-1">
-                                    Dinas Kesehatan & UTD Bangka Tengah
-                                </span>
-                                <h2 class="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
-                                    Informasi Stok Darah Unit Transfusi Darah (UTD)
-                                </h2>
-                                <p class="text-xs text-slate-600 dark:text-slate-400 max-w-xl leading-relaxed">
-                                    Informasi real-time ketersediaan stok darah per komponen dan golongan darah di Unit Transfusi Darah (UTD) Kabupaten Bangka Tengah.
-                                </p>
-                            </div>
-
-                            <div class="flex items-center gap-3 shrink-0">
-                                <!-- Link to History Page (Visible to UTD Admin / Superadmin Only) -->
-                                <Link
-                                    v-if="isUtdAdmin"
-                                    href="/utd/history"
-                                    class="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-4 py-2.5 text-xs font-extrabold text-rose-700 dark:text-rose-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition shadow-sm cursor-pointer"
-                                >
-                                    <span>📜 Riwayat Transfusi</span>
-                                </Link>
-
-                                <!-- Admin UTD Edit Button (Visible to UTD Admin / Superadmin) -->
-                                <button
-                                    v-if="isUtdAdmin"
-                                    @click="openEditModal"
-                                    class="inline-flex items-center gap-2 rounded-xl bg-rose-600 hover:bg-rose-700 px-4 py-2.5 text-xs font-bold text-white transition shadow-md shadow-rose-500/20 cursor-pointer"
-                                >
-                                    <span>⚙️ Update Stok Darah</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- TOTAL STOK SUMMARY & LAST UPDATED CARD -->
                     <div class="bg-white dark:bg-slate-900 rounded-2xl border border-rose-100 dark:border-slate-800 p-6 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
                         <div class="flex items-center gap-4">
@@ -576,6 +505,22 @@ const getAvailabilityStatus = (amount) => {
                             </div>
                             <div class="text-slate-400 text-[11px]">📍 Unit Transfusi Darah Kab. Bangka Tengah</div>
                         </div>
+                    </div>
+
+                    <!-- Admin UTD Controls (Visible only to Admin UTD) -->
+                    <div v-if="isUtdAdmin" class="flex items-center gap-3 justify-end animate-fade-in-up">
+                        <Link
+                            href="/utd/history"
+                            class="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-4 py-2.5 text-xs font-extrabold text-rose-700 dark:text-rose-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition shadow-sm cursor-pointer"
+                        >
+                            <span>📜 Riwayat Transfusi</span>
+                        </Link>
+                        <button
+                            @click="openEditModal"
+                            class="inline-flex items-center gap-2 rounded-xl bg-rose-600 hover:bg-rose-700 px-4 py-2.5 text-xs font-bold text-white transition shadow-md shadow-rose-500/20 cursor-pointer"
+                        >
+                            <span>⚙️ Update Stok Darah</span>
+                        </button>
                     </div>
 
                     <!-- MATRIX TABLE STOK DARAH (X: Gol. Darah, Y: Komponen, Corner: Komponen) -->

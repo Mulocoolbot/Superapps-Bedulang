@@ -30,7 +30,7 @@ class PertanianServiceTest extends TestCase
         $this->assertArrayHasKey('icon', $metadata);
         $this->assertArrayHasKey('description', $metadata);
         $this->assertArrayHasKey('source', $metadata);
-        $this->assertEquals('Pertanian', $metadata['name']);
+        $this->assertEquals('Desa', $metadata['name']);
     }
 
     public function test_pertanian_service_parses_live_html_correctly(): void

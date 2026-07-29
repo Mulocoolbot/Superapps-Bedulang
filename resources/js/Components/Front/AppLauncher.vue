@@ -37,28 +37,18 @@ const services = [
 <section
     id="aplikasi"
     data-aos="fade-up"
-    class="py-16 bg-white dark:bg-gray-950">
+    class="py-16 bg-gradient-to-b from-blue-50/20 via-white to-white dark:from-slate-950 dark:via-slate-900/30 dark:to-slate-950 transition-colors duration-300">
 
     <div class="max-w-7xl mx-auto px-6">
 
         <!-- Header -->
-
         <div class="text-center mb-12">
-
-            <h2
-                class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
-
+            <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">
                 Aplikasi Daerah
-
             </h2>
-
-            <p
-                class="mt-3 text-gray-600 dark:text-gray-400">
-
-                Akses berbagai aplikasi digital Pemerintah Kabupaten Bangka Tengah.
-
+            <p class="mt-4 text-base md:text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto font-medium">
+                Akses berbagai aplikasi digital sektoral Pemerintah Kabupaten Bangka Tengah.
             </p>
-
         </div>
 
         <!-- Grid -->
@@ -73,11 +63,12 @@ const services = [
                 target="_blank"
                 data-aos="fade-up"
                 :data-aos-delay="index*50"
-                class="group">
+                class="group"
+            >
 
                 <div
                     :id="'aplikasi-' + service.name.toLowerCase().replace(/[^a-z0-9]/g, '-')"
-                    class="flex items-center gap-4 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-blue-400 hover:shadow-lg">
+                    class="flex items-center gap-4 rounded-2xl border border-blue-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-blue-500 dark:hover:border-blue-400 hover:shadow-lg">
 
                     <!-- Logo -->
 
@@ -85,7 +76,7 @@ const services = [
                         class="flex h-16 w-16 items-center justify-center rounded-xl transition-colors duration-300"
                         :class="service.name === 'SIKOK DATA' 
                             ? 'bg-slate-950 dark:bg-transparent' 
-                            : 'bg-gray-50 dark:bg-gray-900'"
+                            : 'bg-blue-50/40 dark:bg-slate-950/40'"
                     >
 
                         <img
@@ -101,14 +92,14 @@ const services = [
                     <div class="flex-1">
 
                         <h3
-                            class="font-semibold text-gray-900 dark:text-white">
+                            class="font-bold text-slate-900 dark:text-white">
 
                             {{ service.name }}
 
                         </h3>
 
                         <p
-                            class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                            class="mt-1 text-sm text-slate-500 dark:text-slate-400 font-medium">
 
                             Buka aplikasi
 

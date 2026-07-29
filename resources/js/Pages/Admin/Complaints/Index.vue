@@ -66,6 +66,51 @@ const resetFilters = () => {
     selectedType.value = 'all'
     applyFilters()
 }
+
+const OPD_WHATSAPP_NUMBERS = {
+    'pemerintahan': '6281234567801',
+    'pendidikan': '6281234567802',
+    'kesehatan': '6281234567803',
+    'perindagkop-ukm': '6281234567804',
+    'hukum': '6281234567805',
+    'sosial': '6281234567806',
+    'kependudukan': '6281234567807',
+    'kepegawaian': '6281234567808',
+    'pertanian': '6281234567809',
+    'informasi-publik': '6281234567810',
+    'pariwisata': '6281234567811',
+    'data-sektoral': '6281234567812',
+    'makanan-bergizi-gratis': '6281234567813',
+    'pengaduan-bedulang': '6283128848371'
+}
+
+const getFollowUpUrl = (complaint) => {
+    const defaultPhone = '6283128848371'
+    const opdPhone = OPD_WHATSAPP_NUMBERS[complaint.service_slug] || defaultPhone
+    
+    const formattedDate = new Date(complaint.created_at).toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    })
+    
+    const message = `*TINDAK LANJUT PENGADUAN - BEDULANG*
+
+Halo OPD Terkait,
+Berikut adalah laporan pengaduan dari layanan *${complaint.service_name}* yang perlu segera ditindaklanjuti karena statusnya saat ini masih *Menunggu*:
+
+*Detail Laporan Pengaduan:*
+• *Judul:* ${complaint.title}
+• *Kategori:* ${complaint.category || '-'}
+• *Deskripsi:* ${complaint.description}
+• *Pelapor:* ${complaint.contact_person_name} (${complaint.contact_phone || '-'} / ${complaint.contact_email || '-'})
+• *Tanggal:* ${formattedDate}
+• *Status:* Menunggu
+
+*Keterangan:* Laporan pengaduan ini masih menunggu proses dan harus segera diproses. Mohon tanggapan dan tindak lanjutnya sesegera mungkin. Terima kasih.`
+
+    return `https://wa.me/${opdPhone}?text=${encodeURIComponent(message)}`
+}
 </script>
 
 <template>
@@ -329,15 +374,30 @@ const resetFilters = () => {
                             </p>
                         </div>
 
-                        <Link
-                            :href="`/admin/complaints/${complaint.id}`"
-                            class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white text-xs font-semibold transition shrink-0 self-start md:self-center"
-                        >
-                            <span>{{ $page.props.auth.user.role === 'pimpinan' ? 'Detail Pengaduan' : 'Tindak Lanjut & Detail' }}</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                            </svg>
-                        </Link>
+                        <div class="flex items-center gap-2.5 shrink-0 self-start md:self-center">
+                            <!-- Follow Up Button for Pimpinan -->
+                            <a
+                                v-if="$page.props.auth.user.role === 'pimpinan' && complaint.status === 'pending'"
+                                :href="getFollowUpUrl(complaint)"
+                                target="_blank"
+                                class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white text-xs font-semibold transition"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.458L0 24zm6.224-3.826l.409.243c1.6.95 3.791 1.453 6.012 1.454 5.717 0 10.368-4.63 10.371-10.35.002-2.772-1.07-5.378-3.02-7.332-1.951-1.953-4.546-3.029-7.322-3.03C7.03 1.159 2.38 5.789 2.378 11.51c0 2.13.552 4.208 1.6 6.023l.267.461-1.055 3.861 3.96-.104c-.035-.004-.07-.008-.104-.012z"/>
+                                </svg>
+                                <span>Follow Up</span>
+                            </a>
+
+                            <Link
+                                :href="`/admin/complaints/${complaint.id}`"
+                                class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white text-xs font-semibold transition"
+                            >
+                                <span>{{ $page.props.auth.user.role === 'pimpinan' ? 'Detail Pengaduan' : 'Tindak Lanjut & Detail' }}</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                </svg>
+                            </Link>
+                        </div>
                     </div>
                 </div>
 

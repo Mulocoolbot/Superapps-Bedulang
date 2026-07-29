@@ -4,7 +4,7 @@
 <template>
     <footer
         id="kontak"
-        class="bg-[#0F3D77] dark:bg-slate-950 text-white mt-20">
+        class="bg-[#0F3D77] dark:bg-slate-950 text-white mt-0">
 
         <div class="max-w-7xl mx-auto px-6 py-14">
 
@@ -41,11 +41,25 @@
 
                     <div class="space-y-3 text-blue-100 text-sm">
 
-                        <p>📞 (0718) 7362032</p>
+                        <a href="tel:07187362032" class="flex items-center gap-2 hover:underline hover:text-white transition">
+                            <span>📞</span>
+                            <span>(0718) 7362032</span>
+                        </a>
 
-                        <p>✉ diskominfo@bangkatengah.go.id</p>
+                        <a href="https://wa.me/6283128848371" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:underline hover:text-white transition">
+                            <span>💬</span>
+                            <span>+62 831-2884-8371 (WhatsApp)</span>
+                        </a>
 
-                        <p>🌐 bangkatengahkab.go.id</p>
+                        <a href="mailto:diskominfo@bangkatengah.go.id" class="flex items-center gap-2 hover:underline hover:text-white transition">
+                            <span>✉</span>
+                            <span>diskominfo@bangkatengah.go.id</span>
+                        </a>
+
+                        <a href="https://bangkatengahkab.go.id" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:underline hover:text-white transition">
+                            <span>🌐</span>
+                            <span>bangkatengahkab.go.id</span>
+                        </a>
 
                     </div>
 
@@ -59,14 +73,22 @@
                         Alamat
                     </h4>
 
-                    <p class="text-blue-100 text-sm leading-7">
-
-                        Komplek Perkantoran Pemerintah
-                        Kabupaten Bangka Tengah<br>
-
-                        Provinsi Kepulauan Bangka Belitung
-
-                    </p>
+                    <a 
+                        href="https://maps.app.goo.gl/5VoQ2phAct9yi4mH8" 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        class="text-blue-100 hover:text-white transition text-sm leading-7 block hover:underline group flex items-start gap-2"
+                    >
+                        <svg class="w-5 h-5 mt-0.5 text-blue-300 group-hover:text-white transition shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span>
+                            Komplek Perkantoran Pemerintah<br>
+                            Kabupaten Bangka Tengah<br>
+                            Provinsi Kepulauan Bangka Belitung
+                        </span>
+                    </a>
 
                 </div>
 
@@ -113,7 +135,7 @@
             <!-- Bottom -->
 
             <div
-                class="border-t border-blue-700 dark:border-slate-800 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center text-sm text-blue-200">
+                class="border-t border-blue-700 dark:border-slate-800 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center text-sm text-white">
 
                 <p>
                     © 2026 Pemerintah Kabupaten Bangka Tengah

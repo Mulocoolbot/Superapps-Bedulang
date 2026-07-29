@@ -16,12 +16,12 @@ class PertanianService implements InformationServiceInterface
     public function getMetadata(): array
     {
         return [
-            'name' => 'Pertanian',
-            'icon' => '🌾',
-            'description' => 'Dashboard informasi Dinas Pertanian Kabupaten Bangka Tengah.',
+            'name' => 'Desa',
+            'icon' => '📍',
+            'description' => 'Dashboard informasi mengenai desa di masing-masing kecamatan Kabupaten Bangka Tengah.',
             'filters' => [],
-            'source' => 'Dinas Pertanian Kab. Bangka Tengah',
-            'source_url' => 'https://dpkp.bangkatengahkab.go.id/',
+            'source' => 'Pemerintah Kabupaten Bangka Tengah',
+            'source_url' => 'https://bangkatengahkab.go.id/',
         ];
     }
 
