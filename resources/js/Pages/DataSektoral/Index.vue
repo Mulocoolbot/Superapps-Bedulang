@@ -514,17 +514,27 @@ fetchUrusan()
     <Head title="Data Sektoral" />
 
     <FrontLayout>
-        <div class="relative min-h-screen overflow-hidden bg-gray-50 dark:bg-gray-900 pb-16">
+        <div 
+            class="relative min-h-screen overflow-hidden bg-cover bg-center bg-no-repeat pb-16 pt-20"
+            style="background-image: url('/services/bg layanan.svg');"
+        >
             
             <!-- Global Back Button Below Navbar -->
             <transition name="fade">
                 <div v-if="currentStep > 1 && !isAnimating" class="container mx-auto px-6 pt-4">
                     <button 
                         @click="handleBack"
-                        class="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 shadow-md transition-all hover:-translate-x-1 hover:bg-gray-100 hover:shadow-lg dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 cursor-pointer"
+                        class="group mb-6 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-bold text-white transition bg-white/10 hover:bg-white/20 backdrop-blur-md shadow-xs border border-white/10 cursor-pointer"
                     >
-                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-4 w-4 transition-transform group-hover:-translate-x-0.5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                         </svg>
                         Kembali
                     </button>
@@ -539,14 +549,14 @@ fetchUrusan()
                     
                     <!-- Section Title -->
                     <div class="mb-10 text-center popup-anim">
-                        <h1 class="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+                        <h1 class="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
                             {{ 
                                 currentStep === 1 ? 'Pilih Urusan Data Sektoral' : 
                                 currentStep === 2 ? 'Pilih Sub Urusan' : 
                                 'Pilih Indikator Data' 
                             }}
                         </h1>
-                        <p class="mt-3 text-base text-gray-600 dark:text-gray-400">
+                        <p class="mt-3 text-base text-white/80 font-medium">
                             {{ 
                                 currentStep === 1 ? 'Silakan pilih jenis urusan untuk melihat data sektoral Kabupaten Bangka Tengah' : 
                                 currentStep === 2 ? `Urusan: ${selectedUrusan}` : 

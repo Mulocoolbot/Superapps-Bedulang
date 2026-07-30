@@ -55,16 +55,7 @@ class InformationServiceRegistry
         'pertanian' => PertanianService::class,
         'desa' => PertanianService::class,
         'informasi-publik' => InformasiPublikService::class,
-        'pariwisata' => [
-            'name' => 'Pariwisata',
-            'icon' => '🏖️',
-            'description' => 'Dashboard informasi Pariwisata Kabupaten Bangka Tengah.',
-            'filters' => [
-                ['label' => 'Harga Cabe', 'value' => 'harga-cabe'],
-                ['label' => 'Kematian', 'value' => 'kematian'],
-                ['label' => 'Gender', 'value' => 'gender'],
-            ],
-        ],
+        'pariwisata' => PariwisataService::class,
         'data-sektoral' => [
             'name' => 'Data Sektoral',
             'icon' => '📊',

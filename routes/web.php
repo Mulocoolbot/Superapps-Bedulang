@@ -207,6 +207,9 @@ Route::middleware('auth')->group(function () {
 
 });
 
+Route::get('/layanan/pariwisata/destinasi/{id}', [InformationServiceController::class, 'showPariwisataDestinasi'])
+    ->name('layanan.pariwisata.destinasi');
+
 Route::get('/layanan/{slug}', [InformationServiceController::class, 'show'])
     ->name('layanan.show');
 

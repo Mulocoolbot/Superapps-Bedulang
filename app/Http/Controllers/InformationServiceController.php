@@ -31,7 +31,7 @@ class InformationServiceController extends Controller
             abort(404);
         }
 
-        if ($slug !== 'pertanian' && $slug !== 'desa' && !auth()->check()) {
+        if ($slug !== 'pertanian' && $slug !== 'desa' && $slug !== 'pariwisata' && !auth()->check()) {
             return redirect()->guest(route('login'));
         }
 
@@ -87,6 +87,26 @@ class InformationServiceController extends Controller
                 'slug' => 'kdmp',
             ],
             'koperasi' => $koperasi,
+        ]);
+    }
+    public function showPariwisataDestinasi($id)
+    {
+        $service = $this->registry->resolve('pariwisata');
+        $metadata = $service->getMetadata();
+        
+        $data = app(\App\Services\PariwisataService::class)->getDestinationById((int) $id);
+
+        if (!$data) {
+            abort(404);
+        }
+
+        return Inertia::render('Front/Services/Dashboards/PariwisataDetail', [
+            'service' => [
+                ...$metadata,
+                'slug' => 'pariwisata',
+            ],
+            'destination' => $data['destination'],
+            'other_destinations' => $data['other_destinations'],
         ]);
     }
 }
