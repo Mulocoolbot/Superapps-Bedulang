@@ -308,7 +308,6 @@ const getAvailabilityStatus = (amount) => {
                             </svg>
                         </button>
 
-
                         <!-- Tab 4: Unit Transfusi Darah -->
                         <button
                             @click="selectTab('utd')"
@@ -476,6 +475,7 @@ const getAvailabilityStatus = (amount) => {
                     </div>
 
                 </div>
+
 
 
                 <!-- 🩸 SUB-VIEW 4: UNIT TRANSFUSI DARAH (UTD) -->

@@ -363,7 +363,7 @@ const dprdBarChartData = computed(() => {
                     <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-blue-600 dark:bg-blue-500" />
                     <div class="pl-2">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">Jumlah Penduduk</span>
+                            <span class="text-xs font-bold text-black uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">Jumlah Penduduk</span>
                             <span class="text-lg"></span>
                         </div>
                         <p class="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
@@ -378,7 +378,7 @@ const dprdBarChartData = computed(() => {
                     <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-sky-500 dark:bg-sky-400" />
                     <div class="pl-2">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">Laki-Laki</span>
+                            <span class="text-xs font-bold text-black uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">Laki-Laki</span>
                             <span class="text-lg"></span>
                         </div>
                         <p class="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
@@ -395,7 +395,7 @@ const dprdBarChartData = computed(() => {
                     <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-rose-500 dark:bg-rose-400" />
                     <div class="pl-2">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">Perempuan</span>
+                            <span class="text-xs font-bold text-black uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">Perempuan</span>
                             <span class="text-lg"></span>
                         </div>
                         <p class="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
@@ -513,7 +513,7 @@ const dprdBarChartData = computed(() => {
             
             <!-- Sleek Leadership Banner Card -->
             <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900 animate-fade-in-up [animation-delay:120ms]">
-                <span class="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">Struktur Pimpinan</span>
+                <span class="text-xs font-bold text-black uppercase tracking-[0.16em] dark:text-white mb-4 text-slate-400">Struktur Pimpinan</span>
                 <h3 class="mt-0.5 text-base font-extrabold text-slate-900 dark:text-white mb-4">Pimpinan DPRD Kabupaten Bangka Tengah (Periode {{ dprd.periode }})</h3>
                 
                 <div class="grid gap-4 sm:grid-cols-3">
@@ -793,7 +793,7 @@ const dprdBarChartData = computed(() => {
                 <div class="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 transition-all duration-300 hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700">
                     <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-blue-600 dark:bg-blue-500" />
                     <div class="pl-2">
-                        <span class="text-xs font-bold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">Kecamatan</span>
+                        <span class="text-xs font-bold text-black uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">Kecamatan</span>
                         <p class="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
                             <AnimatedNumber :value="desaKecamatan.total_kecamatan"></AnimatedNumber>
                         </p>
@@ -805,7 +805,7 @@ const dprdBarChartData = computed(() => {
                 <div class="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 transition-all duration-300 hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700">
                     <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-emerald-500 dark:bg-emerald-400" />
                     <div class="pl-2">
-                        <span class="text-xs font-bold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">Desa</span>
+                        <span class="text-xs font-bold text-black uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">Desa</span>
                         <p class="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
                             <AnimatedNumber :value="desaKecamatan.total_desa"></AnimatedNumber>
                         </p>

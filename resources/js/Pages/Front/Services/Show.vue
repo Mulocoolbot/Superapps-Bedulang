@@ -13,6 +13,8 @@ import DesaDashboard from './Dashboards/DesaDashboard.vue'
 import InformasiPublikDashboard from './Dashboards/InformasiPublikDashboard.vue'
 import PemerintahanDashboard from './Dashboards/PemerintahanDashboard.vue'
 import KdmpDashboard from './Dashboards/KdmpDashboard.vue'
+import KesehatanDashboard from './Dashboards/KesehatanDashboard.vue'
+import PendidikanDashboard from './Dashboards/PendidikanDashboard.vue'
 import DefaultDashboard from './Dashboards/DefaultDashboard.vue'
 
 const isComplaintModalOpen = ref(false)
@@ -44,6 +46,10 @@ const dashboardComponent = computed(() => {
             return InformasiPublikDashboard
         case 'pemerintahan':
             return PemerintahanDashboard
+        case 'kesehatan':
+            return KesehatanDashboard
+        case 'pendidikan':
+            return PendidikanDashboard
         case 'hukum':
         case 'kdmp':
             return KdmpDashboard

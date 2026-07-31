@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import { router } from '@inertiajs/vue3'
+import UmkmDashboard from './UmkmDashboard.vue'
 
 const props = defineProps({
     service: {
@@ -14,6 +15,87 @@ const props = defineProps({
 })
 
 const dashboardData = computed(() => props.dashboard ?? {})
+
+// UMKM State & Computeds
+const selectedSektor = ref('')
+const selectedKecamatan = ref('')
+const selectedDesa = ref('')
+const selectedTahun = ref('')
+
+const availableSektors = computed(() => {
+    const list = new Set((props.dashboard?.umkm_list ?? []).map(item => item.sektor_usaha))
+    return Array.from(list).sort()
+})
+
+const availableKecamatans = computed(() => {
+    const list = new Set((props.dashboard?.umkm_list ?? []).map(item => item.kecamatan))
+    return Array.from(list).sort()
+})
+
+const availableDesas = computed(() => {
+    let list = props.dashboard?.umkm_list ?? []
+    if (selectedKecamatan.value) {
+        list = list.filter(item => item.kecamatan === selectedKecamatan.value)
+    }
+    const set = new Set(list.map(item => item.desa_kel))
+    return Array.from(set).sort()
+})
+
+const availableYears = computed(() => {
+    const list = new Set((props.dashboard?.umkm_list ?? []).map(item => item.tahun))
+    return Array.from(list).sort().reverse()
+})
+
+watch(selectedKecamatan, () => {
+    selectedDesa.value = ''
+})
+
+const filteredUmkm = computed(() => {
+    let list = props.dashboard?.umkm_list ?? []
+    
+    if (selectedSektor.value) {
+        list = list.filter(item => item.sektor_usaha === selectedSektor.value)
+    }
+    if (selectedKecamatan.value) {
+        list = list.filter(item => item.kecamatan === selectedKecamatan.value)
+    }
+    if (selectedDesa.value) {
+        list = list.filter(item => item.desa_kel === selectedDesa.value)
+    }
+    if (selectedTahun.value) {
+        list = list.filter(item => item.tahun == selectedTahun.value)
+    }
+    
+    return list
+})
+
+const totalUmkm = computed(() => {
+    return filteredUmkm.value.reduce((acc, item) => acc + item.total, 0)
+})
+
+const currentPage = ref(1)
+const itemsPerPage = ref(10)
+
+const paginatedUmkm = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage.value
+    const end = start + itemsPerPage.value
+    return filteredUmkm.value.slice(start, end)
+})
+
+const totalPages = computed(() => {
+    return Math.ceil(filteredUmkm.value.length / itemsPerPage.value)
+})
+
+watch(filteredUmkm, () => {
+    currentPage.value = 1
+})
+
+const resetUmkmFilters = () => {
+    selectedSektor.value = ''
+    selectedKecamatan.value = ''
+    selectedDesa.value = ''
+    selectedTahun.value = ''
+}
 
 const serviceTypes = computed(() =>
     props.service?.filters?.length > 0
@@ -465,7 +547,11 @@ const getPasarBarPercent = (val) => {
 </script>
 
 <template>
-    <!-- Menu Bar Section (only for Perindagkop) -->
+    <div v-if="props.service?.slug === 'perindagkop-ukm'">
+        <UmkmDashboard :service="props.service" :dashboard="props.dashboard" />
+    </div>
+    <div v-else>
+        <!-- Menu Bar Section (only for Perindagkop) -->
     <div class="mt-6 flex flex-wrap gap-2 rounded-xl bg-slate-100 p-1.5 dark:bg-slate-800/60 w-full animate-fade-in-up [animation-delay:100ms]">
         <button
             @click="activeTab = 'harga'"
@@ -1065,6 +1151,7 @@ const getPasarBarPercent = (val) => {
                 </div>
             </div>
         </aside>
+    </div>
     </div>
 </template>
 

@@ -79,9 +79,9 @@ class InformasiPublikService implements InformationServiceInterface
             'perindag' => $perindagData,
             'sawit' => $sawitData,
             'umkm' => [
-                'status' => 'empty',
+                'status' => 'active',
                 'title' => 'Data UMKM',
-                'message' => 'Data Usaha Mikro, Kecil, dan Menengah (UMKM) Kabupaten Bangka Tengah sedang dalam tahap pendataan dan pengintegrasian sistem.',
+                'umkm_list' => $perindagData['umkm_list'] ?? [],
             ],
             'utd' => [
                 'status' => 'active',

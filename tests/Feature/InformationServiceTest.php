@@ -42,9 +42,12 @@ class InformationServiceTest extends TestCase
         ];
 
         foreach ($slugs as $slug) {
-            $this->actingAs($user)
-                ->get('/layanan/' . $slug)
-                ->assertOk();
+            $response = $this->actingAs($user)->get('/layanan/' . $slug);
+            if ($slug === 'data-sektoral') {
+                $response->assertRedirect();
+            } else {
+                $response->assertOk();
+            }
         }
     }
 
