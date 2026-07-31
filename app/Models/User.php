@@ -109,4 +109,9 @@ class User extends Authenticatable
     {
         return $this->kdmp_role === 'admin_kmp';
     }
+
+    public function isAdminKoperasi(): bool
+    {
+        return $this->role === 'admin_koperasi' || ($this->role === 'admin' && $this->service_slug === 'koperasi') || $this->isSuperAdmin();
+    }
 }

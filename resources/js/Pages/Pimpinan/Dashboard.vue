@@ -227,6 +227,40 @@ defineProps({
                         </div>
                     </Link>
 
+                    <!-- Total Koperasi Bangka Tengah (Bukan Data KDMP) -->
+                    <Link href="/pimpinan/koperasi" class="block transition hover:scale-[1.02]">
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-emerald-200/80 dark:border-emerald-700/50 h-full relative overflow-hidden group">
+                            <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-emerald-500/10 rounded-full blur-xl group-hover:scale-150 transition duration-500"></div>
+                            <div class="flex items-start justify-between relative z-10">
+                                <div>
+                                    <div class="flex items-center gap-1.5 mb-1">
+                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 border border-emerald-200">
+                                            Kab. Bangka Tengah
+                                        </span>
+                                    </div>
+                                    <p class="text-sm font-medium text-slate-600 dark:text-slate-400">Total Koperasi</p>
+                                    <h3 class="text-3xl font-extrabold text-slate-800 dark:text-white mt-1 flex items-baseline gap-2">
+                                        {{ new Intl.NumberFormat('id-ID').format(recap.koperasi?.total || 0) }}
+                                        <span class="text-base font-medium text-slate-500">Koperasi</span>
+                                    </h3>
+                                    <div class="mt-2 flex items-center gap-2">
+                                        <span class="text-xs font-semibold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                                            <span>Klik untuk lihat detail data & grafik</span>
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                                            </svg>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="p-3 bg-emerald-100 text-emerald-600 rounded-xl dark:bg-emerald-900/30 dark:text-emerald-400 flex-shrink-0 shadow-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3a1.5 1.5 0 0 1 1.5-1.5h1.5a1.5 1.5 0 0 1 1.5 1.5v3m-6 0h6" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </Link>
+
                 </div>
             </div>
 

@@ -16,6 +16,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call(KoperasiSeeder::class);
+
         User::updateOrCreate(
             ['email' => 'superadmin@example.com'],
             [

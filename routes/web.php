@@ -9,6 +9,8 @@ use App\Http\Controllers\InformationServiceController;
 use App\Http\Controllers\UserComplaintController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PimpinanDashboardController;
+use App\Http\Controllers\Admin\KoperasiImportController;
+use App\Http\Controllers\KoperasiPimpinanController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\KubernetesController;
@@ -166,6 +168,23 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/pimpinan', [PimpinanDashboardController::class, 'index'])
         ->name('pimpinan.dashboard');
+
+    Route::get('/pimpinan/koperasi', [KoperasiPimpinanController::class, 'detail'])
+        ->name('pimpinan.koperasi.detail');
+
+    // Admin Koperasi routes
+    Route::get('/admin/koperasi', [KoperasiImportController::class, 'index'])
+        ->name('admin.koperasi.index');
+    Route::post('/admin/koperasi/import', [KoperasiImportController::class, 'import'])
+        ->name('admin.koperasi.import');
+    Route::get('/admin/koperasi/template', [KoperasiImportController::class, 'downloadTemplate'])
+        ->name('admin.koperasi.template');
+    Route::put('/admin/koperasi/{koperasi}', [KoperasiImportController::class, 'update'])
+        ->name('admin.koperasi.update');
+    Route::delete('/admin/koperasi/{koperasi}', [KoperasiImportController::class, 'destroy'])
+        ->name('admin.koperasi.destroy');
+    Route::delete('/admin/koperasi/log/{log}', [KoperasiImportController::class, 'destroyLog'])
+        ->name('admin.koperasi.destroy_log');
 
     Route::get('/dashboard/pad', [PimpinanDashboardController::class, 'pad'])
         ->name('pimpinan.pad');

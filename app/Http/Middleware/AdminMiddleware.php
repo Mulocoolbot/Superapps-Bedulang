@@ -14,7 +14,7 @@ class AdminMiddleware
             return redirect('/login');
         }
 
-        if (! in_array(auth()->user()->role, ['admin', 'super_admin', 'pimpinan'], true)) {
+        if (! in_array(auth()->user()->role, ['admin', 'super_admin', 'pimpinan', 'admin_koperasi'], true) && auth()->user()->service_slug !== 'koperasi') {
             abort(403, 'Anda tidak memiliki akses.');
         }
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Complaint;
 use App\Models\BloodStock;
+use App\Models\Koperasi;
 use App\Services\MbgService;
 use App\Services\PerindagService;
 use App\Services\PertanianService;
@@ -107,6 +108,9 @@ class PimpinanDashboardController extends Controller
             ],
             'kdmp' => [
                 'total' => 1248,
+            ],
+            'koperasi' => [
+                'total' => Koperasi::where('tahun', Koperasi::max('tahun'))->count(),
             ],
         ];
 

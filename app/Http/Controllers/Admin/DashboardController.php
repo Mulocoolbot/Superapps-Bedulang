@@ -17,6 +17,10 @@ class DashboardController extends Controller
             return redirect()->route('pimpinan.dashboard');
         }
 
+        if ($user && $user->isAdminKoperasi()) {
+            return redirect()->route('admin.koperasi.index');
+        }
+
         // Base scoped query matching admin domain logic
         $baseQuery = Complaint::query();
         if ($user && !$user->isSuperAdmin() && !empty($user->service_slug)) {
