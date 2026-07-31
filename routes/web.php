@@ -9,6 +9,8 @@ use App\Http\Controllers\InformationServiceController;
 use App\Http\Controllers\UserComplaintController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PimpinanDashboardController;
+use App\Http\Controllers\Admin\KoperasiImportController;
+use App\Http\Controllers\KoperasiPimpinanController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\KubernetesController;
@@ -117,6 +119,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/admin/kdmp/kecamatan/admin-kmp/{user}', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'destroyAdmin'])->name('admin.kdmp.kecamatan.destroy_admin');
     Route::post('/admin/kdmp/kecamatan/kmp/{kmp}/verify-pembentukan', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'verifyPembentukan'])->name('admin.kdmp.kecamatan.verify_pembentukan');
     Route::post('/admin/kdmp/kecamatan/kmp/{kmp}/verify-sertifikat', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'verifySertifikat'])->name('admin.kdmp.kecamatan.verify_sertifikat');
+    Route::post('/admin/kdmp/kecamatan/kmp/{kmp}/verify-pelatihan', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'verifyPelatihan'])->name('admin.kdmp.kecamatan.verify_pelatihan');
     Route::post('/admin/kdmp/kecamatan/kmp-edit/{editRequest}/verify', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'verifyEditRequest'])->name('admin.kdmp.kecamatan.verify_edit');
     Route::get('/admin/kdmp/kecamatan/history', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'historyLog'])->name('admin.kdmp.kecamatan.history');
 
@@ -125,6 +128,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/kdmp/kmp', [\App\Http\Controllers\Kdmp\AdminKmpController::class, 'storeKmp'])->name('admin.kdmp.kmp.store');
     Route::post('/admin/kdmp/kmp/edit', [\App\Http\Controllers\Kdmp\AdminKmpController::class, 'requestEdit'])->name('admin.kdmp.kmp.request_edit');
     Route::post('/admin/kdmp/kmp/sertifikat', [\App\Http\Controllers\Kdmp\AdminKmpController::class, 'uploadSertifikat'])->name('admin.kdmp.kmp.upload_sertifikat');
+    Route::post('/admin/kdmp/kmp/pelatihan', [\App\Http\Controllers\Kdmp\AdminKmpController::class, 'uploadPelatihan'])->name('admin.kdmp.kmp.upload_pelatihan');
     Route::post('/admin/kdmp/kmp/management', [\App\Http\Controllers\Kdmp\AdminKmpController::class, 'updateManagement'])->name('admin.kdmp.kmp.update_management');
     Route::get('/admin/kdmp/kmp/history', [\App\Http\Controllers\Kdmp\AdminKmpController::class, 'historyLog'])->name('admin.kdmp.kmp.history');
 
@@ -165,6 +169,23 @@ Route::middleware('auth')->group(function () {
     Route::get('/pimpinan', [PimpinanDashboardController::class, 'index'])
         ->name('pimpinan.dashboard');
 
+    Route::get('/pimpinan/koperasi', [KoperasiPimpinanController::class, 'detail'])
+        ->name('pimpinan.koperasi.detail');
+
+    // Admin Koperasi routes
+    Route::get('/admin/koperasi', [KoperasiImportController::class, 'index'])
+        ->name('admin.koperasi.index');
+    Route::post('/admin/koperasi/import', [KoperasiImportController::class, 'import'])
+        ->name('admin.koperasi.import');
+    Route::get('/admin/koperasi/template', [KoperasiImportController::class, 'downloadTemplate'])
+        ->name('admin.koperasi.template');
+    Route::put('/admin/koperasi/{koperasi}', [KoperasiImportController::class, 'update'])
+        ->name('admin.koperasi.update');
+    Route::delete('/admin/koperasi/{koperasi}', [KoperasiImportController::class, 'destroy'])
+        ->name('admin.koperasi.destroy');
+    Route::delete('/admin/koperasi/log/{log}', [KoperasiImportController::class, 'destroyLog'])
+        ->name('admin.koperasi.destroy_log');
+
     Route::get('/dashboard/pad', [PimpinanDashboardController::class, 'pad'])
         ->name('pimpinan.pad');
 
@@ -204,6 +225,9 @@ Route::middleware('auth')->group(function () {
         ->name('profile.destroy');
 
 });
+
+Route::get('/layanan/pariwisata/destinasi/{id}', [InformationServiceController::class, 'showPariwisataDestinasi'])
+    ->name('layanan.pariwisata.destinasi');
 
 Route::get('/layanan/{slug}', [InformationServiceController::class, 'show'])
     ->name('layanan.show');

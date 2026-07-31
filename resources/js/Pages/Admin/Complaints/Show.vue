@@ -14,7 +14,7 @@ const isFinalStatus = computed(() =>
 )
 
 const initialStatus = () => {
-    if (props.complaint.status === 'pending') return 'processing'
+    if (props.complaint.status === 'pending' || props.complaint.status === 'terkirim') return 'processing'
     if (props.complaint.status === 'processing') return 'resolved'
     return props.complaint.status
 }
@@ -332,14 +332,8 @@ Berikut adalah laporan pengaduan dari layanan *${complaint.service_name}* yang p
                     <div>
                         <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Status Pengaduan</label>
                         <select v-model="status" :disabled="isFinalStatus" class="w-full rounded-xl border-slate-200 text-sm focus:border-blue-500 focus:ring-blue-500 disabled:bg-slate-100 disabled:text-slate-500">
-                            <option v-if="complaint.status === 'terkirim'" value="processing">Diproses (Processing)</option>
-                            <option v-if="complaint.status === 'pending'" value="rejected">Ditolak (Rejected)</option>
-                            <option 
-                                v-if="complaint.status === 'terkirim'" 
-                                value="rejected"
-                                >
-                                Ditolak (Rejected)
-                                </option>
+                            <option v-if="complaint.status === 'pending' || complaint.status === 'terkirim'" value="processing">Diproses (Processing)</option>
+                            <option v-if="complaint.status === 'pending' || complaint.status === 'terkirim'" value="rejected">Ditolak (Rejected)</option>
                             <option v-if="complaint.status === 'processing'" value="resolved">Selesai (Resolved)</option>
                             <option v-if="complaint.status === 'processing'" value="rejected">Ditolak (Rejected)</option>
 

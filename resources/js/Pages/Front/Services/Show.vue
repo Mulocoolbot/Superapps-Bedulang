@@ -15,6 +15,7 @@ import PemerintahanDashboard from './Dashboards/PemerintahanDashboard.vue'
 import KdmpDashboard from './Dashboards/KdmpDashboard.vue'
 import KesehatanDashboard from './Dashboards/KesehatanDashboard.vue'
 import PendidikanDashboard from './Dashboards/PendidikanDashboard.vue'
+import PariwisataDashboard from './Dashboards/PariwisataDashboard.vue'
 import DefaultDashboard from './Dashboards/DefaultDashboard.vue'
 
 const isComplaintModalOpen = ref(false)
@@ -53,6 +54,8 @@ const dashboardComponent = computed(() => {
         case 'hukum':
         case 'kdmp':
             return KdmpDashboard
+        case 'pariwisata':
+            return PariwisataDashboard
         default:
             return DefaultDashboard
     }

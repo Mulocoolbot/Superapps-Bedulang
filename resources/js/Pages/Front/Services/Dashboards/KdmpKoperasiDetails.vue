@@ -103,7 +103,8 @@ const getInitials = (name) => {
                         <div class="space-y-4">
                             <!-- Kepala -->
                             <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
-                                <div class="h-12 w-12 shrink-0 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-white font-bold shadow-inner">
+                                <img v-if="koperasi.pengurus.kepala.foto" :src="`/storage/${koperasi.pengurus.kepala.foto}`" alt="Foto Kepala Koperasi" class="h-12 w-12 object-cover shrink-0 rounded-full border-2 border-cyan-400 shadow-sm" />
+                                <div v-else class="h-12 w-12 shrink-0 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-white font-bold shadow-inner">
                                     {{ getInitials(koperasi.pengurus.kepala.nama) }}
                                 </div>
                                 <div>
@@ -114,7 +115,8 @@ const getInitials = (name) => {
                             
                             <!-- Sekretaris -->
                             <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
-                                <div class="h-12 w-12 shrink-0 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white font-bold shadow-inner">
+                                <img v-if="koperasi.pengurus.sekretaris.foto" :src="`/storage/${koperasi.pengurus.sekretaris.foto}`" alt="Foto Sekretaris" class="h-12 w-12 object-cover shrink-0 rounded-full border-2 border-indigo-400 shadow-sm" />
+                                <div v-else class="h-12 w-12 shrink-0 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-white font-bold shadow-inner">
                                     {{ getInitials(koperasi.pengurus.sekretaris.nama) }}
                                 </div>
                                 <div>
@@ -125,7 +127,8 @@ const getInitials = (name) => {
 
                             <!-- Bendahara -->
                             <div class="flex items-center gap-4 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
-                                <div class="h-12 w-12 shrink-0 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-bold shadow-inner">
+                                <img v-if="koperasi.pengurus.bendahara.foto" :src="`/storage/${koperasi.pengurus.bendahara.foto}`" alt="Foto Bendahara" class="h-12 w-12 object-cover shrink-0 rounded-full border-2 border-emerald-400 shadow-sm" />
+                                <div v-else class="h-12 w-12 shrink-0 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white font-bold shadow-inner">
                                     {{ getInitials(koperasi.pengurus.bendahara.nama) }}
                                 </div>
                                 <div>

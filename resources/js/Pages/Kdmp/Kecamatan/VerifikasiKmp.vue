@@ -38,6 +38,12 @@ const verifySertifikat = (kmpId, action) => {
     }
 }
 
+const verifyPelatihan = (kmpId, action) => {
+    if(confirm(`Apakah Anda yakin ingin ${action === 'verify' ? 'menyetujui' : 'menolak'} bukti pelatihan KMP ini?`)) {
+        router.post(route('admin.kdmp.kecamatan.verify_pelatihan', kmpId), { action })
+    }
+}
+
 // Preview Modal Logic
 const previewModal = ref(false)
 const previewUrl = ref('')
@@ -112,6 +118,7 @@ const closePreview = () => {
                                     <th class="px-6 py-3">Admin</th>
                                     <th class="px-6 py-3">Status Pembentukan</th>
                                     <th class="px-6 py-3">Sertifikat</th>
+                                    <th class="px-6 py-3">Pelatihan</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -153,9 +160,31 @@ const closePreview = () => {
                                         </div>
                                         <span v-else class="text-gray-400">Belum Upload</span>
                                     </td>
+                                    <td class="px-6 py-4">
+                                        <div v-if="kmp.file_pelatihan">
+                                            <button type="button" @click="openPreview(`/storage/${kmp.file_pelatihan}`)" class="inline-flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-800 bg-indigo-50 px-3 py-1 rounded-md mb-2">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                </svg>
+                                                Lihat File
+                                            </button>
+                                            <div class="block mt-2">
+                                                <span v-if="kmp.status_pelatihan === 'pending'" class="text-amber-600 text-sm">Status Pelatihan: Menunggu</span>
+                                                <span v-else-if="kmp.status_pelatihan === 'verified'" class="text-emerald-600 text-sm">Status Pelatihan: Diterima</span>
+                                                <span v-else class="text-red-600 text-sm">Status Pelatihan: Ditolak</span>
+                                            </div>
+                                            
+                                            <div class="mt-2 flex gap-2" v-if="kmp.status_pelatihan === 'pending'">
+                                                <button @click="verifyPelatihan(kmp.id, 'verify')" class="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded hover:bg-emerald-200">Terima</button>
+                                                <button @click="verifyPelatihan(kmp.id, 'reject')" class="text-xs bg-red-100 text-red-700 px-2 py-1 rounded hover:bg-red-200">Tolak</button>
+                                            </div>
+                                        </div>
+                                        <span v-else class="text-gray-400">Belum Upload</span>
+                                    </td>
                                 </tr>
                                 <tr v-if="kmps.data.length === 0">
-                                    <td colspan="4" class="px-6 py-4 text-center">Belum ada KMP.</td>
+                                    <td colspan="5" class="px-6 py-4 text-center">Belum ada KMP.</td>
                                 </tr>
                             </tbody>
                         </table>

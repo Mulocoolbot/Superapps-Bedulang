@@ -28,6 +28,10 @@ const certForm = useForm({
     sertifikat: null,
 })
 
+const pelatihanForm = useForm({
+    pelatihan: null,
+})
+
 const managementForm = useForm({
     jumlah_anggota: props.kmp?.jumlah_anggota || 0,
     jumlah_pengawas: props.kmp?.jumlah_pengawas || 0,
@@ -64,6 +68,13 @@ const submitCert = () => {
     certForm.post(route('admin.kdmp.kmp.upload_sertifikat'), {
         preserveScroll: true,
         onSuccess: () => certForm.reset('sertifikat'),
+    })
+}
+
+const submitPelatihan = () => {
+    pelatihanForm.post(route('admin.kdmp.kmp.upload_pelatihan'), {
+        preserveScroll: true,
+        onSuccess: () => pelatihanForm.reset('pelatihan'),
     })
 }
 
@@ -250,6 +261,41 @@ const submitManagement = () => {
                             <PrimaryButton :disabled="certForm.processing || !certForm.sertifikat">Unggah Sertifikat</PrimaryButton>
                             <Transition enter-active-class="transition ease-in-out" enter-from-class="opacity-0" leave-active-class="transition ease-in-out" leave-to-class="opacity-0">
                                 <p v-if="certForm.recentlySuccessful" class="text-sm text-gray-600 dark:text-gray-400">Berhasil diunggah.</p>
+                            </Transition>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Pemberkasan Bukti Pelatihan -->
+                <div v-if="kmp" class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+                    <header>
+                        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Pemberkasan Bukti Pelaksanaan Pelatihan</h2>
+                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                            Unggah bukti pelaksanaan pelatihan KMP (PDF/Gambar) untuk diverifikasi oleh Admin Kecamatan.
+                        </p>
+                    </header>
+
+                    <div v-if="kmp.status_pelatihan === 'pending' && kmp.file_pelatihan" class="mt-4 bg-amber-50 text-amber-700 p-3 rounded text-sm">
+                        Bukti pelatihan sedang dalam proses verifikasi.
+                    </div>
+                    <div v-else-if="kmp.status_pelatihan === 'verified' && kmp.file_pelatihan" class="mt-4 bg-emerald-50 text-emerald-700 p-3 rounded text-sm">
+                        Bukti pelatihan telah <strong>disetujui</strong>.
+                    </div>
+                    <div v-else-if="kmp.status_pelatihan === 'rejected'" class="mt-4 bg-red-50 text-red-700 p-3 rounded text-sm">
+                        Bukti pelatihan sebelumnya ditolak. Silakan unggah dokumen yang benar.
+                    </div>
+
+                    <form @submit.prevent="submitPelatihan" class="mt-6 space-y-6">
+                        <div>
+                            <InputLabel for="pelatihan" value="File Bukti Pelatihan" />
+                            <input id="pelatihan" type="file" @input="pelatihanForm.pelatihan = $event.target.files[0]" class="mt-1 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" accept=".pdf,.jpg,.jpeg,.png">
+                            <InputError :message="pelatihanForm.errors.pelatihan" class="mt-2" />
+                        </div>
+
+                        <div class="flex items-center gap-4">
+                            <PrimaryButton :disabled="pelatihanForm.processing || !pelatihanForm.pelatihan">Unggah Bukti Pelatihan</PrimaryButton>
+                            <Transition enter-active-class="transition ease-in-out" enter-from-class="opacity-0" leave-active-class="transition ease-in-out" leave-to-class="opacity-0">
+                                <p v-if="pelatihanForm.recentlySuccessful" class="text-sm text-gray-600 dark:text-gray-400">Berhasil diunggah.</p>
                             </Transition>
                         </div>
                     </form>

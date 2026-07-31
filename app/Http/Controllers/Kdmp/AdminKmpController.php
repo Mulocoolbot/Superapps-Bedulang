@@ -146,6 +146,31 @@ class AdminKmpController extends Controller
         return redirect()->back()->with('success', 'Sertifikat berhasil diunggah dan menunggu verifikasi.');
     }
 
+    public function uploadPelatihan(Request $request)
+    {
+        $user = Auth::user();
+        $kmp = Kmp::where('user_id', $user->id)->firstOrFail();
+
+        $request->validate([
+            'pelatihan' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
+        ]);
+
+        $path = $request->file('pelatihan')->store('kmp_pelatihan', 'public');
+
+        $kmp->file_pelatihan = $path;
+        $kmp->status_pelatihan = 'pending';
+        $kmp->save();
+
+        KmpHistoryLog::create([
+            'kmp_id' => $kmp->id,
+            'user_id' => $user->id,
+            'action' => 'upload_pelatihan',
+            'description' => 'Admin KMP mengunggah bukti pelaksanaan pelatihan.',
+        ]);
+
+        return redirect()->back()->with('success', 'Bukti pelatihan berhasil diunggah dan menunggu verifikasi.');
+    }
+
     public function updateManagement(Request $request)
     {
         $user = Auth::user();

@@ -26,7 +26,7 @@ class InformationServiceTest extends TestCase
             'pendidikan',
             'kesehatan',
             'perindagkop-ukm',
-            'hukum',
+            'kdmp',
             'sosial',
             'kependudukan',
             'kepegawaian',
@@ -44,7 +44,7 @@ class InformationServiceTest extends TestCase
         foreach ($slugs as $slug) {
             $response = $this->actingAs($user)->get('/layanan/' . $slug);
             if ($slug === 'data-sektoral') {
-                $response->assertRedirect();
+                $response->assertRedirect(route('data-sektoral.index'));
             } else {
                 $response->assertOk();
             }
