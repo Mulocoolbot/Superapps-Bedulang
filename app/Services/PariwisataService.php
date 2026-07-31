@@ -25,6 +25,13 @@ class PariwisataService implements InformationServiceInterface
             'lng' => 106.2567,
             'maps_url' => 'https://maps.app.goo.gl/jsE2raX7mDaK1Eha8',
             'image_gradient' => 'from-emerald-500 to-teal-600',
+            'main_image' => '/images/destinations/danau-pading/pading-1.jpg',
+            'gallery' => [
+                '/images/destinations/danau-pading/pading-1.jpg',
+                '/images/destinations/danau-pading/pading-2.jpg',
+                '/images/destinations/danau-pading/pading-3.jpg',
+                '/images/destinations/danau-pading/pading-4.jpg',
+            ],
             'about' => [
                 'Gambaran Umum' => 'Bekas lokasi penambangan timah (kulong) yang telah bertransformasi menjadi objek wisata alam yang tertata rapi dan estetik.',
                 'Daya Tarik Utama' => 'Air danau yang berwarna hijau kebiruan dengan latar belakang bukit pasir galian dan lanskap perbukitan hijau di sekitarnya.',
@@ -46,6 +53,13 @@ class PariwisataService implements InformationServiceInterface
             'lng' => 106.1333,
             'maps_url' => 'https://maps.app.goo.gl/EEnhvGTTqZ2XfJ8P8',
             'image_gradient' => 'from-cyan-500 to-blue-600',
+            'main_image' => '/images/destinations/danau-kaolin/kaolin-1.jpg',
+            'gallery' => [
+                '/images/destinations/danau-kaolin/kaolin-1.jpg',
+                '/images/destinations/danau-kaolin/kaolin-2.jpg',
+                '/images/destinations/danau-kaolin/kaolin-3.jpg',
+                '/images/destinations/danau-kaolin/kaolin-4.jpg',
+            ],
             'about' => [
                 'Gambaran Umum' => 'Salah satu ikon destinasi foto paling terkenal di Pulau Bangka. Danau ini terbentuk akibat penambangan kaolin dan timah di masa lalu.',
                 'Daya Tarik Utama' => 'Perpaduan warna air danau yang membiru cerah (electric blue) dengan gundukan daratan pasir putih bersih bak salju di sekelilingnya.',
@@ -56,7 +70,7 @@ class PariwisataService implements InformationServiceInterface
         ],
         [
             'id' => 3,
-            'name' => 'Bukit Pintéir',
+            'name' => 'Bukit Pinteir',
             'category' => 'wisata',
             'subcategory' => 'Wisata Danau & Alam',
             'subcategory_icon' => '🏞️',
@@ -111,6 +125,13 @@ class PariwisataService implements InformationServiceInterface
             'lng' => 106.4700,
             'maps_url' => 'https://maps.app.goo.gl/sYPSDdiN4QMG7LF67',
             'image_gradient' => 'from-sky-400 to-blue-600',
+            'main_image' => '/images/destinations/ketawai/ketawai-1.jpg',
+            'gallery' => [
+                '/images/destinations/ketawai/ketawai-1.jpg',
+                '/images/destinations/ketawai/ketawai-2.jpg',
+                '/images/destinations/ketawai/ketawai-3.jpg',
+                '/images/destinations/ketawai/ketawai-4.jpg',
+            ],
             'about' => [
                 'Gambaran Umum' => 'Pulau kecil tak berpenghuni yang berjarak sekitar 30–45 menit perjalanan perahu dari Dermaga Kurau.',
                 'Daya Tarik Utama' => 'Rimbunnya ratusan pohon kelapa tinggi yang menutupi pulau, pasir putih halus, dan air laut yang tenang.',
@@ -132,6 +153,13 @@ class PariwisataService implements InformationServiceInterface
             'lng' => 106.4200,
             'maps_url' => 'https://maps.app.goo.gl/egpkWUBGZVaetV9R7',
             'image_gradient' => 'from-orange-400 to-rose-500',
+            'main_image' => '/images/destinations/tanjung-berikat/berikat-1.jpg',
+            'gallery' => [
+                '/images/destinations/tanjung-berikat/berikat-1.jpg',
+                '/images/destinations/tanjung-berikat/berikat-2.jpg',
+                '/images/destinations/tanjung-berikat/berikat-3.jpg',
+                '/images/destinations/tanjung-berikat/berikat-4.jpg',
+            ],
             'about' => [
                 'Gambaran Umum' => 'Pantai eksotis yang berada di ujung paling timur Kabupaten Bangka Tengah.',
                 'Daya Tarik Utama' => 'Susunan bebatuan granit raksasa di sepanjang pesisir pantai serta bangunan mercusuar yang megah.',
@@ -195,6 +223,10 @@ class PariwisataService implements InformationServiceInterface
             'lng' => 106.4100,
             'maps_url' => 'https://maps.app.goo.gl/mRv68GX2X2PqJeh66',
             'image_gradient' => 'from-cyan-400 to-teal-500',
+            'main_image' => '/images/destinations/penyak/penyak-1.jpg',
+            'gallery' => [
+                '/images/destinations/penyak/penyak-1.jpg',
+            ],
             'about' => [
                 'Gambaran Umum' => 'Pantai panjang yang terletak tepat di tepi jalan raya utama penghubung Pangkalpinang dan Koba.',
                 'Daya Tarik Utama' => 'Garis pantainya yang sangat panjang melengkung serta aksesibilitas yang sangat mudah tanpa perlu masuk ke dalam pemukiman.',

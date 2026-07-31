@@ -170,9 +170,15 @@ const getSubcategoryGradient = (subcategory) => {
                     class="group relative overflow-hidden rounded-2xl border border-white/15 shadow-lg transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1 hover:border-white/30 cursor-pointer"
                     :style="{ animationDelay: `${200 + index * 100}ms` }"
                 >
-                    <!-- Gradient Background with Pattern -->
-                    <div :class="`absolute inset-0 bg-gradient-to-br ${featuredGradients[index]}`"></div>
-                    <div class="absolute inset-0 opacity-[0.07]" style="background-image: url(&quot;data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E&quot;);"></div>
+                    <!-- Background Image or Gradient -->
+                    <template v-if="dest.main_image">
+                        <img :src="dest.main_image" :alt="dest.name" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-slate-950/20"></div>
+                    </template>
+                    <template v-else>
+                        <div :class="`absolute inset-0 bg-gradient-to-br ${featuredGradients[index]}`"></div>
+                        <div class="absolute inset-0 opacity-[0.07]" style="background-image: url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 viewBox=%220 0 60 60%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg fill=%22none%22 fill-rule=%22evenodd%22%3E%3Cg fill=%22%23ffffff%22 fill-opacity=%221%22%3E%3Cpath d=%22M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+                    </template>
                     
                     <!-- Rank Badge -->
                     <div class="absolute top-4 left-4 z-20 flex items-center justify-center w-9 h-9 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 shadow-lg">
@@ -331,17 +337,23 @@ const getSubcategoryGradient = (subcategory) => {
                             class="group relative overflow-hidden rounded-xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-sm transition-all duration-300 hover:bg-white/[0.07] hover:border-white/20 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-500/5 cursor-pointer"
                             :style="{ animationDelay: `${dIndex * 50}ms` }"
                         >
-                            <!-- Card Top: Gradient Visual -->
-                            <div :class="`relative h-28 bg-gradient-to-br ${dest.image_gradient} overflow-hidden`">
-                                <!-- SVG Pattern overlay -->
-                                <div class="absolute inset-0 opacity-10" style="background-image: url(&quot;data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='1' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E&quot;);"></div>
-                                
-                                <!-- Center Icon -->
-                                <div class="absolute inset-0 flex items-center justify-center">
-                                    <span class="text-5xl opacity-80 drop-shadow-lg transform group-hover:scale-110 transition-transform duration-500">
-                                        {{ dest.subcategory_icon }}
-                                    </span>
-                                </div>
+                            <!-- Card Top: Visual -->
+                            <div :class="`relative h-36 bg-gradient-to-br ${dest.image_gradient} overflow-hidden`">
+                                <template v-if="dest.main_image">
+                                    <img :src="dest.main_image" :alt="dest.name" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                    <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent"></div>
+                                </template>
+                                <template v-else>
+                                    <!-- SVG Pattern overlay -->
+                                    <div class="absolute inset-0 opacity-10" style="background-image: url('data:image/svg+xml,%3Csvg width=%2240%22 height=%2240%22 viewBox=%220 0 40 40%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cg fill=%22%23ffffff%22 fill-opacity=%221%22 fill-rule=%22evenodd%22%3E%3Cpath d=%22M0 40L40 0H20L0 20M40 40V20L20 40%22/%3E%3C/g%3E%3C/svg%3E');"></div>
+                                    
+                                    <!-- Center Icon -->
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <span class="text-5xl opacity-80 drop-shadow-lg transform group-hover:scale-110 transition-transform duration-500">
+                                            {{ dest.subcategory_icon }}
+                                        </span>
+                                    </div>
+                                </template>
 
                                 <!-- Rating Pill (top right) -->
                                 <div class="absolute top-3 right-3 flex items-center gap-1 bg-black/30 backdrop-blur-md rounded-full px-2.5 py-1 border border-white/10">
@@ -457,6 +469,7 @@ const getSubcategoryGradient = (subcategory) => {
 .line-clamp-1 {
     display: -webkit-box;
     -webkit-line-clamp: 1;
+    line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
@@ -464,6 +477,7 @@ const getSubcategoryGradient = (subcategory) => {
 .line-clamp-2 {
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }

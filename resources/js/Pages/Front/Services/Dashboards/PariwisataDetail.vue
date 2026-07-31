@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3'
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import FrontLayout from '@/Layouts/FrontLayout.vue'
 import Footer from '@/Components/Front/Footer.vue'
 
@@ -17,6 +17,23 @@ const props = defineProps({
         type: Array,
         default: () => [],
     }
+})
+
+const activeImage = ref(props.destination.main_image || null)
+
+watch(() => props.destination, (newDest) => {
+    activeImage.value = newDest.main_image || null
+})
+
+const selectImage = (imgUrl) => {
+    activeImage.value = imgUrl
+}
+
+const galleryImages = computed(() => {
+    if (props.destination.gallery && props.destination.gallery.length > 0) {
+        return props.destination.gallery
+    }
+    return []
 })
 
 // Format number
@@ -80,25 +97,47 @@ const parsedMapEmbed = computed(() => {
                 <div class="rounded-3xl border border-white/15 bg-white/[0.04] backdrop-blur-xl p-6 sm:p-10 shadow-2xl space-y-10">
                     
                     <!-- Photo Gallery Section -->
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <!-- Main Photo Placeholder -->
-                        <div class="md:col-span-3 aspect-[16/9] md:aspect-auto h-64 md:h-[450px] bg-slate-900/60 rounded-3xl overflow-hidden relative group border border-white/10">
-                            <div :class="`absolute inset-0 bg-gradient-to-br ${destination.image_gradient} opacity-30`"></div>
-                            <div class="absolute inset-0 flex flex-col items-center justify-center text-white/60">
-                                <span class="text-6xl md:text-8xl mb-3 opacity-60 drop-shadow-lg">{{ destination.subcategory_icon }}</span>
-                                <span class="font-bold text-lg text-white/80">Foto Utama Destinasi</span>
-                                <span class="text-xs text-white/50">(Akan diupload nanti)</span>
-                            </div>
-                        </div>
-                        <!-- Thumbnail Photos Placeholder -->
-                        <div class="hidden md:flex flex-col gap-4">
-                            <div v-for="i in 3" :key="i" class="flex-1 bg-slate-900/60 rounded-2xl relative overflow-hidden group border border-white/10">
-                                <div :class="`absolute inset-0 bg-gradient-to-br ${destination.image_gradient} opacity-20`"></div>
-                                <div class="absolute inset-0 flex flex-col items-center justify-center text-white/40 text-xs text-center p-2">
-                                    <span class="text-2xl mb-1">📷</span>
-                                    <span>Kumpulan Foto</span>
+                    <div class="space-y-4">
+                        <!-- Main Photo Container -->
+                        <div class="w-full h-72 sm:h-96 lg:h-[480px] bg-slate-900/60 rounded-3xl overflow-hidden relative group border border-white/10 shadow-xl">
+                            <template v-if="activeImage">
+                                <img :src="activeImage" :alt="destination.name" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60"></div>
+                            </template>
+                            <template v-else>
+                                <div :class="`absolute inset-0 bg-gradient-to-br ${destination.image_gradient} opacity-30`"></div>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center text-white/60">
+                                    <span class="text-6xl md:text-8xl mb-3 opacity-60 drop-shadow-lg">{{ destination.subcategory_icon }}</span>
+                                    <span class="font-bold text-lg text-white/80">Foto Utama Destinasi</span>
+                                    <span class="text-xs text-white/50">(Akan diupload nanti)</span>
                                 </div>
-                            </div>
+                            </template>
+                        </div>
+                        
+                        <!-- 4 Thumbnails Grid Container -->
+                        <div v-if="galleryImages.length !== 1" class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+                            <template v-if="galleryImages.length > 1">
+                                <div
+                                    v-for="(img, idx) in galleryImages.slice(0, 4)"
+                                    :key="idx"
+                                    @click="selectImage(img)"
+                                    :class="[
+                                        'h-24 sm:h-32 rounded-2xl relative overflow-hidden group border cursor-pointer transition-all duration-300 shadow-sm',
+                                        activeImage === img ? 'border-blue-400 ring-2 ring-blue-400/60 scale-[1.02]' : 'border-white/10 opacity-75 hover:opacity-100 hover:border-white/40'
+                                    ]"
+                                >
+                                    <img :src="img" :alt="`${destination.name} ${idx + 1}`" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                                    <div v-if="activeImage === img" class="absolute inset-0 bg-blue-500/20"></div>
+                                </div>
+                            </template>
+                            <template v-else-if="galleryImages.length === 0">
+                                <div v-for="i in 4" :key="i" class="h-24 sm:h-32 bg-slate-900/60 rounded-2xl relative overflow-hidden group border border-white/10">
+                                    <div :class="`absolute inset-0 bg-gradient-to-br ${destination.image_gradient} opacity-20`"></div>
+                                    <div class="absolute inset-0 flex items-center justify-center text-white/30">
+                                        <span class="text-2xl opacity-60">📷</span>
+                                    </div>
+                                </div>
+                            </template>
                         </div>
                     </div>
 
@@ -203,11 +242,17 @@ const parsedMapEmbed = computed(() => {
                                 class="group relative overflow-hidden rounded-2xl border border-white/15 bg-white/[0.04] backdrop-blur-md shadow-sm hover:shadow-xl hover:bg-white/[0.08] transition-all duration-300 hover:-translate-y-1"
                             >
                                 <div :class="`h-32 bg-gradient-to-br ${dest.image_gradient} relative overflow-hidden`">
-                                    <div class="absolute inset-0 flex items-center justify-center">
-                                        <span class="text-4xl opacity-80 drop-shadow-lg transform group-hover:scale-110 transition-transform duration-500">
-                                            {{ dest.subcategory_icon }}
-                                        </span>
-                                    </div>
+                                    <template v-if="dest.main_image">
+                                        <img :src="dest.main_image" :alt="dest.name" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+                                    </template>
+                                    <template v-else>
+                                        <div class="absolute inset-0 flex items-center justify-center">
+                                            <span class="text-4xl opacity-80 drop-shadow-lg transform group-hover:scale-110 transition-transform duration-500">
+                                                {{ dest.subcategory_icon }}
+                                            </span>
+                                        </div>
+                                    </template>
                                     <div class="absolute top-2 left-2">
                                         <span class="inline-flex items-center gap-1 rounded-full bg-black/40 backdrop-blur-md border border-white/20 px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider">
                                             {{ dest.category === 'wisata' ? 'Wisata' : 'Hotel' }}
