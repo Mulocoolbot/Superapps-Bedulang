@@ -463,15 +463,18 @@ const getAvailabilityStatus = (amount) => {
                     </div>
 
                     <!-- TAB 2 SPECIFIC DATA SOURCE FOOTER -->
-                    <div class="pt-4 border-t border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400 gap-2">
+                    <div class="pt-4 border-t border-slate-200/80 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400 gap-3">
                         <div class="flex items-center gap-1.5">
                             <span class="font-medium">Sumber Data:</span>
                             <a href="https://dpkp.bangkatengahkab.go.id/" target="_blank" rel="noopener noreferrer" class="font-semibold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 underline">
                                 Dinas Pertanian Kab. Bangka Tengah (dpkp.bangkatengahkab.go.id)
                             </a>
                         </div>
-                        <div v-if="displayDateSawit">
-                            Terakhir diperbarui: {{ displayDateSawit }}
+                        <div v-if="displayDateSawit" class="flex flex-wrap items-center gap-3">
+                            <a v-if="sawitData.metadata?.download_pdf" :href="sawitData.metadata.download_pdf" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-lg shadow-xs transition text-[11px]">
+                                <span>📄</span> Unduh Dokumen PDF
+                            </a>
+                            <span>Terakhir diperbarui: {{ displayDateSawit }}</span>
                         </div>
                     </div>
 
