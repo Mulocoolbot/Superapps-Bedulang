@@ -81,6 +81,13 @@ class PariwisataService implements InformationServiceInterface
             'lng' => 106.2000,
             'maps_url' => 'https://maps.app.goo.gl/CaVUcwRyvMfry6v69',
             'image_gradient' => 'from-green-500 to-emerald-600',
+            'main_image' => '/images/destinations/bukit-pinteir/pinteir-1.jpg',
+            'gallery' => [
+                '/images/destinations/bukit-pinteir/pinteir-1.jpg',
+                '/images/destinations/bukit-pinteir/pinteir-2.jpg',
+                '/images/destinations/bukit-pinteir/pinteir-3.jpg',
+                '/images/destinations/bukit-pinteir/pinteir-4.jpg',
+            ],
             'about' => [
                 'Gambaran Umum' => 'Destinasi wisata olahraga alam dan perbukitan yang terletak di kawasan Taman Hutan Raya (Tahura) Mangkol.',
                 'Daya Tarik Utama' => 'Udara segar pegunungan, pemandangan lanskap kota dan hutan dari ketinggian, serta rute pendakian yang asri.',
@@ -102,6 +109,12 @@ class PariwisataService implements InformationServiceInterface
             'lng' => 106.3000,
             'maps_url' => 'https://maps.app.goo.gl/DVPLBv3Y5FmtUrWe9',
             'image_gradient' => 'from-teal-500 to-cyan-600',
+            'main_image' => '/images/destinations/air-terjun-mangkol/mangkol-1.jpg',
+            'gallery' => [
+                '/images/destinations/air-terjun-mangkol/mangkol-1.jpg',
+                '/images/destinations/air-terjun-mangkol/mangkol-2.jpg',
+                '/images/destinations/air-terjun-mangkol/mangkol-3.jpg',
+            ],
             'about' => [
                 'Gambaran Umum' => 'Destinasi wisata tirta alami yang terletak di kaki kawasan perbukitan Bukit Mangkol.',
                 'Daya Tarik Utama' => 'Aliran air pegunungan yang jernih dan segar dengan suasana hutan tropis yang lebat dan menenangkan.',
@@ -181,6 +194,12 @@ class PariwisataService implements InformationServiceInterface
             'lng' => 106.4500,
             'maps_url' => 'https://maps.app.goo.gl/8sz6fz9ePwFYS7cz5',
             'image_gradient' => 'from-blue-400 to-indigo-500',
+            'main_image' => '/images/destinations/sumur-tujuh/sumur-1.jpg',
+            'gallery' => [
+                '/images/destinations/sumur-tujuh/sumur-1.jpg',
+                '/images/destinations/sumur-tujuh/sumur-2.jpg',
+                '/images/destinations/sumur-tujuh/sumur-3.jpg',
+            ],
             'about' => [
                 'Gambaran Umum' => 'Pantai unik yang memadukan keindahan bahari dengan sejarah era pendudukan Jepang.',
                 'Daya Tarik Utama' => 'Keberadaan 7 buah sumur beton di tepi pantai yang dahulu digunakan sebagai wadah pembuatan garam oleh tentara Jepang.',
@@ -248,6 +267,12 @@ class PariwisataService implements InformationServiceInterface
             'lng' => 106.3500,
             'maps_url' => 'https://maps.app.goo.gl/14JjweVCEX6Cdnza7',
             'image_gradient' => 'from-violet-400 to-purple-500',
+            'main_image' => '/images/destinations/telapak-antu/telapak-1.jpg',
+            'gallery' => [
+                '/images/destinations/telapak-antu/telapak-1.jpg',
+                '/images/destinations/telapak-antu/telapak-2.jpg',
+                '/images/destinations/telapak-antu/telapak-3.jpg',
+            ],
             'about' => [
                 'Gambaran Umum' => 'Pantai di kawasan Batu Belubang yang kental dengan cerita rakyat dan legenda setempat.',
                 'Daya Tarik Utama' => 'Keberadaan cetakan mirip telapak kaki manusia berukuran besar di salah satu hamparan batu granit pesisir.',
@@ -270,6 +295,13 @@ class PariwisataService implements InformationServiceInterface
             'lng' => 106.2800,
             'maps_url' => 'https://maps.app.goo.gl/SjxttgaiaDR4H9YG7',
             'image_gradient' => 'from-lime-500 to-green-600',
+            'main_image' => '/images/destinations/mangrove-munjang/munjang-1.jpg',
+            'gallery' => [
+                '/images/destinations/mangrove-munjang/munjang-1.jpg',
+                '/images/destinations/mangrove-munjang/munjang-2.jpg',
+                '/images/destinations/mangrove-munjang/munjang-3.jpg',
+                '/images/destinations/mangrove-munjang/munjang-4.jpg',
+            ],
             'about' => [
                 'Gambaran Umum' => 'Kawasan ekowisata bakau seluas puluhan hektar yang dikelola secara profesional oleh kelompok masyarakat setempat.',
                 'Daya Tarik Utama' => 'Keasrian ekosistem bakau alami yang dapat ditelusuri melalui jembatan kayu tebal maupun menggunakan perahu.',
@@ -291,6 +323,12 @@ class PariwisataService implements InformationServiceInterface
             'lng' => 106.2100,
             'maps_url' => 'https://maps.app.goo.gl/b1CVPgd4c8rS9muCA',
             'image_gradient' => 'from-emerald-500 to-green-700',
+            'main_image' => '/images/destinations/hutan-pelawan/pelawan-1.jpg',
+            'gallery' => [
+                '/images/destinations/hutan-pelawan/pelawan-1.jpg',
+                '/images/destinations/hutan-pelawan/pelawan-2.jpg',
+                '/images/destinations/hutan-pelawan/pelawan-3.jpg',
+            ],
             'about' => [
                 'Gambaran Umum' => 'Hutan konservasi keanekaragaman hayati yang menjadi tempat tumbuh suburnya Pohon Pelawan (Tristaniopsis merguensis).',
                 'Daya Tarik Utama' => 'Keberadaan lebah liar yang menghasilkan Madu Pahit Pelawan yang langka dan berkhasiat tinggi, serta kebun Jamur Pelawan.',
@@ -314,6 +352,13 @@ class PariwisataService implements InformationServiceInterface
             'lng' => 106.1200,
             'maps_url' => 'https://maps.app.goo.gl/yLRrfsg3aLokfEJA6',
             'image_gradient' => 'from-indigo-500 to-purple-600',
+            'main_image' => '/images/destinations/novotel/novotel-3.jpg',
+            'gallery' => [
+                '/images/destinations/novotel/novotel-3.jpg',
+                '/images/destinations/novotel/novotel-4.jpg',
+                '/images/destinations/novotel/novotel-2.jpg',
+                '/images/destinations/novotel/novotel-1.jpg',
+            ],
             'about' => [
                 'Gambaran Umum' => 'Hotel bintang 4 internasional terbesar dan terlengkap di Bangka Tengah. Terletak di koridor utama Pangkalan Baru yang sangat dekat dengan Bandara Depati Amir.',
                 'Fasilitas Utama' => "Kamar berdesain modern dengan pemandangan taman atau kota.\nKolam renang outdoor berukuran besar yang dilengkapi fasilitas ramah anak.\nPusat kebugaran (gym), spa, dan lapangan tenis.\nRestoran The Square yang menyajikan hidangan internasional dan lokal.\nRuang pertemuan (ballroom) berkapasitas besar untuk acara bisnis maupun pernikahan.",
@@ -334,6 +379,13 @@ class PariwisataService implements InformationServiceInterface
             'lng' => 106.1150,
             'maps_url' => 'https://maps.app.goo.gl/zHHBZcvmcHesc1H47',
             'image_gradient' => 'from-slate-500 to-slate-700',
+            'main_image' => '/images/destinations/santika/santika-1.jpg',
+            'gallery' => [
+                '/images/destinations/santika/santika-1.jpg',
+                '/images/destinations/santika/santika-2.jpg',
+                '/images/destinations/santika/santika-3.jpg',
+                '/images/destinations/santika/santika-4.jpg',
+            ],
             'about' => [
                 'Gambaran Umum' => 'Hotel bintang 3 modern dengan kehangatan keramahan khas Indonesia. Menawarkan suasana menginap yang tenang dan efisien.',
                 'Fasilitas Utama' => "Kamar dengan interior minimalis dan kasur berkualitas tinggi.\nRestoran Kabita yang menyajikan sarapan khas Nusantara dan pilihan kuliner lokal Bangka.\nKolam renang outdoor untuk dewasa dan anak-anak.\nRuang rapat multifungsi dan layanan shuttle ke bandara.",
@@ -354,6 +406,13 @@ class PariwisataService implements InformationServiceInterface
             'lng' => 106.1180,
             'maps_url' => 'https://maps.app.goo.gl/eyeVgqLptUDahhn67',
             'image_gradient' => 'from-blue-600 to-indigo-700',
+            'main_image' => '/images/destinations/soll-marina/soll-marina-1.jpg',
+            'gallery' => [
+                '/images/destinations/soll-marina/soll-marina-1.jpg',
+                '/images/destinations/soll-marina/soll-marina-2.jpg',
+                '/images/destinations/soll-marina/soll-marina-3.jpg',
+                '/images/destinations/soll-marina/soll-marina-4.jpg',
+            ],
             'about' => [
                 'Gambaran Umum' => 'Hotel bintang 3 bernuansa resor yang dikelilingi oleh pepohonan dan taman tropis yang hijau.',
                 'Fasilitas Utama' => "Kolam renang outdoor berlatar taman asri.\nRestoran D'Cockpit dan area lounge santai.\nKamar-kamar berukuran luas dengan pemandangan hijau.\nPusat konvensi dan area outdoor yang cocok untuk kegiatan outbound atau acara pesta.",
@@ -374,6 +433,13 @@ class PariwisataService implements InformationServiceInterface
             'lng' => 106.2300,
             'maps_url' => 'https://maps.app.goo.gl/pM2N5pZ3YJF8zedi9',
             'image_gradient' => 'from-rose-500 to-pink-600',
+            'main_image' => '/images/destinations/grand-vella/vella-1.jpg',
+            'gallery' => [
+                '/images/destinations/grand-vella/vella-1.jpg',
+                '/images/destinations/grand-vella/vella-2.jpg',
+                '/images/destinations/grand-vella/vella-3.jpg',
+                '/images/destinations/grand-vella/vella-4.jpg',
+            ],
             'about' => [
                 'Gambaran Umum' => 'Hotel bintang 2 berdesain elegan yang menawarkan harga terjangkau tanpa mengesampingkan kenyamanan.',
                 'Fasilitas Utama' => "Kolam renang indoor kecil yang nyaman untuk bersantai.\nRestoran dan kafe dengan aneka menu hidangan harian.\nAkses Wi-Fi cepat dan resepsionis 24 jam.\nRuang rapat berkapasitas sedang.",
@@ -394,6 +460,10 @@ class PariwisataService implements InformationServiceInterface
             'lng' => 106.2450,
             'maps_url' => 'https://maps.app.goo.gl/9P4gP9AkKuJBsG3x9',
             'image_gradient' => 'from-amber-500 to-orange-600',
+            'main_image' => '/images/destinations/widari-hotel/widari-1.jpg',
+            'gallery' => [
+                '/images/destinations/widari-hotel/widari-1.jpg',
+            ],
             'about' => [
                 'Gambaran Umum' => 'Hotel/penginapan lokal terfavorit di pusat Kota Koba yang menjadi pilihan utama saat beraktivitas di pusat pemerintahan Bangka Tengah.',
                 'Fasilitas Utama' => "Kamar ber-AC dengan perlengkapan standar penginapan (TV, kamar mandi dalam, meja).\nArea parkir kendaraan yang aman.\nLayanan kebersihan harian dan akses Wi-Fi gratis.",

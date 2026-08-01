@@ -71,7 +71,7 @@ const parsedMapEmbed = computed(() => {
             class="relative bg-cover bg-center bg-no-repeat min-h-screen text-white"
             style="background-image: url('/services/bg layanan.svg');"
         >
-            <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-16">
+            <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 pb-16">
                 
                 <!-- Back Button -->
                 <div class="mb-6">
@@ -115,29 +115,32 @@ const parsedMapEmbed = computed(() => {
                         </div>
                         
                         <!-- 4 Thumbnails Grid Container -->
-                        <div v-if="galleryImages.length !== 1" class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-                            <template v-if="galleryImages.length > 1">
-                                <div
-                                    v-for="(img, idx) in galleryImages.slice(0, 4)"
-                                    :key="idx"
-                                    @click="selectImage(img)"
-                                    :class="[
-                                        'h-24 sm:h-32 rounded-2xl relative overflow-hidden group border cursor-pointer transition-all duration-300 shadow-sm',
-                                        activeImage === img ? 'border-blue-400 ring-2 ring-blue-400/60 scale-[1.02]' : 'border-white/10 opacity-75 hover:opacity-100 hover:border-white/40'
-                                    ]"
-                                >
-                                    <img :src="img" :alt="`${destination.name} ${idx + 1}`" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                                    <div v-if="activeImage === img" class="absolute inset-0 bg-blue-500/20"></div>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+                            <!-- Real Gallery Images -->
+                            <div
+                                v-for="(img, idx) in galleryImages.slice(0, 4)"
+                                :key="'img-' + idx"
+                                @click="selectImage(img)"
+                                :class="[
+                                    'h-24 sm:h-32 rounded-2xl relative overflow-hidden group border cursor-pointer transition-all duration-300 shadow-sm',
+                                    activeImage === img ? 'border-blue-400 ring-2 ring-blue-400/60 scale-[1.02]' : 'border-white/10 opacity-75 hover:opacity-100 hover:border-white/40'
+                                ]"
+                            >
+                                <img :src="img" :alt="`${destination.name} ${idx + 1}`" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                                <div v-if="activeImage === img" class="absolute inset-0 bg-blue-500/20"></div>
+                            </div>
+
+                            <!-- Remaining Empty Slots (Clean Placeholders without text) -->
+                            <div
+                                v-for="i in Math.max(0, 4 - galleryImages.length)"
+                                :key="'empty-' + i"
+                                class="h-24 sm:h-32 bg-slate-900/60 rounded-2xl relative overflow-hidden group border border-white/10"
+                            >
+                                <div :class="`absolute inset-0 bg-gradient-to-br ${destination.image_gradient} opacity-20`"></div>
+                                <div class="absolute inset-0 flex items-center justify-center text-white/30">
+                                    <span class="text-2xl opacity-60">📷</span>
                                 </div>
-                            </template>
-                            <template v-else-if="galleryImages.length === 0">
-                                <div v-for="i in 4" :key="i" class="h-24 sm:h-32 bg-slate-900/60 rounded-2xl relative overflow-hidden group border border-white/10">
-                                    <div :class="`absolute inset-0 bg-gradient-to-br ${destination.image_gradient} opacity-20`"></div>
-                                    <div class="absolute inset-0 flex items-center justify-center text-white/30">
-                                        <span class="text-2xl opacity-60">📷</span>
-                                    </div>
-                                </div>
-                            </template>
+                            </div>
                         </div>
                     </div>
 

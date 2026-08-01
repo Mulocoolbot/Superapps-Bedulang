@@ -97,7 +97,7 @@ const { visiblePageLinks: pageLinks, hasPagination: showPagination } = useSlidin
     <Head title="Riwayat Pengaduan Saya"></Head>
 
     <FrontLayout>
-        <div class="py-8 bg-slate-50/60 dark:bg-gray-900/60 min-h-[calc(100vh-7rem)]">
+        <div class="pt-24 sm:pt-28 pb-12 bg-slate-50/60 dark:bg-gray-900/60 min-h-screen">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
                 <!-- Navigation & Page Title -->
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
