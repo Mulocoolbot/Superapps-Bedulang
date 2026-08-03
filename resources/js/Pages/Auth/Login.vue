@@ -10,7 +10,7 @@ import { ref, onMounted } from 'vue'
 const props = defineProps({
     canResetPassword: Boolean,
     status: String,
-    ipBlockedMessage: String,
+
 })
 
 const form = useForm({
@@ -67,8 +67,6 @@ onMounted(() => {
 })
 
 const submit = () => {
-    if (props.ipBlockedMessage) return
-
     form.captcha_input = form.captcha
 
     const userAnswer = parseInt(form.captcha, 10)
@@ -152,18 +150,7 @@ const submit = () => {
 
         </div>
 
-        <!-- IP Blocked Alert -->
-        <div
-            v-if="ipBlockedMessage"
-            class="mt-6 rounded-2xl bg-red-50 border border-red-200 dark:bg-red-950/60 dark:border-red-900/80 p-4 text-xs font-bold text-red-700 dark:text-red-300 flex items-start gap-3 shadow-sm">
-            <svg class="w-5 h-5 shrink-0 text-red-600 dark:text-red-400 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-            </svg>
-            <div>
-                <p class="font-extrabold text-sm mb-0.5">Akses Login Diblokir (24 Jam)</p>
-                <p class="font-medium text-xs leading-relaxed">{{ ipBlockedMessage }}</p>
-            </div>
-        </div>
+
 
         <!-- Form -->
 
@@ -182,7 +169,7 @@ const submit = () => {
                     type="email"
                     class="mt-2 block w-full"
                     v-model="form.email"
-                    :disabled="!!ipBlockedMessage"
+
                     required
                     autofocus
                     autocomplete="username"></TextInput>
@@ -205,7 +192,7 @@ const submit = () => {
                         :type="showPassword ? 'text' : 'password'"
                         class="block w-full pr-11"
                         v-model="form.password"
-                        :disabled="!!ipBlockedMessage"
+
                         required
                         autocomplete="current-password"></TextInput>
 
@@ -263,7 +250,7 @@ const submit = () => {
                             class="block w-full font-mono text-center font-bold text-sm tracking-wider"
                             placeholder="Jawaban"
                             v-model="form.captcha"
-                            :disabled="!!ipBlockedMessage"
+
                             required
                             autocomplete="off"
                         />
@@ -295,7 +282,7 @@ const submit = () => {
                     <Checkbox
                         name="remember"
                         v-model:checked="form.remember"
-                        :disabled="!!ipBlockedMessage"></Checkbox>
+                        ></Checkbox>
 
                     <span
                         class="ml-2 text-sm text-gray-600 dark:text-gray-400">
@@ -322,8 +309,8 @@ const submit = () => {
             <button
                 type="submit"
                 class="w-full flex justify-center items-center rounded-xl py-3 text-base font-bold text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-md shadow-blue-500/10 hover:shadow-lg hover:shadow-blue-500/20 active:scale-[0.98] cursor-pointer"
-                :class="{ 'opacity-50 pointer-events-none': form.processing || !!ipBlockedMessage }"
-                :disabled="form.processing || !!ipBlockedMessage"
+                :class="{ 'opacity-50 pointer-events-none': form.processing }"
+                :disabled="form.processing"
             >
                 Masuk
             </button>
