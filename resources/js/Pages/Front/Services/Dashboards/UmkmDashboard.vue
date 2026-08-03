@@ -109,7 +109,7 @@ const mockProducts = [
     {
         brand: 'Bahek Ewaki',
         owner: 'Andreas Maulana',
-        sector: 'Kuliner (Makanan & Minuman)',
+        sector: 'Perikanan & Olahan Laut',
         district: 'Koba',
         village: 'Kurau Barat',
         phone: '6281273880001',
@@ -182,7 +182,7 @@ const mockProducts = [
     {
         brand: 'Gurih DD',
         owner: 'Daddi',
-        sector: 'Kuliner (Makanan & Minuman)',
+        sector: 'Perikanan & Olahan Laut',
         district: 'Koba',
         village: 'Kurau Barat',
         phone: '6285769206830',
