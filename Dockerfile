@@ -31,13 +31,17 @@ RUN npm install --save-dev laravel-echo pusher-js
 RUN npm run build
 RUN rm -rf node_modules
 
-RUN chmod -x /var/www/html
-RUN chmod -Rf 755  /var/www/html
-RUN chown -Rf nginx:nginx /var/www/html/storage/app
-RUN chown -Rf nginx:nginx /var/www/html/storage/framework
-RUN chown -Rf nginx:nginx /var/www/html/storage/logs
-RUN mkdir -p /var/www/html/public/storage
-RUN chown -Rf root:root /var/www/html/public/storage
+RUN mkdir -p /var/www/html/storage/app \
+    /var/www/html/storage/framework/views \
+    /var/www/html/storage/framework/sessions \
+    /var/www/html/storage/framework/cache/data \
+    /var/www/html/storage/logs \
+    /var/www/html/bootstrap/cache \
+    /var/www/html/public/storage
+
+RUN chmod -Rf 755 /var/www/html
+RUN chmod -Rf 777 /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chown -Rf nginx:nginx /var/www/html/storage /var/www/html/bootstrap/cache
 RUN php artisan key:generate
 #RUN php artisan storage:link
 
