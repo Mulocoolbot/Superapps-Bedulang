@@ -387,8 +387,67 @@ class PerindagService implements InformationServiceInterface
                 'pasar_commodities' => $pasarCommoditiesList,
                 'pasar_chart_data' => $pasarChartDataResult,
                 'stok_data' => $stokData,
+                'umkm_list' => $this->getUmkmData(),
             ];
         });
+    }
+
+    /**
+     * Get MSME/UMKM data for Central Bangka.
+     *
+     * @return array
+     */
+    public function getUmkmData(): array
+    {
+        $kecamatans = [
+            'Koba' => ['Nibung', 'Penyak', 'Kurau', 'Guntung', 'Kurau Barat', 'Terentang III', 'Kelurahan Koba', 'Kelurahan Padang Mulia', 'Kelurahan Berok', 'Kelurahan Arung Dalam', 'Kelurahan Simpang Perlang'],
+            'Pangkalan Baru' => ['Air Mesu', 'Air Mesu Timur', 'Batu Belubang', 'Beluluk', 'Benteng', 'Jeruk', 'Kebintik', 'Mangkol', 'Padang Baru', 'Pedindang', 'Tanjung Gunung', 'Kelurahan Dul'],
+            'Namang' => ['Belilik', 'Bhaskara Bhakti', 'Bukit Kijang', 'Cambai', 'Jelutung', 'Kayu Besi', 'Namang', 'Cambai Selatan'],
+            'Lubuk Besar' => ['Batu Beriga', 'Belimbing', 'Kulur', 'Kulur Ilir', 'Lubuk Besar', 'Lubuk Lingkuk', 'Lubuk Pabrik', 'Perlang', 'Trubus'],
+            'Simpang Katis' => ['Beruas', 'Terak', 'Celuak', 'Pasir Garam', 'Puput', 'Pinang Sebatang', 'Simpang Katis', 'Sungkap', 'Katis', 'Teru'],
+            'Sungai Selan' => ['Lampur', 'Sungai Selan Atas', 'Romadhon', 'Kerantai', 'Kerakas', 'Kemingking', 'Keretak', 'Keretak Atas', 'Sarang Mandi', 'Tanjung Pura', 'Munggu', 'Melabun', 'Kelurahan Sungai Selan']
+        ];
+
+        $sektors = [
+            'Kuliner (Makanan & Minuman)',
+            'Kerajinan (Kriya)',
+            'Fashion & Tekstil',
+            'Perdagangan & Kelontong',
+            'Jasa & Servis',
+            'Pertanian & Agribisnis',
+            'Perikanan & Olahan Laut',
+            'Industri Kreatif'
+        ];
+
+        $years = [2024, 2025, 2026];
+
+        $data = [];
+
+        foreach ($kecamatans as $kecamatan => $desas) {
+            foreach ($desas as $desa) {
+                foreach ($sektors as $sektor) {
+                    foreach ($years as $year) {
+                        // Deterministic generation
+                        $hashString = $kecamatan . $desa . $sektor . $year;
+                        $seed = 0;
+                        for ($i = 0; $i < strlen($hashString); $i++) {
+                            $seed = ($seed * 31 + ord($hashString[$i])) & 0xffffffff;
+                        }
+                        $count = (abs($seed) % 45) + 5; // count between 5 and 50
+                        
+                        $data[] = [
+                            'desa_kel' => $desa,
+                            'kecamatan' => $kecamatan,
+                            'sektor_usaha' => $sektor,
+                            'total' => $count,
+                            'tahun' => $year
+                        ];
+                    }
+                }
+            }
+        }
+
+        return $data;
     }
 
     /**

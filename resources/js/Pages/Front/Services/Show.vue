@@ -13,6 +13,8 @@ import DesaDashboard from './Dashboards/DesaDashboard.vue'
 import InformasiPublikDashboard from './Dashboards/InformasiPublikDashboard.vue'
 import PemerintahanDashboard from './Dashboards/PemerintahanDashboard.vue'
 import KdmpDashboard from './Dashboards/KdmpDashboard.vue'
+import KesehatanDashboard from './Dashboards/KesehatanDashboard.vue'
+import PendidikanDashboard from './Dashboards/PendidikanDashboard.vue'
 import PariwisataDashboard from './Dashboards/PariwisataDashboard.vue'
 import DefaultDashboard from './Dashboards/DefaultDashboard.vue'
 
@@ -45,6 +47,10 @@ const dashboardComponent = computed(() => {
             return InformasiPublikDashboard
         case 'pemerintahan':
             return PemerintahanDashboard
+        case 'kesehatan':
+            return KesehatanDashboard
+        case 'pendidikan':
+            return PendidikanDashboard
         case 'hukum':
         case 'kdmp':
             return KdmpDashboard
@@ -55,7 +61,7 @@ const dashboardComponent = computed(() => {
     }
 })
 
-const title = computed(() => `Dashboard ${props.service?.name ?? ''}`)
+const title = computed(() => props.service?.name ?? '')
 const subtitle = computed(() => props.service?.description ?? '')
 const serviceIcon = computed(() => props.service?.icon ?? '📊')
 
@@ -107,7 +113,7 @@ const handleTabChange = (tabId) => {
 
         <!-- Page background with bg layanan.svg -->
         <div 
-            class="relative bg-cover bg-center bg-no-repeat min-h-screen"
+            class="relative bg-gradient-to-b from-[#0F3D77] via-[#0F3D77]/95 to-[#0b2b52] dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-white bg-cover bg-center bg-no-repeat bg-fixed min-h-screen w-full"
             style="background-image: url('/services/bg layanan.svg');"
         >
 
@@ -131,18 +137,18 @@ const handleTabChange = (tabId) => {
                 </Link>
 
                 <!-- Header -->
-                <div class="relative overflow-hidden rounded-3xl border border-blue-100/80 dark:border-slate-800 bg-white/75 dark:bg-slate-900/85 backdrop-blur-md p-8 shadow-md sm:p-10 dark:shadow-slate-950/20 mb-10 animate-fade-in-up">
-                    <div class="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-blue-100/50 blur-3xl dark:bg-blue-950/20" />
+                <div class="relative overflow-hidden rounded-3xl border border-white/15 bg-white/10 dark:bg-slate-900/80 backdrop-blur-md p-8 shadow-md sm:p-10 mb-10 animate-fade-in-up">
+                    <div class="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-blue-400/10 blur-3xl" />
                     <div class="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
                         <div>
-                            <div class="inline-flex items-center gap-2 rounded-full bg-blue-50 dark:bg-blue-950/40 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-blue-700 dark:text-blue-400">
+                            <div class="inline-flex items-center gap-2 rounded-full bg-white/10 backdrop-blur-md border border-white/15 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-blue-200">
                                 <span>{{ serviceIcon }}</span>
                                 <span>Data & Informasi</span>
                             </div>
-                            <h1 class="mt-3 text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+                            <h1 class="mt-3 text-3xl md:text-4xl font-extrabold tracking-tight text-white">
                                 {{ title }}
                             </h1>
-                            <p class="mt-3 text-sm md:text-base text-slate-500 dark:text-slate-400 font-medium">
+                            <p class="mt-3 text-sm md:text-base text-blue-100/80 font-medium">
                                 {{ subtitle }}
                             </p>
                         </div>

@@ -68,7 +68,7 @@ const parsedMapEmbed = computed(() => {
         <Head :title="destination.name + ' - ' + service.name" />
 
         <div 
-            class="relative bg-cover bg-center bg-no-repeat min-h-screen text-white"
+            class="relative bg-gradient-to-b from-[#0F3D77] via-[#0F3D77]/95 to-[#0b2b52] dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-white bg-cover bg-center bg-no-repeat bg-fixed min-h-screen w-full"
             style="background-image: url('/services/bg layanan.svg');"
         >
             <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 pb-16">
@@ -89,7 +89,7 @@ const parsedMapEmbed = computed(() => {
                         >
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                         </svg>
-                        Kembali ke Dashboard Pariwisata
+                        Kembali ke Pariwisata
                     </Link>
                 </div>
 
@@ -164,12 +164,19 @@ const parsedMapEmbed = computed(() => {
                                 </h1>
 
                                 <div class="flex flex-wrap items-center gap-4 text-sm text-white/80">
-                                    <!-- Rating -->
-                                    <div class="flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/15">
+                                    <!-- Rating (Clickable to Google Maps) -->
+                                    <a 
+                                        :href="destination.maps_url" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        class="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/15 transition-all hover:scale-105 group cursor-pointer"
+                                        title="Buka ulasan live di Google Maps"
+                                    >
                                         <svg class="w-4 h-4 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                                         <span class="font-bold text-white">{{ destination.rating }}</span>
                                         <span class="text-white/60">({{ formatNumber(destination.review_count) }} ulasan Google)</span>
-                                    </div>
+                                        <svg class="w-3.5 h-3.5 text-blue-300 group-hover:translate-x-0.5 transition-transform ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
+                                    </a>
                                 </div>
                             </div>
 

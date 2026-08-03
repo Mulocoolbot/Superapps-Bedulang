@@ -69,13 +69,6 @@ const searchResults = computed(() => {
     )
 })
 
-// Render stars
-const renderStars = (rating) => {
-    const full = Math.floor(rating)
-    const hasHalf = rating % 1 >= 0.3
-    return { full, hasHalf, empty: 5 - full - (hasHalf ? 1 : 0) }
-}
-
 // Format number
 const formatNumber = (val) => {
     if (typeof val === 'string') return val
@@ -89,15 +82,48 @@ const featuredGradients = [
     'from-amber-500/90 via-orange-600/90 to-rose-700/90',
 ]
 
+// Subcategory slider pagination (6 items max per view)
+const groupPages = ref({})
+
+const getGroupPage = (title) => {
+    return groupPages.value[title] || 0
+}
+
+const getDisplayedItems = (group) => {
+    const page = getGroupPage(group.title)
+    const start = page * 6
+    return group.items.slice(start, start + 6)
+}
+
+const getTotalGroupPages = (group) => {
+    return Math.max(1, Math.ceil(group.items.length / 6))
+}
+
+const prevGroupPage = (title) => {
+    const current = getGroupPage(title)
+    if (current > 0) {
+        groupPages.value = { ...groupPages.value, [title]: current - 1 }
+    }
+}
+
+const nextGroupPage = (title, itemsLength) => {
+    const current = getGroupPage(title)
+    const maxPage = Math.ceil(itemsLength / 6) - 1
+    if (current < maxPage) {
+        groupPages.value = { ...groupPages.value, [title]: current + 1 }
+    }
+}
+
 // Category badge colors
 const getCategoryBadge = (subcategory) => {
     const map = {
-        'Wisata Danau & Alam': { bg: 'bg-emerald-100 dark:bg-emerald-900/40', text: 'text-emerald-700 dark:text-emerald-400', border: 'border-emerald-200 dark:border-emerald-800' },
-        'Wisata Bahari & Pulau': { bg: 'bg-sky-100 dark:bg-sky-900/40', text: 'text-sky-700 dark:text-sky-400', border: 'border-sky-200 dark:border-sky-800' },
-        'Wisata Edukasi & Hutan Konservasi': { bg: 'bg-lime-100 dark:bg-lime-900/40', text: 'text-lime-700 dark:text-lime-400', border: 'border-lime-200 dark:border-lime-800' },
-        'Akomodasi & Penginapan': { bg: 'bg-violet-100 dark:bg-violet-900/40', text: 'text-violet-700 dark:text-violet-400', border: 'border-violet-200 dark:border-violet-800' },
+        'Wisata Danau & Alam': { bg: 'bg-emerald-500/20 dark:bg-emerald-900/40', text: 'text-emerald-300 dark:text-emerald-400', border: 'border-emerald-400/30 dark:border-emerald-800' },
+        'Wisata Bahari & Pulau': { bg: 'bg-sky-500/20 dark:bg-sky-900/40', text: 'text-sky-300 dark:text-sky-400', border: 'border-sky-400/30 dark:border-sky-800' },
+        'Wisata Edukasi & Hutan Konservasi': { bg: 'bg-lime-500/20 dark:bg-lime-900/40', text: 'text-lime-300 dark:text-lime-400', border: 'border-lime-400/30 dark:border-lime-800' },
+        'Wisata Sejarah, Budaya & Ruang Publik': { bg: 'bg-amber-500/20 dark:bg-amber-900/40', text: 'text-amber-300 dark:text-amber-400', border: 'border-amber-400/30 dark:border-amber-800' },
+        'Akomodasi & Penginapan': { bg: 'bg-violet-500/20 dark:bg-violet-900/40', text: 'text-violet-300 dark:text-violet-400', border: 'border-violet-400/30 dark:border-violet-800' },
     }
-    return map[subcategory] ?? { bg: 'bg-slate-100 dark:bg-slate-800', text: 'text-slate-700 dark:text-slate-400', border: 'border-slate-200 dark:border-slate-700' }
+    return map[subcategory] ?? { bg: 'bg-slate-500/20 dark:bg-slate-800', text: 'text-slate-300 dark:text-slate-400', border: 'border-slate-400/30 dark:border-slate-700' }
 }
 
 // Subcategory header gradients
@@ -106,6 +132,7 @@ const getSubcategoryGradient = (subcategory) => {
         'Wisata Danau & Alam': 'from-emerald-600 to-teal-600',
         'Wisata Bahari & Pulau': 'from-sky-600 to-blue-600',
         'Wisata Edukasi & Hutan Konservasi': 'from-lime-600 to-green-600',
+        'Wisata Sejarah, Budaya & Ruang Publik': 'from-amber-600 to-rose-600',
         'Akomodasi & Penginapan': 'from-violet-600 to-purple-600',
     }
     return map[subcategory] ?? 'from-slate-600 to-slate-700'
@@ -251,7 +278,7 @@ const getSubcategoryGradient = (subcategory) => {
                 </div>
             </div>
 
-            <!-- Tabs -->
+            <!-- Tabs Bar -->
             <div class="flex gap-1 p-1 rounded-xl bg-white/[0.06] border border-white/10 mb-6">
                 <button
                     v-for="tab in tabs"
@@ -317,21 +344,46 @@ const getSubcategoryGradient = (subcategory) => {
                     :style="{ animationDelay: `${gIndex * 100}ms` }"
                 >
                     <!-- Subcategory Header -->
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br" :class="getSubcategoryGradient(group.title)">
-                            <span class="text-sm">{{ group.icon }}</span>
+                    <div class="flex items-center justify-between gap-3 mb-4">
+                        <div class="flex items-center gap-3 flex-1 min-w-0">
+                            <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br shrink-0 shadow-xs" :class="getSubcategoryGradient(group.title)">
+                                <span class="text-sm">{{ group.icon }}</span>
+                            </div>
+                            <h3 class="text-base font-bold text-white/90 truncate">{{ group.title }}</h3>
+                            <div class="hidden sm:block flex-1 h-px bg-gradient-to-r from-white/10 to-transparent"></div>
+                            <span class="text-[11px] font-semibold text-white/40 px-2.5 py-0.5 rounded-full bg-white/[0.05] border border-white/10 shrink-0">
+                                {{ group.items.length }} tempat
+                            </span>
                         </div>
-                        <h3 class="text-base font-bold text-white/90">{{ group.title }}</h3>
-                        <div class="flex-1 h-px bg-gradient-to-r from-white/10 to-transparent"></div>
-                        <span class="text-[11px] font-semibold text-white/30 px-2 py-0.5 rounded-full bg-white/[0.05] border border-white/10">
-                            {{ group.items.length }} tempat
-                        </span>
+
+                        <!-- Arrow Navigation controls if > 6 items -->
+                        <div v-if="group.items.length > 6" class="flex items-center gap-2 shrink-0">
+                            <span class="text-xs text-white/40 font-medium mr-1">
+                                {{ getGroupPage(group.title) + 1 }} / {{ getTotalGroupPages(group) }}
+                            </span>
+                            <button
+                                @click="prevGroupPage(group.title)"
+                                :disabled="getGroupPage(group.title) === 0"
+                                class="p-1.5 rounded-lg border border-white/10 bg-white/5 text-white/80 hover:text-white hover:bg-white/10 transition disabled:opacity-30 disabled:cursor-not-allowed shadow-xs"
+                                title="Halaman Sebelumnya"
+                            >
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                            </button>
+                            <button
+                                @click="nextGroupPage(group.title, group.items.length)"
+                                :disabled="getGroupPage(group.title) >= getTotalGroupPages(group) - 1"
+                                class="p-1.5 rounded-lg border border-white/10 bg-white/5 text-white/80 hover:text-white hover:bg-white/10 transition disabled:opacity-30 disabled:cursor-not-allowed shadow-xs"
+                                title="Halaman Selanjutnya"
+                            >
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                            </button>
+                        </div>
                     </div>
 
-                    <!-- Destination Cards Grid -->
+                    <!-- Destination Cards Grid (Max 6 per view) -->
                     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         <Link
-                            v-for="(dest, dIndex) in group.items"
+                            v-for="(dest, dIndex) in getDisplayedItems(group)"
                             :key="dest.id"
                             :href="route('layanan.pariwisata.destinasi', dest.id)"
                             class="group relative overflow-hidden rounded-xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-sm transition-all duration-300 hover:bg-white/[0.07] hover:border-white/20 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-500/5 cursor-pointer"
@@ -356,14 +408,14 @@ const getSubcategoryGradient = (subcategory) => {
                                 </template>
 
                                 <!-- Rating Pill (top right) -->
-                                <div class="absolute top-3 right-3 flex items-center gap-1 bg-black/30 backdrop-blur-md rounded-full px-2.5 py-1 border border-white/10">
+                                <div class="absolute top-3 right-3 flex items-center gap-1 bg-black/40 backdrop-blur-md rounded-full px-2.5 py-1 border border-white/20 shadow-xs">
                                     <svg class="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                                     <span class="text-xs font-bold text-white">{{ dest.rating }}</span>
                                 </div>
 
                                 <!-- Category Badge (top left) -->
                                 <div class="absolute top-3 left-3">
-                                    <span :class="[getCategoryBadge(dest.subcategory).bg, getCategoryBadge(dest.subcategory).text, getCategoryBadge(dest.subcategory).border]" class="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">
+                                    <span :class="[getCategoryBadge(dest.subcategory).bg, getCategoryBadge(dest.subcategory).text, getCategoryBadge(dest.subcategory).border]" class="inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider shadow-xs">
                                         {{ dest.category === 'wisata' ? 'Wisata' : 'Hotel' }}
                                     </span>
                                 </div>
@@ -374,74 +426,21 @@ const getSubcategoryGradient = (subcategory) => {
                                 <h4 class="text-sm font-bold text-white leading-tight group-hover:text-blue-300 transition-colors duration-200 line-clamp-1">
                                     {{ dest.name }}
                                 </h4>
-                                <p class="mt-1.5 text-xs text-white/40 leading-relaxed line-clamp-2">
+                                <p class="mt-1.5 text-xs text-white/50 leading-relaxed line-clamp-2">
                                     {{ dest.description }}
                                 </p>
 
                                 <div class="mt-3 pt-3 border-t border-white/[0.06] flex items-center justify-between">
-                                    <span class="text-[11px] text-white/30 font-medium">
+                                    <span class="text-[11px] text-white/40 font-medium">
                                         {{ formatNumber(dest.review_count) }} ulasan
                                     </span>
-                                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-400/70 group-hover:text-blue-400 transition-colors">
+                                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-400 group-hover:text-blue-300 transition-colors">
                                         Lihat Detail
                                         <svg class="w-3 h-3 transform group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"/></svg>
                                     </span>
                                 </div>
                             </div>
                         </Link>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ═══════════════════════════════════════════════ -->
-        <!-- 🗺️ Peta Lokasi (Leaflet Map)                   -->
-        <!-- ═══════════════════════════════════════════════ -->
-        <section class="rounded-2xl border border-white/10 bg-white/[0.06] backdrop-blur-lg p-6 sm:p-8 shadow-lg animate-fade-in-up [animation-delay:400ms]">
-            <div class="flex items-center gap-3 mb-5">
-                <div class="flex items-center justify-center w-10 h-10 rounded-xl bg-emerald-400/20 backdrop-blur-md border border-emerald-400/30">
-                    <span class="text-lg">🗺️</span>
-                </div>
-                <div>
-                    <h2 class="text-xl font-extrabold text-white tracking-tight">Peta Lokasi</h2>
-                    <p class="text-xs text-blue-200/60 font-medium">Sebaran destinasi wisata dan akomodasi di Bangka Tengah</p>
-                </div>
-            </div>
-
-            <!-- Map Legend -->
-            <div class="flex flex-wrap gap-4 mb-4">
-                <div class="flex items-center gap-2 text-xs text-white/60">
-                    <span class="w-3 h-3 rounded-full bg-blue-500 shadow-sm shadow-blue-500/30"></span>
-                    <span>Wisata</span>
-                </div>
-                <div class="flex items-center gap-2 text-xs text-white/60">
-                    <span class="w-3 h-3 rounded-full bg-purple-500 shadow-sm shadow-purple-500/30"></span>
-                    <span>Akomodasi</span>
-                </div>
-            </div>
-
-            <!-- Map Container -->
-            <div class="rounded-xl overflow-hidden border border-white/10 shadow-inner h-[400px] bg-slate-800/50">
-                <div class="flex items-center justify-center h-full text-white/30">
-                    <div class="text-center">
-                        <span class="text-4xl block mb-3">🗺️</span>
-                        <p class="text-sm font-medium">Peta interaktif destinasi pariwisata</p>
-                        <p class="text-xs mt-1 text-white/20">Bangka Tengah, Kepulauan Bangka Belitung</p>
-                        <!-- Quick links to Maps -->
-                        <div class="mt-4 flex flex-wrap gap-2 justify-center">
-                            <a
-                                v-for="dest in allDestinations.slice(0, 5)"
-                                :key="'map-' + dest.id"
-                                :href="dest.maps_url"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-white/[0.06] border border-white/10 text-[11px] font-semibold text-white/50 hover:bg-white/10 hover:text-white/80 transition-all"
-                            >
-                                <span>{{ dest.subcategory_icon }}</span>
-                                {{ dest.name.length > 20 ? dest.name.substring(0, 20) + '…' : dest.name }}
-                                <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25"/></svg>
-                            </a>
-                        </div>
                     </div>
                 </div>
             </div>
