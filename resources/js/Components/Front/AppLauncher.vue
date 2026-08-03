@@ -6,9 +6,9 @@ const services = [
         url: 'https://dashboard-sipelawan.bangkatengahkab.go.id/dashboard/'
     },
     {
-        name: 'SIDOLPIN',
-        logo: '/services/sidolpin.svg',
-        url: 'https://sidolpin.bangkatengahkab.go.id/'
+        name: 'SEPERADIK',
+        logo: '/services/seperadik.png',
+        url: 'https://seperadik.bangkatengahkab.go.id/'
     },
     {
         name: 'SILAKSO',
@@ -24,11 +24,6 @@ const services = [
         name: 'LAPOR PPID',
         logo: '/services/lapor.png',
         url: 'https://www.lapor.go.id/instansi/pemerintah-kabupaten-bangka-tengah'
-    },
-    {
-        name: 'SIMENTARI',
-        logo: '/services/seperadik.png',
-        url: 'https://inspektorat.bangkatengahkab.go.id'
     },
 ]
 </script>
