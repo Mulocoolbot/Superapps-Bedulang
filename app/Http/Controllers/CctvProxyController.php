@@ -18,12 +18,12 @@ class CctvProxyController extends Controller
         }
 
         // Construct the full target stream URL
-        $streamUrl = rtrim($baseUrl, '/') . '/' . $file;
+        $targetUrl = rtrim($baseUrl, '/') . '/' . $file;
 
         // Resolve query parameters if any
         $queryString = $request->getQueryString();
         if ($queryString) {
-            $streamUrl .= '?' . $queryString;
+            $targetUrl .= '?' . $queryString;
         }
 
         // Determine correct headers and content type based on file extension
@@ -34,20 +34,49 @@ class CctvProxyController extends Controller
             $contentType = 'video/MP2T';
         }
 
-        // Setup stream context with timeout
-        $context = stream_context_create([
-            'http' => [
-                'timeout' => 5, // 5 seconds
-                'follow_location' => 1,
-            ]
-        ]);
+        // Translate IP / Domain to localhost dynamically with fallback to allow both local development and remote deployment
+        $localUrl = $targetUrl;
+        $isLocalReplacementPossible = false;
+        if (str_contains($targetUrl, '157.10.109.241') || str_contains($targetUrl, 'bedulang.bangkatengahkab.go.id')) {
+            $localUrl = str_replace(
+                ['157.10.109.241', 'bedulang.bangkatengahkab.go.id'],
+                '127.0.0.1',
+                $targetUrl
+            );
+            $isLocalReplacementPossible = true;
+        }
+
+        $fp = null;
+        $streamUrl = $targetUrl;
 
         try {
-            // Open the remote stream
-            $fp = @fopen($streamUrl, 'rb', false, $context);
+            if ($isLocalReplacementPossible) {
+                // 1. Attempt to stream from localhost first with a quick timeout
+                $localContext = stream_context_create([
+                    'http' => [
+                        'timeout' => 2.0, // 2 seconds timeout for fast local fallback
+                        'follow_location' => 1,
+                    ]
+                ]);
+                $fp = @fopen($localUrl, 'rb', false, $localContext);
+                if ($fp) {
+                    $streamUrl = $localUrl;
+                }
+            }
+
+            // 2. If localhost fails or isn't applicable, fallback to the original URL
+            if (!$fp) {
+                $context = stream_context_create([
+                    'http' => [
+                        'timeout' => 5.0, // 5 seconds timeout
+                        'follow_location' => 1,
+                    ]
+                ]);
+                $fp = @fopen($targetUrl, 'rb', false, $context);
+            }
 
             if (!$fp) {
-                Log::warning("CCTV Proxy: Failed to open stream at URL: {$streamUrl}");
+                Log::warning("CCTV Proxy: Failed to open stream at URL: {$targetUrl}");
                 return response()->json(['error' => 'CCTV stream offline or unavailable'], 404);
             }
 
