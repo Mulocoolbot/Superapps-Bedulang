@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, watch, nextTick } from 'vue'
-import { Head } from '@inertiajs/vue3'
+import { Head, Link } from '@inertiajs/vue3'
 import FrontLayout from '@/Layouts/FrontLayout.vue'
 import Footer from '@/Components/Front/Footer.vue'
 
@@ -515,14 +515,32 @@ fetchUrusan()
 
     <FrontLayout>
         <div 
-            class="relative min-h-screen overflow-hidden bg-cover bg-center bg-no-repeat pb-16 pt-20"
+            class="relative min-h-screen overflow-hidden bg-cover bg-center bg-no-repeat pb-16 pt-24 sm:pt-28"
             style="background-image: url('/services/bg layanan.svg');"
         >
             
             <!-- Global Back Button Below Navbar -->
             <transition name="fade">
-                <div v-if="currentStep > 1 && !isAnimating" class="container mx-auto px-6 pt-4">
+                <div v-if="!isAnimating" class="container mx-auto px-6 pt-4">
+                    <Link 
+                        v-if="currentStep === 1"
+                        href="/"
+                        class="group mb-6 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-bold text-white transition bg-white/10 hover:bg-white/20 backdrop-blur-md shadow-xs border border-white/10 cursor-pointer"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-4 w-4 transition-transform group-hover:-translate-x-0.5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        >
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                        </svg>
+                        Kembali
+                    </Link>
                     <button 
+                        v-else
                         @click="handleBack"
                         class="group mb-6 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-bold text-white transition bg-white/10 hover:bg-white/20 backdrop-blur-md shadow-xs border border-white/10 cursor-pointer"
                     >

@@ -19,12 +19,34 @@ class DatabaseSeeder extends Seeder
         $this->call(KoperasiSeeder::class);
 
         User::updateOrCreate(
-            ['email' => 'superadmin@example.com'],
+            ['email' => 'bedulangsuperadmin@gmail.com'],
             [
-                'name' => 'Super Admin',
-                'password' => Hash::make('password'),
+                'name' => 'Super Admin Bedulang',
+                'password' => Hash::make('superadmin12345678'),
                 'role' => 'super_admin',
                 'service_slug' => null,
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'adminbedulang@gmail.com'],
+            [
+                'name' => 'Admin Website Bedulang',
+                'password' => Hash::make('adminbedulang12345678'),
+                'role' => 'admin',
+                'service_slug' => 'pengaduan-bedulang',
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'adminkdmp36@gmail.com'],
+            [
+                'name' => 'Admin KDMP Keseluruhan',
+                'password' => Hash::make('adminkdmp12345678'),
+                'role' => 'admin',
+                'service_slug' => 'kdmp',
+                'kdmp_role' => 'admin_kdmp',
+                'kdmp_admin_status' => 'approved',
             ]
         );
 
@@ -49,20 +71,38 @@ class DatabaseSeeder extends Seeder
         );
 
         User::updateOrCreate(
-            ['email' => 'admin.utd@example.com'],
+            ['email' => 'rsud.abuhanifah@bangkatengahkab.go.id'],
             [
-                'name' => 'Admin UTD Bangka Tengah',
-                'password' => Hash::make('password'),
+                'name' => 'Admin RSUD Abuhanifah',
+                'password' => Hash::make('Bateng_2026'),
                 'role' => 'admin',
                 'service_slug' => 'informasi-publik',
             ]
         );
 
         User::updateOrCreate(
-            ['email' => 'pimpinan@email.com'],
+            ['email' => 'bupati@bangkatengahkab.go.id'],
             [
-                'name' => 'Pimpinan',
-                'password' => Hash::make('qwertyu'),
+                'name' => 'Bupati Bangka Tengah',
+                'password' => Hash::make('Bateng_2026'),
+                'role' => 'pimpinan',
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'wabup@bangkatengahkab.go.id'],
+            [
+                'name' => 'Wakil Bupati Bangka Tengah',
+                'password' => Hash::make('Bateng_2026'),
+                'role' => 'pimpinan',
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'sekda@bangkatengahkab.go.id'],
+            [
+                'name' => 'Sekda Bangka Tengah',
+                'password' => Hash::make('Bateng_2026'),
                 'role' => 'pimpinan',
             ]
         );
@@ -76,23 +116,21 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        $utdUser = User::where('email', 'admin.utd@example.com')->first();
+        $utdUser = User::where('email', 'rsud.abuhanifah@bangkatengahkab.go.id')->first();
         $adminUser = User::where('email', 'admin.kesehatan@example.com')->first();
-        $superAdminUser = User::where('email', 'superadmin@example.com')->first();
+        $superAdminUser = User::where('email', 'bedulangsuperadmin@gmail.com')->first();
         $updaters = array_filter([$utdUser?->id, $adminUser?->id, $superAdminUser?->id]);
 
         $components = ['Whole Blood (WB)', 'Packed Red Blood (PRC)'];
-        $bloodTypes = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
+        $bloodTypes = ['A+', 'B+', 'O+', 'AB+'];
 
         // Initial default stock values for matrix
         $initialAmounts = [
             'Whole Blood (WB)' => [
-                'A+' => 18, 'A-' => 5, 'B+' => 22, 'B-' => 6,
-                'O+' => 35, 'O-' => 10, 'AB+' => 12, 'AB-' => 4,
+                'A+' => 18, 'B+' => 22, 'O+' => 35, 'AB+' => 12,
             ],
             'Packed Red Blood (PRC)' => [
-                'A+' => 24, 'A-' => 8, 'B+' => 28, 'B-' => 7,
-                'O+' => 42, 'O-' => 12, 'AB+' => 15, 'AB-' => 6,
+                'A+' => 24, 'B+' => 28, 'O+' => 42, 'AB+' => 15,
             ],
         ];
 

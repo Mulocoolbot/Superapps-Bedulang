@@ -13,6 +13,12 @@ use Illuminate\Validation\ValidationException;
 class LoginRequest extends FormRequest
 {
     /**
+     * Max allowed login/captcha attempts by IP before 24-hour block.
+     */
+    public const MAX_IP_ATTEMPTS = 3;
+    public const DECAY_SECONDS = 86400; // 24 Hours
+
+    /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
@@ -30,27 +36,72 @@ class LoginRequest extends FormRequest
         return [
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
+            'captcha_num1' => ['nullable', 'integer'],
+            'captcha_num2' => ['nullable', 'integer'],
+            'captcha_operator' => ['nullable', 'string'],
+            'captcha_input' => ['nullable'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'email.required' => 'Email is required.',
-            'password.required' => 'Password is required.',
-            'email.email' => 'Please enter a valid email address.',
+            'email.required' => 'Email wajib diisi.',
+            'password.required' => 'Password wajib diisi.',
+            'email.email' => 'Silakan masukkan alamat email yang valid.',
         ];
     }
 
-    public function withValidator($validator)
+    /**
+     * Get the rate limiting throttle key for the client IP.
+     */
+    public function ipThrottleKey(): string
     {
-        $validator->after(function ($validator) {
-            if (empty($this->email) && empty($this->password)) {
-                $validator->errors()->forget('email');
-                $validator->errors()->forget('password');
-                $validator->errors()->add('email', 'Email and password are required.');
-            }
-        });
+        return 'login_ip_block:' . $this->ip();
+    }
+
+    /**
+     * Check if the client IP is blocked due to 3 failed attempts in 24 hours.
+     *
+     * @throws ValidationException
+     */
+    public function ensureIpIsNotBlocked(): void
+    {
+        $key = $this->ipThrottleKey();
+
+        if (! RateLimiter::tooManyAttempts($key, self::MAX_IP_ATTEMPTS)) {
+            return;
+        }
+
+        event(new Lockout($this));
+
+        $seconds = RateLimiter::availableIn($key);
+        $hours = floor($seconds / 3600);
+        $minutes = ceil(($seconds % 3600) / 60);
+
+        $timeText = $hours > 0
+            ? "{$hours} jam {$minutes} menit"
+            : "{$seconds} detik";
+
+        throw ValidationException::withMessages([
+            'email' => "Alamat IP Anda ({$this->ip()}) diblokir dari melakukan login selama 24 jam karena 3 kali gagal verifikasi/login. Silakan coba lagi dalam {$timeText}.",
+        ]);
+    }
+
+    /**
+     * Record a failed attempt for the IP.
+     */
+    public function hitIpThrottle(): void
+    {
+        RateLimiter::hit($this->ipThrottleKey(), self::DECAY_SECONDS);
+    }
+
+    /**
+     * Clear failed attempts for the IP on successful login.
+     */
+    public function clearIpThrottle(): void
+    {
+        RateLimiter::clear($this->ipThrottleKey());
     }
 
     /**
@@ -60,47 +111,53 @@ class LoginRequest extends FormRequest
      */
     public function authenticate(): void
     {
-        $this->ensureIsNotRateLimited();
+        // 1. Ensure IP is not blocked for 24 hours
+        $this->ensureIpIsNotBlocked();
 
+        // 2. Validate Math Captcha if parameters sent
+        if ($this->has('captcha_num1') && $this->has('captcha_num2') && $this->has('captcha_operator')) {
+            $n1 = (int) $this->input('captcha_num1');
+            $n2 = (int) $this->input('captcha_num2');
+            $op = $this->input('captcha_operator');
+            $userAns = (int) $this->input('captcha_input');
+
+            $expected = ($op === '-') ? ($n1 - $n2) : ($n1 + $n2);
+
+            if ($userAns !== $expected) {
+                $this->hitIpThrottle();
+
+                $key = $this->ipThrottleKey();
+                $attempts = RateLimiter::attempts($key);
+                $remaining = max(0, self::MAX_IP_ATTEMPTS - $attempts);
+
+                if ($attempts >= self::MAX_IP_ATTEMPTS) {
+                    $this->ensureIpIsNotBlocked();
+                }
+
+                throw ValidationException::withMessages([
+                    'captcha_input' => "Jawaban verifikasi captcha salah. Sisa kesempatan login: {$remaining} kali.",
+                ]);
+            }
+        }
+
+        // 3. Attempt user authentication
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
-            RateLimiter::hit($this->throttleKey());
+            $this->hitIpThrottle();
+
+            $key = $this->ipThrottleKey();
+            $attempts = RateLimiter::attempts($key);
+            $remaining = max(0, self::MAX_IP_ATTEMPTS - $attempts);
+
+            if ($attempts >= self::MAX_IP_ATTEMPTS) {
+                $this->ensureIpIsNotBlocked();
+            }
 
             throw ValidationException::withMessages([
-                'email' => 'Email or password is invalid.',
+                'email' => "Email atau password yang Anda masukkan salah. Sisa kesempatan login: {$remaining} kali.",
             ]);
         }
 
-        RateLimiter::clear($this->throttleKey());
-    }
-
-    /**
-     * Ensure the login request is not rate limited.
-     *
-     * @throws ValidationException
-     */
-    public function ensureIsNotRateLimited(): void
-    {
-        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
-            return;
-        }
-
-        event(new Lockout($this));
-
-        $seconds = RateLimiter::availableIn($this->throttleKey());
-
-        throw ValidationException::withMessages([
-            'email' => trans('auth.throttle', [
-                'seconds' => $seconds,
-                'minutes' => ceil($seconds / 60),
-            ]),
-        ]);
-    }
-
-    /**
-     * Get the rate limiting throttle key for the request.
-     */
-    public function throttleKey(): string
-    {
-        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+        // 4. On success, reset IP block counter
+        $this->clearIpThrottle();
     }
 }

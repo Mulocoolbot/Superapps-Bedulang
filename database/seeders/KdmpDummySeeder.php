@@ -21,14 +21,15 @@ class KdmpDummySeeder extends Seeder
         $faker = Faker::create('id_ID');
 
         // Create Admin KDMP Keseluruhan
-        $superAdmin = User::firstOrCreate(
-            ['email' => 'admin_kdmp@example.com'],
+        $superAdmin = User::updateOrCreate(
+            ['email' => 'adminkdmp36@gmail.com'],
             [
-                'name' => 'Super Admin KDMP',
-                'password' => Hash::make('password'),
+                'name' => 'Admin KDMP Keseluruhan',
+                'password' => Hash::make('adminkdmp12345678'),
                 'role' => 'admin',
                 'service_slug' => 'kdmp',
                 'kdmp_role' => 'admin_kdmp',
+                'kdmp_admin_status' => 'approved',
             ]
         );
 

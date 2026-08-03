@@ -34,7 +34,7 @@ const toggleDarkMode = () => {
         <Navbar ></Navbar>
 
         <!-- CONTENT -->
-        <main class="pt-28 relative z-0 min-h-[calc(100vh-5.5rem)]">
+        <main class="relative z-0 min-h-screen">
             <!-- Flash Message Banner -->
             <div v-if="$page.props.flash?.warning" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 mb-2">
                 <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-sm font-medium flex items-center gap-3 shadow-sm">

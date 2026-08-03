@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3'
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import FrontLayout from '@/Layouts/FrontLayout.vue'
 import Footer from '@/Components/Front/Footer.vue'
 
@@ -17,6 +17,23 @@ const props = defineProps({
         type: Array,
         default: () => [],
     }
+})
+
+const activeImage = ref(props.destination.main_image || null)
+
+watch(() => props.destination, (newDest) => {
+    activeImage.value = newDest.main_image || null
+})
+
+const selectImage = (imgUrl) => {
+    activeImage.value = imgUrl
+}
+
+const galleryImages = computed(() => {
+    if (props.destination.gallery && props.destination.gallery.length > 0) {
+        return props.destination.gallery
+    }
+    return []
 })
 
 // Format number
@@ -51,10 +68,10 @@ const parsedMapEmbed = computed(() => {
         <Head :title="destination.name + ' - ' + service.name" />
 
         <div 
-            class="relative bg-cover bg-center bg-no-repeat min-h-screen text-white"
+            class="relative bg-gradient-to-b from-[#0F3D77] via-[#0F3D77]/95 to-[#0b2b52] dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-white bg-cover bg-center bg-no-repeat bg-fixed min-h-screen w-full"
             style="background-image: url('/services/bg layanan.svg');"
         >
-            <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-16">
+            <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 pb-16">
                 
                 <!-- Back Button -->
                 <div class="mb-6">
@@ -72,7 +89,7 @@ const parsedMapEmbed = computed(() => {
                         >
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                         </svg>
-                        Kembali ke Dashboard Pariwisata
+                        Kembali ke Pariwisata
                     </Link>
                 </div>
 
@@ -80,23 +97,48 @@ const parsedMapEmbed = computed(() => {
                 <div class="rounded-3xl border border-white/15 bg-white/[0.04] backdrop-blur-xl p-6 sm:p-10 shadow-2xl space-y-10">
                     
                     <!-- Photo Gallery Section -->
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <!-- Main Photo Placeholder -->
-                        <div class="md:col-span-3 aspect-[16/9] md:aspect-auto h-64 md:h-[450px] bg-slate-900/60 rounded-3xl overflow-hidden relative group border border-white/10">
-                            <div :class="`absolute inset-0 bg-gradient-to-br ${destination.image_gradient} opacity-30`"></div>
-                            <div class="absolute inset-0 flex flex-col items-center justify-center text-white/60">
-                                <span class="text-6xl md:text-8xl mb-3 opacity-60 drop-shadow-lg">{{ destination.subcategory_icon }}</span>
-                                <span class="font-bold text-lg text-white/80">Foto Utama Destinasi</span>
-                                <span class="text-xs text-white/50">(Akan diupload nanti)</span>
-                            </div>
+                    <div class="space-y-4">
+                        <!-- Main Photo Container -->
+                        <div class="w-full h-72 sm:h-96 lg:h-[480px] bg-slate-900/60 rounded-3xl overflow-hidden relative group border border-white/10 shadow-xl">
+                            <template v-if="activeImage">
+                                <img :src="activeImage" :alt="destination.name" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60"></div>
+                            </template>
+                            <template v-else>
+                                <div :class="`absolute inset-0 bg-gradient-to-br ${destination.image_gradient} opacity-30`"></div>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center text-white/60">
+                                    <span class="text-6xl md:text-8xl mb-3 opacity-60 drop-shadow-lg">{{ destination.subcategory_icon }}</span>
+                                    <span class="font-bold text-lg text-white/80">Foto Utama Destinasi</span>
+                                    <span class="text-xs text-white/50">(Akan diupload nanti)</span>
+                                </div>
+                            </template>
                         </div>
-                        <!-- Thumbnail Photos Placeholder -->
-                        <div class="hidden md:flex flex-col gap-4">
-                            <div v-for="i in 3" :key="i" class="flex-1 bg-slate-900/60 rounded-2xl relative overflow-hidden group border border-white/10">
+                        
+                        <!-- 4 Thumbnails Grid Container -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+                            <!-- Real Gallery Images -->
+                            <div
+                                v-for="(img, idx) in galleryImages.slice(0, 4)"
+                                :key="'img-' + idx"
+                                @click="selectImage(img)"
+                                :class="[
+                                    'h-24 sm:h-32 rounded-2xl relative overflow-hidden group border cursor-pointer transition-all duration-300 shadow-sm',
+                                    activeImage === img ? 'border-blue-400 ring-2 ring-blue-400/60 scale-[1.02]' : 'border-white/10 opacity-75 hover:opacity-100 hover:border-white/40'
+                                ]"
+                            >
+                                <img :src="img" :alt="`${destination.name} ${idx + 1}`" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                                <div v-if="activeImage === img" class="absolute inset-0 bg-blue-500/20"></div>
+                            </div>
+
+                            <!-- Remaining Empty Slots (Clean Placeholders without text) -->
+                            <div
+                                v-for="i in Math.max(0, 4 - galleryImages.length)"
+                                :key="'empty-' + i"
+                                class="h-24 sm:h-32 bg-slate-900/60 rounded-2xl relative overflow-hidden group border border-white/10"
+                            >
                                 <div :class="`absolute inset-0 bg-gradient-to-br ${destination.image_gradient} opacity-20`"></div>
-                                <div class="absolute inset-0 flex flex-col items-center justify-center text-white/40 text-xs text-center p-2">
-                                    <span class="text-2xl mb-1">📷</span>
-                                    <span>Kumpulan Foto</span>
+                                <div class="absolute inset-0 flex items-center justify-center text-white/30">
+                                    <span class="text-2xl opacity-60">📷</span>
                                 </div>
                             </div>
                         </div>
@@ -122,12 +164,19 @@ const parsedMapEmbed = computed(() => {
                                 </h1>
 
                                 <div class="flex flex-wrap items-center gap-4 text-sm text-white/80">
-                                    <!-- Rating -->
-                                    <div class="flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/15">
+                                    <!-- Rating (Clickable to Google Maps) -->
+                                    <a 
+                                        :href="destination.maps_url" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        class="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-white/15 transition-all hover:scale-105 group cursor-pointer"
+                                        title="Buka ulasan live di Google Maps"
+                                    >
                                         <svg class="w-4 h-4 text-amber-400 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                                         <span class="font-bold text-white">{{ destination.rating }}</span>
                                         <span class="text-white/60">({{ formatNumber(destination.review_count) }} ulasan Google)</span>
-                                    </div>
+                                        <svg class="w-3.5 h-3.5 text-blue-300 group-hover:translate-x-0.5 transition-transform ml-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
+                                    </a>
                                 </div>
                             </div>
 
@@ -203,11 +252,17 @@ const parsedMapEmbed = computed(() => {
                                 class="group relative overflow-hidden rounded-2xl border border-white/15 bg-white/[0.04] backdrop-blur-md shadow-sm hover:shadow-xl hover:bg-white/[0.08] transition-all duration-300 hover:-translate-y-1"
                             >
                                 <div :class="`h-32 bg-gradient-to-br ${dest.image_gradient} relative overflow-hidden`">
-                                    <div class="absolute inset-0 flex items-center justify-center">
-                                        <span class="text-4xl opacity-80 drop-shadow-lg transform group-hover:scale-110 transition-transform duration-500">
-                                            {{ dest.subcategory_icon }}
-                                        </span>
-                                    </div>
+                                    <template v-if="dest.main_image">
+                                        <img :src="dest.main_image" :alt="dest.name" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
+                                    </template>
+                                    <template v-else>
+                                        <div class="absolute inset-0 flex items-center justify-center">
+                                            <span class="text-4xl opacity-80 drop-shadow-lg transform group-hover:scale-110 transition-transform duration-500">
+                                                {{ dest.subcategory_icon }}
+                                            </span>
+                                        </div>
+                                    </template>
                                     <div class="absolute top-2 left-2">
                                         <span class="inline-flex items-center gap-1 rounded-full bg-black/40 backdrop-blur-md border border-white/20 px-2 py-0.5 text-[10px] font-bold text-white uppercase tracking-wider">
                                             {{ dest.category === 'wisata' ? 'Wisata' : 'Hotel' }}

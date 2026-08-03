@@ -83,7 +83,7 @@ const confirmSent = async () => {
     <FrontLayout>
         <Head title="Layanan Pengaduan Bedulang" />
 
-        <div class="min-h-screen bg-gradient-to-b from-[#0F3D77] via-[#0F3D77]/95 to-[#0b2b52] py-12 transition-colors duration-300 bg-cover bg-center bg-no-repeat" style="background-image: url('/services/bg layanan.svg');">
+        <div class="min-h-screen bg-gradient-to-b from-[#0F3D77] via-[#0F3D77]/95 to-[#0b2b52] pt-24 sm:pt-28 pb-12 transition-colors duration-300 bg-cover bg-center bg-no-repeat" style="background-image: url('/services/bg layanan.svg');">
             <section class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
                 <!-- Back Link -->
                 <div class="mb-8">
