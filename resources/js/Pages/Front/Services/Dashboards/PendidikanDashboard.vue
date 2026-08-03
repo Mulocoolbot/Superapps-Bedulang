@@ -28,7 +28,6 @@ const summary = computed(() => props.dashboard?.summary ?? {
 
 const availableKecamatans = computed(() => props.dashboard?.available_kecamatans ?? [])
 const availableJenjangs = computed(() => props.dashboard?.available_jenjangs ?? ['PAUD', 'SD', 'SMP'])
-const availableStatus = computed(() => props.dashboard?.available_status ?? ['Negeri', 'Swasta'])
 
 // Active main tab ('sekolah', 'peserta-didik', 'pendidik')
 const activeMainTab = ref('sekolah')
@@ -36,7 +35,6 @@ const activeMainTab = ref('sekolah')
 // Filter states for Tab 1 (Sekolah)
 const filterSekolahKecamatan = ref('all')
 const filterSekolahJenjang = ref('all')
-const filterSekolahStatus = ref('all')
 const searchSekolahQuery = ref('')
 
 // Filter states for Tab 2 (Peserta Didik)
@@ -61,7 +59,7 @@ const formatNumber = (val) => {
 }
 
 // Reset pagination when active tab or filters change
-watch([activeMainTab, filterSekolahKecamatan, filterSekolahJenjang, filterSekolahStatus, searchSekolahQuery], () => {
+watch([activeMainTab, filterSekolahKecamatan, filterSekolahJenjang, searchSekolahQuery], () => {
     currentPageSekolah.value = 1
 })
 watch([activeMainTab, filterSiswaJenjang, filterSiswaKecamatan, searchSiswaQuery], () => {
@@ -76,7 +74,6 @@ const filteredSekolah = computed(() => {
     return schoolsList.value.filter(school => {
         if (filterSekolahKecamatan.value !== 'all' && school.kecamatan !== filterSekolahKecamatan.value) return false
         if (filterSekolahJenjang.value !== 'all' && school.jenjang !== filterSekolahJenjang.value) return false
-        if (filterSekolahStatus.value !== 'all' && school.status !== filterSekolahStatus.value) return false
         if (searchSekolahQuery.value.trim() !== '') {
             const q = searchSekolahQuery.value.toLowerCase()
             return school.nama.toLowerCase().includes(q) || school.kecamatan.toLowerCase().includes(q)
@@ -131,12 +128,6 @@ const getJenjangBadgeClass = (jenjang) => {
         default:
             return 'bg-slate-50 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
     }
-}
-
-const getStatusBadgeClass = (status) => {
-    return status === 'Negeri'
-        ? 'bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300 border-teal-100 dark:border-teal-900/40'
-        : 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border-amber-100 dark:border-amber-900/40'
 }
 </script>
 
@@ -229,7 +220,7 @@ const getStatusBadgeClass = (status) => {
 
                 <!-- Filters -->
                 <div class="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-md animate-fade-in-up [animation-delay:200ms]">
-                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
                         <!-- Search Query -->
                         <div class="space-y-1.5">
                             <label class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Cari Sekolah</label>
@@ -283,25 +274,6 @@ const getStatusBadgeClass = (status) => {
                                 </svg>
                             </div>
                         </div>
-
-                        <!-- Filter Status -->
-                        <div class="space-y-1.5">
-                            <label class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider">Negeri / Swasta</label>
-                            <div class="relative">
-                                <select
-                                    v-model="filterSekolahStatus"
-                                    class="w-full h-10 appearance-none rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800 px-4 pr-10 text-xs sm:text-sm text-slate-700 dark:text-slate-200 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 dark:focus:ring-indigo-950/40"
-                                >
-                                    <option value="all">Semua Status</option>
-                                    <option v-for="st in availableStatus" :key="st" :value="st">
-                                        Status {{ st }}
-                                    </option>
-                                </select>
-                                <svg class="pointer-events-none absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                                </svg>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -319,10 +291,9 @@ const getStatusBadgeClass = (status) => {
                                 <thead class="bg-gradient-to-r from-indigo-50/90 via-purple-50/70 to-indigo-50/50 dark:from-indigo-950/80 dark:via-purple-950/60 dark:to-indigo-950/40 text-indigo-950 dark:text-indigo-200 font-extrabold uppercase text-[11px] tracking-wider border-b border-indigo-100 dark:border-slate-800">
                                     <tr>
                                         <th class="py-4 px-3 w-[8%] text-center">No</th>
-                                        <th class="py-4 px-4 w-[35%] text-left">Nama Sekolah</th>
-                                        <th class="py-4 px-3 w-[17%] text-center">Jenjang</th>
-                                        <th class="py-4 px-3 w-[18%] text-center">Status</th>
-                                        <th class="py-4 px-4 w-[22%] text-center">Kecamatan</th>
+                                        <th class="py-4 px-4 w-[50%] text-left">Nama Sekolah</th>
+                                        <th class="py-4 px-3 w-[21%] text-center">Jenjang</th>
+                                        <th class="py-4 px-4 w-[21%] text-center">Kecamatan</th>
                                     </tr>
                                 </thead>
 
@@ -347,18 +318,13 @@ const getStatusBadgeClass = (status) => {
                                                 {{ school.jenjang }}
                                             </span>
                                         </td>
-                                        <td class="py-3.5 px-3 text-center">
-                                            <span class="inline-flex items-center justify-center px-3 py-0.5 rounded-full border text-[10px] font-extrabold tracking-wide uppercase" :class="getStatusBadgeClass(school.status)">
-                                                {{ school.status }}
-                                            </span>
-                                        </td>
                                         <td class="py-3.5 px-4 text-center font-semibold text-slate-700 dark:text-slate-300">
                                             {{ school.kecamatan }}
                                         </td>
                                     </tr>
 
                                     <tr v-if="filteredSekolah.length === 0">
-                                        <td colspan="5" class="py-12 text-center text-slate-400 text-sm font-medium">
+                                        <td colspan="4" class="py-12 text-center text-slate-400 text-sm font-medium">
                                             Tidak ada data sekolah yang sesuai dengan filter.
                                         </td>
                                     </tr>

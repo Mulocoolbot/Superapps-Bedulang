@@ -56,8 +56,6 @@ class PendidikanService implements InformationServiceInterface
         if (empty($availableJenjangs)) {
             $availableJenjangs = ['PAUD', 'SD', 'SMP'];
         }
-        $availableStatus = ['Negeri', 'Swasta'];
-
         return [
             'metadata' => [
                 'source' => 'Dinas Pendidikan Kabupaten Bangka Tengah',
@@ -81,7 +79,6 @@ class PendidikanService implements InformationServiceInterface
             'schools_list' => $schoolsList,
             'available_kecamatans' => $availableKecamatans,
             'available_jenjangs' => $availableJenjangs,
-            'available_status' => $availableStatus,
         ];
     }
 
@@ -141,7 +138,6 @@ class PendidikanService implements InformationServiceInterface
                                 'nama' => $name,
                                 'jenjang' => $jenjang,
                                 'raw_jenjang' => $rawJenjang,
-                                'status' => $isNegeri ? 'Negeri' : 'Swasta',
                                 'kecamatan' => $kec,
                                 'desa' => trim($item['desa'] ?? ''),
                                 'alamat' => $alamatClean,
