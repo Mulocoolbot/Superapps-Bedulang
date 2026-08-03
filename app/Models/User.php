@@ -112,6 +112,6 @@ class User extends Authenticatable
 
     public function isAdminKoperasi(): bool
     {
-        return $this->role === 'admin_koperasi' || ($this->role === 'admin' && $this->service_slug === 'koperasi') || $this->isSuperAdmin();
+        return $this->role === 'admin_koperasi' || ($this->role === 'admin' && $this->service_slug === 'koperasi');
     }
 }

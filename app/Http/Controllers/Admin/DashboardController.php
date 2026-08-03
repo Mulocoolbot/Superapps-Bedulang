@@ -17,7 +17,7 @@ class DashboardController extends Controller
             return redirect()->route('pimpinan.dashboard');
         }
 
-        if ($user && $user->isAdminKoperasi()) {
+        if ($user && !$user->isSuperAdmin() && $user->isAdminKoperasi()) {
             return redirect()->route('admin.koperasi.index');
         }
 

@@ -18,7 +18,8 @@ class StoreAdminRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', Rule::in(['admin', 'super_admin'])],
+            'role' => ['required', Rule::in(['admin', 'super_admin', 'admin_koperasi'])],
+            'service_slug' => ['nullable', 'string', 'max:255'],
         ];
     }
 }
