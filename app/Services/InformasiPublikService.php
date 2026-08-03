@@ -89,7 +89,7 @@ class InformasiPublikService implements InformationServiceInterface
                 'total_stock' => $totalBloodStock,
                 'last_updated' => $formattedLastUpdated,
                 'components' => ['Whole Blood (WB)', 'Packed Red Blood (PRC)'],
-                'blood_types' => ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'],
+                'blood_types' => ['A+', 'B+', 'O+', 'AB+'],
                 'stocks' => $bloodStocks,
             ],
         ];
