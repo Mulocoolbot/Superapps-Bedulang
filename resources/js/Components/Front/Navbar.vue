@@ -72,11 +72,10 @@ const infoServices = [
 
 const regionalApps = [
     { name: 'SIPELAWAN', id: 'sipelawan', url: 'https://dashboard-sipelawan.bangkatengahkab.go.id/dashboard/' },
-    { name: 'SIDOLPIN', id: 'sidolpin', url: 'https://sidolpin.bangkatengahkab.go.id/' },
+    { name: 'SEPERADIK', id: 'seperadik', url: 'https://seperadik.bangkatengahkab.go.id/' },
     { name: 'SILAKSO', id: 'silakso', url: 'https://silakso.bangkatengahkab.go.id/' },
     { name: 'SIKOK DATA', id: 'sikok-data', url: 'https://sikokdata.bangkatengahkab.go.id/' },
     { name: 'LAPOR PPID', id: 'lapor-ppid', url: 'https://www.lapor.go.id/instansi/pemerintah-kabupaten-bangka-tengah' },
-    { name: 'SIMENTARI', id: 'simentari', url: 'https://inspektorat.bangkatengahkab.go.id' },
 ]
 
 const publicServices = [
