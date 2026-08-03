@@ -1,10 +1,9 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
-import { ref, onMounted, nextTick } from 'vue'
-import Hls from 'hls.js'
+import CCTVGridCard from '@/Components/CCTVGridCard.vue'
 
-const props = defineProps({
+defineProps({
     cctvs: {
         type: Array,
         default: () => []
@@ -18,44 +17,10 @@ const props = defineProps({
         default: ''
     }
 })
-
-const videoRef = ref(null)
-const selectedCCTV = ref(props.cctvs && props.cctvs.length > 0 ? props.cctvs[0] : null)
-
-let hls = null
-
-const playCCTV = (cctv) => {
-    selectedCCTV.value = cctv
-    nextTick(() => {
-        if (!cctv || !videoRef.value) return
-        const streamUrl = cctv.stream
-
-        if (hls) {
-            hls.destroy()
-        }
-
-        if (Hls.isSupported()) {
-            hls = new Hls()
-            hls.loadSource(streamUrl)
-            hls.attachMedia(videoRef.value)
-            hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                videoRef.value.play().catch(() => {})
-            })
-        } else if (videoRef.value.canPlayType('application/vnd.apple.mpegurl')) {
-            videoRef.value.src = streamUrl
-        }
-    })
-}
-
-onMounted(() => {
-    if (selectedCCTV.value) {
-        playCCTV(selectedCCTV.value)
-    }
-})
 </script>
 
 <template>
-    <Head title="Dashboard Admin"/>
+    <Head title="Dashboard Admin"></Head>
 
     <AdminLayout>
         <!-- Top header row with Landing Page button on top right -->
@@ -75,12 +40,12 @@ onMounted(() => {
             <!-- Top right landing page back button -->
             <Link
                 href="/"
-                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-blue-600 shadow-sm font-semibold transition shrink-0"
+                class="inline-flex justify-center items-center p-2.5 rounded-xl bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-blue-600 shadow-sm transition shrink-0"
+                title="Kembali ke Landing Page"
             >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
                 </svg>
-                <span>Kembali ke Landing Page</span>
             </Link>
         </div>
 
@@ -91,9 +56,9 @@ onMounted(() => {
             </h2>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- CCTV Live Stream Feature Screen -->
+                <!-- CCTV Live Stream Feature Screen - All CCTVs Grid -->
                 <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-200 p-6 space-y-4">
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-between border-b pb-4">
                         <div class="flex items-center gap-3">
                             <div class="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
@@ -101,52 +66,32 @@ onMounted(() => {
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="font-bold text-gray-800 text-lg">Fitur CCTV - Live Stream</h3>
-                                <p class="text-xs text-gray-500" v-if="selectedCCTV">
-                                    Kamera: {{ selectedCCTV.name }}
-                                </p>
+                                <h3 class="font-bold text-gray-800 text-lg">Monitoring CCTV</h3>
+                                <p class="text-xs text-gray-500">Live monitoring kamera CCTV Kabupaten Bangka Tengah</p>
                             </div>
                         </div>
 
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-                            <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                            Live Stream
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700">
+                            {{ cctvs.length }} Kamera
                         </span>
                     </div>
 
-                    <!-- Direct Video Stream Screen -->
-                    <div class="aspect-video bg-black rounded-xl overflow-hidden shadow-inner relative group">
-                        <video
-                            ref="videoRef"
-                            controls
-                            autoplay
-                            muted
-                            class="w-full h-full object-contain"
-                        ></video>
+                    <!-- CCTV Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <CCTVGridCard
+                            v-for="cctv in cctvs"
+                            :key="cctv.id"
+                            :cctv="cctv"
+                        />
                     </div>
 
-                    <!-- Footer options inside CCTV Card -->
-                    <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
-                        <div class="flex items-center gap-2" v-if="cctvs.length > 1">
-                            <button
-                                v-for="cctv in cctvs"
-                                :key="cctv.id"
-                                @click="playCCTV(cctv)"
-                                class="px-3 py-1.5 rounded-lg text-xs font-medium transition"
-                                :class="selectedCCTV?.id === cctv.id ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
-                            >
-                                {{ cctv.name }}
-                            </button>
-                        </div>
-                        <p v-else class="text-xs text-gray-400">
-                            Tampilan default CCTV pertama yang ditambahkan.
-                        </p>
-
+                    <!-- Bottom Link -->
+                    <div class="flex justify-end pt-2 border-t border-slate-100">
                         <Link
                             href="/admin/cctv"
-                            class="inline-flex items-center gap-1 text-sm font-semibold text-blue-600 hover:text-blue-700 transition ml-auto"
+                            class="inline-flex items-center gap-1 text-sm font-semibold text-blue-600 hover:text-blue-700 transition"
                         >
-                            <span>Monitoring CCTV Lengkap</span>
+                            <span>Monitoring Peta & Detail CCTV</span>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                             </svg>
@@ -173,8 +118,8 @@ onMounted(() => {
                             </div>
                         </div>
 
-                        <!-- Grid 2 Indicators inside Single Card -->
-                        <div class="grid grid-cols-2 gap-3 pt-1">
+                        <!-- Grid 3 Indicators inside Single Card -->
+                        <div class="grid grid-cols-3 gap-3 pt-1">
                             <!-- Pending Stat Box -->
                             <Link
                                 href="/admin/complaints?status=pending"
@@ -197,6 +142,18 @@ onMounted(() => {
                                     {{ complaintStats?.processing ?? 0 }}
                                 </span>
                                 <span class="text-[11px] text-blue-700 font-medium block">Sedang Ditangani</span>
+                            </Link>
+
+                            <!-- Resolved Stat Box -->
+                            <Link
+                                href="/admin/complaints?status=resolved"
+                                class="p-4 rounded-xl bg-green-50/80 hover:bg-green-100/80 border border-green-200/70 transition space-y-2 text-center group"
+                            >
+                                <span class="text-xs font-semibold text-green-800 uppercase tracking-wider block">Selesai</span>
+                                <span class="text-3xl font-extrabold text-green-600 block group-hover:scale-105 transition">
+                                    {{ complaintStats?.resolved ?? 0 }}
+                                </span>
+                                <span class="text-[11px] text-green-700 font-medium block">Telah Diselesaikan</span>
                             </Link>
                         </div>
                     </div>

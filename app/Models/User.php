@@ -24,6 +24,9 @@ class User extends Authenticatable
         'password',
         'role',
         'service_slug',
+        'kdmp_role',
+        'kdmp_kecamatan',
+        'kdmp_admin_status',
     ];
 
     /**
@@ -76,10 +79,39 @@ class User extends Authenticatable
 
     public function canAccessService(?string $serviceSlug): bool
     {
-        if ($this->isSuperAdmin() || empty($this->service_slug)) {
+        if ($this->isSuperAdmin() || $this->isPimpinan() || empty($this->service_slug)) {
             return true;
         }
 
+        if ($serviceSlug === 'pengaduan-bedulang') {
+            return (
+            $this->isAdmin()
+            ||
+            $this->isPimpinan()
+        );
+        }
+
         return $this->service_slug === $serviceSlug;
+    }
+
+    // KDMP Role Helpers
+    public function isKdmpAdmin(): bool
+    {
+        return $this->kdmp_role === 'admin_kdmp' || $this->isSuperAdmin();
+    }
+
+    public function isKdmpKecamatanAdmin(): bool
+    {
+        return $this->kdmp_role === 'admin_kecamatan';
+    }
+
+    public function isKdmpKmpAdmin(): bool
+    {
+        return $this->kdmp_role === 'admin_kmp';
+    }
+
+    public function isAdminKoperasi(): bool
+    {
+        return $this->role === 'admin_koperasi' || ($this->role === 'admin' && $this->service_slug === 'koperasi') || $this->isSuperAdmin();
     }
 }

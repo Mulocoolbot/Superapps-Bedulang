@@ -16,7 +16,7 @@ const handleScroll = () => {
 
 const page = usePage()
 const authUser = computed(() => page.props.auth?.user)
-const isAdmin = computed(() => authUser.value && ['admin', 'super_admin', 'pimpinan'].includes(authUser.value.role))
+const isAdmin = computed(() => authUser.value && (['admin', 'super_admin', 'pimpinan', 'admin_koperasi'].includes(authUser.value.role) || authUser.value.service_slug === 'koperasi'))
 const userNotifications = computed(() => authUser.value?.notifications || [])
 const unreadCount = computed(() => authUser.value?.unread_notifications_count || 0)
 
@@ -59,13 +59,14 @@ const infoServices = [
     { name: 'Pendidikan', id: 'pendidikan' },
     { name: 'Kesehatan', id: 'kesehatan' },
     { name: 'Perindagkop-UKM', id: 'perindagkop-ukm' },
-    { name: 'Hukum', id: 'hukum' },
+    { name: 'KDMP', id: 'kdmp' },
     { name: 'Sosial', id: 'sosial' },
     { name: 'Kependudukan', id: 'kependudukan' },
     { name: 'Kepegawaian', id: 'kepegawaian' },
-    { name: 'Pertanian & Ketahanan Pangan', id: 'lingkungan' },
+    { name: 'Desa', id: 'desa', allowGuest: true },
+    { name: 'Informasi Publik', id: 'informasi-publik' },
     { name: 'Pariwisata', id: 'pariwisata' },
-    { name: 'Data Sektoral', id: 'data-sektoral' },
+    { name: 'Data Sektoral', id: 'data-sektoral', url: '/data-sektoral' },
     { name: 'Makanan Bergizi Gratis', id: 'makanan-bergizi-gratis' },
 ]
 
@@ -83,6 +84,8 @@ const publicServices = [
     { name: 'Pelayanan Kesehatan', id: 'pelayanan-kesehatan' },
     { name: 'Pengaduan PPID', id: 'pengaduan-ppid' },
     { name: 'Administrasi Warga', id: 'administrasi-warga' },
+    { name: 'Pengaduan Bedulang', id: 'pengaduan-bedulang' },
+    { name: 'Monitoring CCTV', url: '/admin/cctv' },
 ]
 
 const scrollToAndHighlight = (targetId) => {
@@ -127,6 +130,10 @@ let pollTimer = null
 const seenIdsSet = new Set()
 
 const isBellRinging = ref(false)
+const mobileLayananOpen = ref(false)
+const mobileAplikasiOpen = ref(false)
+const mobileLayananInfoOpen = ref(false)
+const mobileLayananPublikOpen = ref(false)
 
 const triggerBellRing = () => {
     isBellRinging.value = true
@@ -213,6 +220,14 @@ const selectServicesTab = (tabName) => {
     }
 }
 
+const handleLogoClick = () => {
+    if (window.location.pathname === '/') {
+        window.location.reload()
+    } else {
+        window.location.href = '/'
+    }
+}
+
 const toggleDarkMode = () => {
     darkMode.value = !darkMode.value
 
@@ -234,15 +249,18 @@ const toggleDarkMode = () => {
         <div
             class="mx-auto transition-all duration-500 ease-in-out"
             :class="isScrolled 
-                ? 'max-w-5xl rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg shadow-lg border border-gray-200/50 dark:border-gray-700/50 px-6 py-2 mt-4 mx-4 md:mx-auto' 
-                : 'max-w-full rounded-none bg-white/20 dark:bg-gray-900/20 backdrop-blur-sm border-b border-t-transparent border-x-transparent border-white/20 dark:border-gray-800/20 shadow-sm px-6 py-3 mt-0 mx-0'"
+                ? 'max-w-5xl rounded-full bg-blue-50/75 dark:bg-slate-900/80 backdrop-blur-lg shadow-lg border border-blue-200/40 dark:border-slate-800/60 px-6 py-2 mt-4 mx-4 md:mx-auto' 
+                : 'max-w-full rounded-none bg-blue-50/20 dark:bg-slate-950/20 backdrop-blur-sm border-b border-t-transparent border-x-transparent border-blue-200/10 dark:border-slate-800/10 shadow-sm px-6 py-3 mt-0 mx-0'"
         >
             <div 
                 class="container mx-auto flex justify-between items-center transition-all duration-500 ease-in-out"
                 :class="isScrolled ? 'h-12' : 'h-14'"
             >
                 <!-- LOGO -->
-                <div class="flex items-center gap-3">
+                <div 
+                    @click="handleLogoClick"
+                    class="flex items-center gap-3 cursor-pointer select-none"
+                >
                     <img
                         src="/services/logobateng3.png"
                         alt="logo bangka tengah"
@@ -264,7 +282,7 @@ const toggleDarkMode = () => {
 
                 <!-- MENU -->
                 <div
-                    class="hidden md:flex items-center space-x-8 text-gray-700 dark:text-gray-200 font-medium"
+                    class="hidden md:flex items-center space-x-8 text-blue-900/90 dark:text-blue-100 font-bold"
                 >
                     <a href="/#beranda" @click="navigateMenu($event, '#beranda')" class="hover:text-blue-600 transition">
                         Beranda
@@ -321,7 +339,7 @@ const toggleDarkMode = () => {
                             <button 
                                 @click="selectServicesTab('info')"
                                 class="w-full text-left px-5 py-3 hover:bg-blue-50 dark:hover:bg-gray-700 flex justify-between items-center transition cursor-pointer"
-                            >
+                            >   
                                 <span>Layanan Informasi & Data</span>
                                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
@@ -333,11 +351,11 @@ const toggleDarkMode = () => {
                                 <Link 
                                     v-for="app in infoServices" 
                                     :key="app.name" 
-                                    :href="authUser ? '/layanan/' + app.id : '/login'"
+                                    :href="authUser || app.allowGuest ? (app.url || '/layanan/' + app.id) : '/login'"
                                     class="px-5 py-2.5 hover:bg-blue-50 dark:hover:bg-gray-700 text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center justify-between"
                                 >
                                     <span>{{ app.name }}</span>
-                                    <svg v-if="!authUser" class="w-4 h-4 text-amber-500 ml-2 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <svg v-if="!authUser && !app.allowGuest" class="w-4 h-4 text-amber-500 ml-2 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                                     </svg>
                                 </Link>
@@ -361,7 +379,7 @@ const toggleDarkMode = () => {
                                 <Link 
                                     v-for="app in publicServices" 
                                     :key="app.name" 
-                                    :href="authUser ? '/layanan/' + app.id : '/login'"
+                                    :href="authUser ? (app.url ? app.url : '/layanan/' + app.id) : '/login'"
                                     class="px-5 py-2.5 hover:bg-blue-50 dark:hover:bg-gray-700 text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center justify-between"
                                 >
                                     <span>{{ app.name }}</span>
@@ -643,10 +661,10 @@ const toggleDarkMode = () => {
                                 <div class="border-t border-gray-100 dark:border-gray-700"></div>
 
                                 <Link
-                                    href="/admin"
+                                    :href="authUser.role === 'pimpinan' ? '/pimpinan' : ((authUser.role === 'admin_koperasi' || authUser.service_slug === 'koperasi') ? '/admin/koperasi' : '/admin')"
                                     class="block w-full px-5 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700 font-medium transition"
                                 >
-                                    Admin Panel
+                                    {{ authUser.role === 'pimpinan' ? 'Dashboard Pimpinan' : 'Admin Panel' }}
                                 </Link>
                             </template>
 
@@ -728,13 +746,117 @@ const toggleDarkMode = () => {
                     </a>
                 </div>
 
-                <a href="/#layanan" @click="open = false; navigateMenu($event, '#layanan')" class="block hover:text-blue-600">
-                    Layanan
-                </a>
+                <!-- Layanan Collapsible -->
+                <div class="space-y-1">
+                    <button 
+                        @click="mobileLayananOpen = !mobileLayananOpen" 
+                        class="w-full text-left flex justify-between items-center hover:text-blue-600 transition font-medium"
+                    >
+                        <span>Layanan</span>
+                        <svg 
+                            class="w-4 h-4 transform transition-transform duration-200" 
+                            :class="{ 'rotate-180': mobileLayananOpen }"
+                            fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"
+                        >
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <div v-show="mobileLayananOpen" class="pl-4 space-y-2 py-1">
+                        <!-- Informasi & Data -->
+                        <div>
+                            <button 
+                                @click="mobileLayananInfoOpen = !mobileLayananInfoOpen"
+                                class="w-full text-left flex justify-between items-center text-sm font-semibold text-gray-600 dark:text-gray-400 py-1"
+                            >
+                                <span>Layanan Informasi & Data</span>
+                                <svg 
+                                    class="w-3.5 h-3.5 transform transition-transform duration-200" 
+                                    :class="{ 'rotate-180': mobileLayananInfoOpen }"
+                                    fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                </svg>
+                            </button>
+                            <div v-show="mobileLayananInfoOpen" class="pl-3 space-y-1 py-1">
+                                <Link 
+                                    v-for="app in infoServices" 
+                                    :key="app.name" 
+                                    :href="authUser || app.allowGuest ? '/layanan/' + app.id : '/login'"
+                                    @click="open = false"
+                                    class="block py-1.5 text-xs text-gray-700 dark:text-gray-300 hover:text-blue-600 transition"
+                                >
+                                    • {{ app.name }}
+                                </Link>
+                            </div>
+                        </div>
 
-                <a href="/#aplikasi" @click="open = false; navigateMenu($event, '#aplikasi')" class="block hover:text-blue-600">
-                    Aplikasi
-                </a>
+                        <!-- Layanan Publik -->
+                        <div>
+                            <button 
+                                @click="mobileLayananPublikOpen = !mobileLayananPublikOpen"
+                                class="w-full text-left flex justify-between items-center text-sm font-semibold text-gray-600 dark:text-gray-400 py-1"
+                            >
+                                <span>Layanan Publik</span>
+                                <svg 
+                                    class="w-3.5 h-3.5 transform transition-transform duration-200" 
+                                    :class="{ 'rotate-180': mobileLayananPublikOpen }"
+                                    fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                </svg>
+                            </button>
+                            <div v-show="mobileLayananPublikOpen" class="pl-3 space-y-1 py-1">
+                                <Link 
+                                    v-for="app in publicServices" 
+                                    :key="app.name" 
+                                    :href="authUser ? '/layanan/' + app.id : '/login'"
+                                    @click="open = false"
+                                    class="block py-1.5 text-xs text-gray-700 dark:text-gray-300 hover:text-blue-600 transition"
+                                >
+                                    • {{ app.name }}
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aplikasi Collapsible -->
+                <div class="space-y-1">
+                    <button 
+                        @click="mobileAplikasiOpen = !mobileAplikasiOpen" 
+                        class="w-full text-left flex justify-between items-center hover:text-blue-600 transition font-medium"
+                    >
+                        <span>Aplikasi</span>
+                        <svg 
+                            class="w-4 h-4 transform transition-transform duration-200" 
+                            :class="{ 'rotate-180': mobileAplikasiOpen }"
+                            fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"
+                        >
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <div v-show="mobileAplikasiOpen" class="pl-4 space-y-1.5 py-1">
+                        <template v-for="app in regionalApps" :key="app.name">
+                            <a 
+                                v-if="app.url"
+                                :href="app.url"
+                                target="_blank"
+                                @click="open = false"
+                                class="block py-1.5 text-xs text-gray-700 dark:text-gray-300 hover:text-blue-600 transition"
+                            >
+                                • {{ app.name }}
+                            </a>
+                            <Link 
+                                v-else
+                                href="/login"
+                                @click="open = false"
+                                class="block py-1.5 text-xs text-gray-700 dark:text-gray-300 hover:text-blue-600 transition"
+                            >
+                                • {{ app.name }}
+                            </Link>
+                        </template>
+                    </div>
+                </div>
 
                 <a href="/#kontak" @click="open = false; navigateMenu($event, '#kontak')" class="block hover:text-blue-600">
                     Kontak
@@ -784,10 +906,10 @@ const toggleDarkMode = () => {
                         <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
 
                         <Link
-                            href="/admin"
+                            :href="authUser.role === 'pimpinan' ? '/pimpinan' : ((authUser.role === 'admin_koperasi' || authUser.service_slug === 'koperasi') ? '/admin/koperasi' : '/admin')"
                             class="block text-center mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg"
                         >
-                            Admin Panel
+                            {{ authUser.role === 'pimpinan' ? 'Dashboard Pimpinan' : 'Admin Panel' }}
                         </Link>
                     </template>
                 </template>

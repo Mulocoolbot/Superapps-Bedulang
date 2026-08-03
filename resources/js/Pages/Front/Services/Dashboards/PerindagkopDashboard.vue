@@ -1068,4 +1068,37 @@ const getPasarBarPercent = (val) => {
     </div>
 </template>
 
+<style scoped>
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Smooth Tab Transition Animations */
+.tab-fade-enter-active,
+.tab-fade-leave-active {
+    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.tab-fade-enter-from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.99);
+}
+
+.tab-fade-leave-to {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.99);
+}
+</style>
+
 

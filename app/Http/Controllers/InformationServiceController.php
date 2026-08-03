@@ -31,6 +31,10 @@ class InformationServiceController extends Controller
             abort(404);
         }
 
+        if ($slug !== 'pertanian' && $slug !== 'desa' && $slug !== 'pariwisata' && !auth()->check()) {
+            return redirect()->guest(route('login'));
+        }
+
         $service = $this->registry->resolve($slug);
         
         $metadata = $service->getMetadata();
@@ -42,6 +46,67 @@ class InformationServiceController extends Controller
                 'slug' => $slug,
             ],
             'dashboard' => $dashboard,
+        ]);
+    }
+
+    public function showKdmpKecamatan($nama)
+    {
+        $service = $this->registry->resolve('kdmp');
+        $metadata = $service->getMetadata();
+        
+        $koperasiDetails = app(\App\Services\KdmpService::class)->getKecamatanDetails($nama);
+
+        if (!$koperasiDetails) {
+            abort(404);
+        }
+
+        return Inertia::render('Front/Services/Dashboards/KdmpKecamatanDetails', [
+            'service' => [
+                ...$metadata,
+                'slug' => 'kdmp',
+            ],
+            'kecamatan' => $nama,
+            'koperasiDetails' => $koperasiDetails,
+        ]);
+    }
+
+    public function showKdmpKoperasi($id)
+    {
+        $service = $this->registry->resolve('kdmp');
+        $metadata = $service->getMetadata();
+        
+        $koperasi = app(\App\Services\KdmpService::class)->getKoperasiDetail($id);
+
+        if (!$koperasi) {
+            abort(404);
+        }
+
+        return Inertia::render('Front/Services/Dashboards/KdmpKoperasiDetails', [
+            'service' => [
+                ...$metadata,
+                'slug' => 'kdmp',
+            ],
+            'koperasi' => $koperasi,
+        ]);
+    }
+    public function showPariwisataDestinasi($id)
+    {
+        $service = $this->registry->resolve('pariwisata');
+        $metadata = $service->getMetadata();
+        
+        $data = app(\App\Services\PariwisataService::class)->getDestinationById((int) $id);
+
+        if (!$data) {
+            abort(404);
+        }
+
+        return Inertia::render('Front/Services/Dashboards/PariwisataDetail', [
+            'service' => [
+                ...$metadata,
+                'slug' => 'pariwisata',
+            ],
+            'destination' => $data['destination'],
+            'other_destinations' => $data['other_destinations'],
         ]);
     }
 }

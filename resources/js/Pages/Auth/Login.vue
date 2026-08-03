@@ -29,7 +29,7 @@ const submit = () => {
 
 <template>
 
-<Head title="Login" />
+<Head title="Login"></Head>
 
 <section
     class="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-blue-50 via-white to-slate-100 dark:from-gray-950 dark:via-gray-900 dark:to-black px-6">
@@ -95,27 +95,26 @@ const submit = () => {
 
         <form
             @submit.prevent="submit"
-            class="mt-8 space-y-5">
+            class="mt-8 space-y-6">
 
             <div>
 
                 <InputLabel
                     for="email"
-                    value="Email" />
+                    value="Email"></InputLabel>
 
                 <TextInput
                     id="email"
                     type="email"
-                    class="mt-2 block w-full rounded-xl"
+                    class="mt-2 block w-full"
                     v-model="form.email"
                     required
                     autofocus
-                    autocomplete="username"
-                />
+                    autocomplete="username"></TextInput>
 
                 <InputError
                     class="mt-2"
-                    :message="form.errors.email" />
+                    :message="form.errors.email"></InputError>
 
             </div>
 
@@ -123,20 +122,19 @@ const submit = () => {
 
                 <InputLabel
                     for="password"
-                    value="Password" />
+                    value="Password"></InputLabel>
 
                 <TextInput
                     id="password"
                     type="password"
-                    class="mt-2 block w-full rounded-xl"
+                    class="mt-2 block w-full"
                     v-model="form.password"
                     required
-                    autocomplete="current-password"
-                />
+                    autocomplete="current-password"></TextInput>
 
                 <InputError
                     class="mt-2"
-                    :message="form.errors.password" />
+                    :message="form.errors.password"></InputError>
 
             </div>
 
@@ -146,11 +144,11 @@ const submit = () => {
                 class="flex items-center justify-between">
 
                 <label
-                    class="flex items-center">
+                    class="flex items-center cursor-pointer select-none">
 
                     <Checkbox
                         name="remember"
-                        v-model:checked="form.remember" />
+                        v-model:checked="form.remember"></Checkbox>
 
                     <span
                         class="ml-2 text-sm text-gray-600 dark:text-gray-400">
@@ -164,7 +162,7 @@ const submit = () => {
                 <Link
                     v-if="canResetPassword"
                     :href="route('password.request')"
-                    class="text-sm text-blue-600 hover:text-blue-700">
+                    class="text-sm font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
 
                     Lupa Password?
 
@@ -174,14 +172,14 @@ const submit = () => {
 
             <!-- Button -->
 
-            <PrimaryButton
-                class="w-full justify-center rounded-xl py-3 text-base font-semibold shadow-md"
-                :class="{ 'opacity-25': form.processing }"
-                :disabled="form.processing">
-
+            <button
+                type="submit"
+                class="w-full flex justify-center items-center rounded-xl py-3 text-base font-bold text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 shadow-md shadow-blue-500/10 hover:shadow-lg hover:shadow-blue-500/20 active:scale-[0.98] cursor-pointer"
+                :class="{ 'opacity-50 pointer-events-none': form.processing }"
+                :disabled="form.processing"
+            >
                 Masuk
-
-            </PrimaryButton>
+            </button>
 
         </form>
 

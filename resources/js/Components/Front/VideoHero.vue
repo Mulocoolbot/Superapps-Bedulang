@@ -46,7 +46,7 @@ const scrollToContent = () => {
         </div>
 
         <!-- BOTTOM GRADIENT TRANSITION TO SITE BACKGROUND -->
-        <div class="absolute bottom-0 left-0 right-0 h-36 bg-gradient-to-t from-white dark:from-gray-900 to-transparent z-10 pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 right-0 h-36 bg-gradient-to-t from-[#0F3D77] dark:from-slate-950 to-transparent z-10 pointer-events-none"></div>
 
         <!-- SCROLL DOWN INDICATOR - High contrast color scheme -->
         <div 

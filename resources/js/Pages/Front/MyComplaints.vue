@@ -2,12 +2,39 @@
 import { ref, computed } from 'vue'
 import { Head, Link, router, usePage } from '@inertiajs/vue3'
 import FrontLayout from '@/Layouts/FrontLayout.vue'
+import { useSlidingPagination } from '@/Composables/useSlidingPagination'
+
+const reviewRating = ref({})
+const reviewText = ref({})
+
+
+const submitReview = (id)=>{
+
+    router.post(
+        `/my-complaints/${id}/review`,
+        {
+            rating: reviewRating.value[id],
+            review: reviewText.value[id]
+        },
+        {
+            preserveScroll:true
+        }
+    )
+
+}
 
 const props = defineProps({
     complaints: {
         type: Object,
         required: true,
     },
+
+    filters: {
+        type: Object,
+        default: () => ({
+            type: 'all'
+        })
+    }
 })
 
 const page = usePage()
@@ -23,6 +50,7 @@ const toggleDetail = (id) => {
 
 const statusLabel = {
     pending: 'Menunggu',
+    terkirim: 'Terkirim',
     processing: 'Diproses',
     resolved: 'Selesai',
     rejected: 'Ditolak',
@@ -31,6 +59,7 @@ const statusLabel = {
 
 const statusClass = (status) => ({
     pending: 'bg-amber-100 text-amber-800 border-amber-200',
+    terkirim: 'bg-indigo-100 text-indigo-800 border-indigo-200',
     processing: 'bg-blue-100 text-blue-800 border-blue-200',
     resolved: 'bg-emerald-100 text-emerald-800 border-emerald-200',
     rejected: 'bg-rose-100 text-rose-800 border-rose-200',
@@ -60,23 +89,15 @@ const confirmCancel = (id) => {
     )
 }
 
-// Compute page number links for circular pagination bubbles
-const pageLinks = computed(() => {
-    if (!props.complaints?.links) return []
-    return props.complaints.links
-        .filter(l => !l.label.includes('Previous') && !l.label.includes('Next') && !l.label.includes('&laquo;') && !l.label.includes('&raquo;'))
-        .map(l => ({
-            ...l,
-            label: l.label.replace('&laquo;', '').replace('&raquo;', '').trim()
-        }))
-})
+// Sliding window pagination (max 5 bubble, geser sesuai halaman aktif)
+const { visiblePageLinks: pageLinks, hasPagination: showPagination } = useSlidingPagination(() => props.complaints)
 </script>
 
 <template>
-    <Head title="Riwayat Pengaduan Saya" />
+    <Head title="Riwayat Pengaduan Saya"></Head>
 
     <FrontLayout>
-        <div class="py-8 bg-slate-50/60 dark:bg-gray-900/60 min-h-[calc(100vh-7rem)]">
+        <div class="pt-24 sm:pt-28 pb-12 bg-slate-50/60 dark:bg-gray-900/60 min-h-screen">
             <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
                 <!-- Navigation & Page Title -->
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -90,6 +111,37 @@ const pageLinks = computed(() => {
                         <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
                             Pantau status dan perkembangan pengaduan yang telah Anda ajukan.
                         </p>
+                        <div class="mt-4">
+
+                    <select
+                        class="rounded-xl border px-4 py-2 text-sm"
+                        :value="filters.type"
+                        @change="router.get('/my-complaints',{
+                            type:$event.target.value
+                        },{
+                            preserveState:true,
+                            preserveScroll:true
+                        })"
+                    >
+
+                    <option value="all">
+                    Semua Pengaduan
+                    </option>
+
+
+                    <option value="bedulang">
+                    Layanan Pengaduan Bedulang
+                    </option>
+
+
+                    <option value="layanan_info">
+                    Layanan Informasi & Data
+                    </option>
+
+
+                    </select>
+
+                    </div>
                     </div>
 
                     <Link
@@ -219,6 +271,27 @@ const pageLinks = computed(() => {
                                         </div>
                                     </div>
 
+                                    <div
+                                        v-if="item.followup_image"
+                                        class="space-y-2"
+                                        >
+
+                                        <h4 class="text-xs font-semibold text-slate-400 uppercase">
+                                        Bukti Tindak Lanjut Admin
+                                        </h4>
+
+
+                                        <img
+
+                                        :src="`/${item.followup_image}`"
+
+                                        class="rounded-xl max-w-md border"
+
+                                        />
+
+
+                                        </div>
+
                                     <!-- Cancel Option (Only available when status is still pending) -->
                                     <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
                                         <template v-if="item.status === 'pending'">
@@ -246,6 +319,99 @@ const pageLinks = computed(() => {
                                         </template>
                                     </div>
 
+                                    <!-- Review Section -->
+
+                                    <div
+                                    v-if="item.status === 'resolved'"
+                                    class="rounded-xl bg-emerald-50 border border-emerald-200 p-4"
+                                    >
+
+
+                                    <h4 class="font-semibold text-sm">
+                                    Ulasan Pengaduan
+                                    </h4>
+
+
+                                    <div v-if="!item.rating">
+
+
+                                    <div class="flex gap-2 mt-3">
+
+                                    <button
+                                    v-for="star in 5"
+                                    :key="star"
+                                    @click="reviewRating[item.id]=star"
+                                    type="button"
+                                    class="transition-transform duration-150 hover:scale-110 focus:outline-none"
+                                    >
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 24 24"
+                                            stroke-width="1.5"
+                                            class="w-8 h-8 transition-colors duration-150"
+                                            :class="star <= (reviewRating[item.id] || 0)
+                                                ? 'fill-amber-400 stroke-amber-500'
+                                                : 'fill-transparent stroke-slate-400 dark:stroke-gray-500'"
+                                        >
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499c.178-.367.68-.367.858 0l2.64 5.34 5.882.855c.404.059.565.556.273.84l-4.256 4.148 1.005 5.858c.069.4-.35.704-.712.51l-5.263-2.768-5.264 2.768c-.363.194-.782-.11-.712-.51l1.005-5.858L3.21 10.534c-.292-.284-.131-.78.273-.841l5.882-.855 2.64-5.34Z" />
+                                        </svg>
+                                    </button>
+
+                                    </div>
+
+
+                                    <textarea
+
+                                    v-model="reviewText[item.id]"
+
+                                    placeholder="Tulis ulasan..."
+
+                                    class="mt-3 w-full rounded-xl border p-3"
+
+                                    ></textarea>
+
+
+                                    <button
+
+                                    @click="submitReview(item.id)"
+
+                                    class="mt-3 px-4 py-2 bg-blue-600 text-white rounded-xl font-semibold"
+
+                                    >
+                                    Kirim Ulasan
+                                    </button>
+
+
+                                    </div>
+
+
+                                    <div v-else class="mt-2 space-y-2">
+
+                                    <div class="flex gap-1">
+                                        <svg
+                                            v-for="star in 5"
+                                            :key="star"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            viewBox="0 0 24 24"
+                                            stroke-width="1.5"
+                                            class="w-5 h-5"
+                                            :class="star <= item.rating
+                                                ? 'fill-amber-400 stroke-amber-500'
+                                                : 'fill-transparent stroke-slate-300 dark:stroke-gray-600'"
+                                        >
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499c.178-.367.68-.367.858 0l2.64 5.34 5.882.855c.404.059.565.556.273.84l-4.256 4.148 1.005 5.858c.069.4-.35.704-.712.51l-5.263-2.768-5.264 2.768c-.363.194-.782-.11-.712-.51l1.005-5.858L3.21 10.534c-.292-.284-.131-.78.273-.841l5.882-.855 2.64-5.34Z" />
+                                        </svg>
+                                    </div>
+
+                                    <p class="mt-2 text-sm text-slate-600 dark:text-slate-300 italic">
+                                    "{{item.review}}"
+                                    </p>
+
+
+                                    </div>
+
+
+                                    </div>
                                     <!-- Progress Logs Timeline -->
                                     <div v-if="item.progress_logs && item.progress_logs.length > 0" class="space-y-2 pt-2">
                                         <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Catatan Progres:</h4>
@@ -275,7 +441,7 @@ const pageLinks = computed(() => {
                     </div>
 
                     <!-- Custom Pagination with Circular Bubbles & Hiding Arrow Controls -->
-                    <div v-if="complaints.last_page > 1" class="flex items-center justify-center gap-2 pt-6">
+                    <div v-if="showPagination" class="flex items-center justify-center gap-2 pt-6">
                         <!-- Left Arrow (Hidden on Page 1) -->
                         <Link
                             v-if="complaints.prev_page_url"

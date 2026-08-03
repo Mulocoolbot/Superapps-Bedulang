@@ -12,7 +12,7 @@ class ComplaintPolicy
      */
     public function viewAny(User $user): bool
     {
-        return in_array($user->role, ['admin', 'super_admin'], true);
+        return in_array($user->role, ['admin', 'super_admin', 'pimpinan'], true);
     }
 
     /**
@@ -20,7 +20,7 @@ class ComplaintPolicy
      */
     public function view(User $user, Complaint $complaint): bool
     {
-        return in_array($user->role, ['admin', 'super_admin'], true) && $user->canAccessService($complaint->service_slug);
+        return in_array($user->role, ['admin', 'super_admin', 'pimpinan'], true) && $user->canAccessService($complaint->service_slug);
     }
 
     /**

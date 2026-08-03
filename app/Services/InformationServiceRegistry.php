@@ -2,21 +2,13 @@
 
 namespace App\Services;
 
+use App\Services\KdmpService;
 use InvalidArgumentException;
 
 class InformationServiceRegistry
 {
     protected array $services = [
-        'pemerintahan' => [
-            'name' => 'Pemerintahan',
-            'icon' => '🏛️',
-            'description' => 'Dashboard informasi Pemerintahan Kabupaten Bangka Tengah.',
-            'filters' => [
-                ['label' => 'Harga Cabe', 'value' => 'harga-cabe'],
-                ['label' => 'Harga Terigu', 'value' => 'harga-terigu'],
-                ['label' => 'Kelahiran', 'value' => 'kelahiran'],
-            ],
-        ],
+        'pemerintahan' => PemerintahanService::class,
         'pendidikan' => [
             'name' => 'Pendidikan',
             'icon' => '🎓',
@@ -38,16 +30,7 @@ class InformationServiceRegistry
             ],
         ],
         'perindagkop-ukm' => PerindagService::class,
-        'hukum' => [
-            'name' => 'Hukum',
-            'icon' => '⚖️',
-            'description' => 'Dashboard informasi Hukum Kabupaten Bangka Tengah.',
-            'filters' => [
-                ['label' => 'Kasus', 'value' => 'kasus'],
-                ['label' => 'Gender', 'value' => 'gender'],
-                ['label' => 'Kematian', 'value' => 'kematian'],
-            ],
-        ],
+        'kdmp' => KdmpService::class,
         'sosial' => [
             'name' => 'Sosial',
             'icon' => '🤝',
@@ -68,32 +51,11 @@ class InformationServiceRegistry
                 ['label' => 'Gender', 'value' => 'gender'],
             ],
         ],
-        'kepegawaian' => [
-            'name' => 'Kepegawaian',
-            'icon' => '👔',
-            'description' => 'Dashboard informasi Kepegawaian Kabupaten Bangka Tengah.',
-            'filters' => [
-                ['label' => 'Gender', 'value' => 'gender'],
-                ['label' => 'Kelahiran', 'value' => 'kelahiran'],
-                ['label' => 'Kematian', 'value' => 'kematian'],
-            ],
-        ],
-        'lingkungan' => [
-            'name' => 'DPKP',
-            'icon' => '🌾',
-            'description' => 'Dashboard informasi Dinas Pertanian & Ketahanan Pangan Kabupaten Bangka Tengah.',
-            'filters' => [],
-        ],
-        'pariwisata' => [
-            'name' => 'Pariwisata',
-            'icon' => '🏖️',
-            'description' => 'Dashboard informasi Pariwisata Kabupaten Bangka Tengah.',
-            'filters' => [
-                ['label' => 'Harga Cabe', 'value' => 'harga-cabe'],
-                ['label' => 'Kematian', 'value' => 'kematian'],
-                ['label' => 'Gender', 'value' => 'gender'],
-            ],
-        ],
+        'kepegawaian' => KepegawaianService::class,
+        'pertanian' => PertanianService::class,
+        'desa' => PertanianService::class,
+        'informasi-publik' => InformasiPublikService::class,
+        'pariwisata' => PariwisataService::class,
         'data-sektoral' => [
             'name' => 'Data Sektoral',
             'icon' => '📊',

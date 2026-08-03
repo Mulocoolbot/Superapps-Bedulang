@@ -19,12 +19,17 @@ const slides = [
     },
     {
         titleHtml: '<span class="text-blue-600">Visi</span>',
-        description: '', // Blank
+        description: '"Satu Aplikasi, Satu Layanan Terpadu, Satu Inovasi untuk Bangka Tengah."',
         image: '/services/ketawai.jpg'
     },
     {
         titleHtml: '<span class="text-blue-600">Misi</span>',
-        description: '', // Blank
+        descriptionList: [
+            'Integrasi seluruh layanan pemerintah.',
+            'Inovasi pelayanan berbasis digital.',
+            'Kolaborasi antar perangkat daerah.',
+            'Kemudahan akses layanan bagi masyarakat.'
+        ],
         image: '/services/misi_kaolin.jpg'
     }
 ]
@@ -194,70 +199,69 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <!-- 1. SECTION WELCOME CARD (STATIC TOP CARD) -->
+    <!-- 1. SECTION WELCOME (FULL-WIDTH BANNER WITH BLUE GRADIENT OVERLAY & SVG WAVE) -->
     <section 
         id="beranda"
-        class="bg-white dark:bg-gray-900 pt-6"
+        class="relative bg-cover bg-center bg-no-repeat pt-28 pb-36 min-h-[650px] overflow-hidden flex items-center"
+        style="background-image: url('/services/bg2.png');"
     >
+        <!-- Blue opacity overlay -->
+        <div class="absolute inset-0 bg-gradient-to-b from-[#0F3D77]/95 via-[#0F3D77]/85 to-[#0b2b52]/95 dark:from-slate-950/95 dark:via-slate-950/90 dark:to-slate-955 z-0"></div>
+
         <div 
-            class="container mx-auto px-6 py-12 transition-all duration-[1200ms] transform ease-out"
+            class="container mx-auto px-6 relative z-10 transition-all duration-[1200ms] transform ease-out"
             :class="animateWelcome ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'"
         >
-            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-50 via-white to-blue-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 shadow-xl border border-gray-100 dark:border-gray-800">
-                <div class="grid lg:grid-cols-2 items-center">
-                    <!-- Left Column -->
-                    <div class="px-10 py-14 lg:px-14 z-10 flex flex-col justify-center min-h-[450px]">
-                        <h1 class="mt-6 text-5xl font-bold leading-tight text-gray-900 dark:text-white">
-                            Selamat Datang di
-                            <span class="text-blue-600">BEDULANG</span>
-                        </h1>
+            <div class="grid lg:grid-cols-2 items-center gap-12">
+                <!-- Left Column -->
+                <div class="z-10 flex flex-col justify-center text-white max-w-xl">
+                    <h1 class="text-5xl font-bold leading-tight text-white">
+                        Selamat Datang di
+                        <span class="text-blue-300 dark:text-blue-400">BEDULANG</span>
+                    </h1>
 
-                        <p class="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
-                            BEDULANG merupakan platform layanan digital Pemerintah Kabupaten Bangka Tengah yang menghadirkan berbagai layanan publik dalam satu aplikasi. Masyarakat dapat mengakses informasi, pelayanan, serta berbagai kebutuhan administrasi dengan lebih mudah, cepat, dan transparan.
-                        </p>
+                    <p class="mt-6 text-lg leading-8 text-blue-100/90">
+                        BEDULANG merupakan platform layanan digital Pemerintah Kabupaten Bangka Tengah yang menghadirkan berbagai layanan publik dalam satu aplikasi. Masyarakat dapat mengakses informasi, pelayanan, serta berbagai kebutuhan administrasi dengan lebih mudah, cepat, dan transparan.
+                    </p>
 
-                        <div class="mt-10 flex gap-4">
-                            <a
-                                href="#layanan"
-                                @click.prevent="goToServicesSection('publik')"
-                                class="px-7 py-3 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition shadow-lg"
-                            >
-                                Masuk Layanan
-                            </a>
+                    <div class="mt-10 flex gap-4">
+                        <a
+                            href="#layanan"
+                            @click.prevent="goToServicesSection('publik')"
+                            class="px-7 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold transition shadow-lg shadow-blue-900/40 hover:shadow-xl active:scale-[0.98]"
+                        >
+                            Masuk Layanan
+                        </a>
 
-                            <a
-                                href="#layanan"
-                                @click.prevent="goToServicesSection('info')"
-                                class="px-7 py-3 rounded-xl border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:text-white dark:hover:bg-gray-700 transition"
-                            >
-                                Lihat Informasi
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Right Image Column -->
-                    <div class="relative h-full min-h-[500px] hidden lg:block">
-                        <img
-                            src="/services/bg2.png"
-                            alt="Bupati & Wakil Bupati Bangka Tengah"
-                            class="absolute inset-0 h-full w-full object-cover object-right"
-                        />
-                        <div class="absolute inset-0 bg-gradient-to-r from-white via-white/60 via-white/15 to-transparent dark:from-gray-900 dark:via-gray-900/60 dark:via-gray-900/15 z-10"></div>
-                        <img
-                            src="/services/bupat-wakil.png"
-                            alt="Bupati dan Wakil Bupati Bangka Tengah"
-                            class="absolute inset-0 h-full w-full object-cover object-right z-20"
-                        />
+                        <a
+                            href="#layanan"
+                            @click.prevent="goToServicesSection('info')"
+                            class="px-7 py-3 rounded-xl border border-white/20 bg-white/10 text-white hover:bg-white/20 transition shadow-sm active:scale-[0.98]"
+                        >
+                            Lihat Informasi
+                        </a>
                     </div>
                 </div>
+
+                <!-- Right Column (Empty placeholder to allow absolute positioned image) -->
+                <div class="hidden lg:block h-[450px]"></div>
             </div>
         </div>
+
+        <!-- Bupati & Wakil Bupati absolute bottom right -->
+        <img
+            src="/services/bupat-wakil.png"
+            alt="Bupati dan Wakil Bupati Bangka Tengah"
+            class="hidden lg:block absolute bottom-0 right-0 left-70 h-[680px] w-auto object-contain transition-all duration-300"
+            />
+
+        
     </section>
 
-    <!-- 2. SECTION TENTANG (DYNAMIC INFINITE CAROUSEL) -->
+    <!-- 2. SECTION TENTANG (DYNAMIC INFINITE CAROUSEL WITH GRADIENT BACKGROUND) -->
     <section
         id="tentang"
-        class="bg-gray-50 dark:bg-gray-950 border-t border-b border-gray-100 dark:border-gray-900 py-16"
+        class="bg-gradient-to-b from-white via-blue-50/40 to-blue-50/10 dark:from-gray-950 dark:via-slate-900/50 dark:to-gray-950 border-b border-gray-100/50 dark:border-gray-900/50 py-20"
     >
         <div 
             class="container mx-auto px-6 relative transition-all duration-[1200ms] transform ease-out"
@@ -266,12 +270,9 @@ onUnmounted(() => {
             
             <!-- Section Header -->
             <div class="text-center mb-12">
-                <h2 class="text-5xl font-bold leading-tight text-gray-900 dark:text-white">
-                    Tentang <span class="text-blue-600">BEDULANG</span>
+                <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+                    Tentang <span class="text-blue-600 dark:text-blue-400">BEDULANG</span>
                 </h2>
-                <p class="mt-2 text-gray-500 dark:text-gray-400">
-                    Mengenal lebih dalam nilai-nilai, visi, dan misi utama kami
-                </p>
             </div>
 
             <!-- CAROUSEL TRACK VIEWPORT CONTAINER -->
@@ -310,16 +311,22 @@ onUnmounted(() => {
                             <!-- Left Column -->
                             <div class="px-8 py-10 lg:px-14 flex flex-col justify-center h-full">
                                 <h3 
-                                    class="text-3xl lg:text-4xl font-bold leading-tight text-gray-900 dark:text-white"
+                                    class="text-3xl lg:text-4xl font-extrabold leading-tight text-slate-900 dark:text-white"
                                     v-html="slide.titleHtml"
                                 ></h3>
 
                                 <p 
-                                    class="mt-6 text-lg leading-relaxed text-gray-600 dark:text-gray-300 min-h-[120px]"
+                                    class="mt-6 text-base lg:text-lg leading-relaxed text-slate-600 dark:text-slate-350 min-h-[120px] font-medium"
                                     v-if="slide.description"
                                 >
                                     {{ slide.description }}
                                 </p>
+                                <ul 
+                                    class="mt-6 text-base lg:text-lg leading-relaxed text-slate-600 dark:text-slate-350 min-h-[120px] list-decimal pl-6 space-y-1 font-medium"
+                                    v-else-if="slide.descriptionList"
+                                >
+                                    <li v-for="(item, idx) in slide.descriptionList" :key="idx" class="pl-1">{{ item }}</li>
+                                </ul>
                                 <div class="mt-6 min-h-[120px]" v-else></div>
                             </div>
 

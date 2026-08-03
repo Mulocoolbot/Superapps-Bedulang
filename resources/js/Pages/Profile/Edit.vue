@@ -27,7 +27,7 @@ const layoutComponent = computed(() => {
 </script>
 
 <template>
-    <Head title="Profil" />
+    <Head title="Profil"></Head>
 
     <component :is="layoutComponent">
         <template #header v-if="!isAdmin">
@@ -46,20 +46,19 @@ const layoutComponent = computed(() => {
                     <UpdateProfileInformationForm
                         :must-verify-email="mustVerifyEmail"
                         :status="status"
-                        class="max-w-xl"
-                    />
+                        class="max-w-xl"></UpdateProfileInformationForm>
                 </div>
 
                 <div
                     class="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800"
                 >
-                    <UpdatePasswordForm class="max-w-xl" />
+                    <UpdatePasswordForm class="max-w-xl"></UpdatePasswordForm>
                 </div>
 
                 <div
                     class="bg-white p-4 shadow sm:rounded-lg sm:p-8 dark:bg-gray-800"
                 >
-                    <DeleteUserForm class="max-w-xl" />
+                    <DeleteUserForm class="max-w-xl"></DeleteUserForm>
                 </div>
             </div>
         </div>

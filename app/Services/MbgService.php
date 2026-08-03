@@ -19,11 +19,8 @@ class MbgService implements InformationServiceInterface
             'name' => 'Makanan Bergizi Gratis',
             'icon' => '🍱',
             'description' => 'Dashboard Pemantauan Penerima Program Makanan Bergizi Gratis Kabupaten Bangka Tengah.',
-            'filters' => [
-                ['label' => 'PAUD', 'value' => 'paud'],
-                ['label' => 'SD', 'value' => 'sd'],
-                ['label' => 'SMP', 'value' => 'smp'],
-            ],
+            // filters will be generated on frontend dynamically based on available jenjangs
+            'filters' => [],
         ];
     }
 
@@ -68,28 +65,48 @@ class MbgService implements InformationServiceInterface
             '290306' => 'Namang',
         ];
 
-        // Prepare tables and summary structures
-        $tables = [
-            'paud' => [],
-            'sd' => [],
-            'smp' => [],
-        ];
+        // Discover all unique jenjangs
+        $availableJenjangs = [];
+        if ($apiData) {
+            foreach ($apiData as $code => $data) {
+                if (isset($data['jenjang']) && is_array($data['jenjang'])) {
+                    foreach ($data['jenjang'] as $item) {
+                        $j = strtolower($item['jenjang'] ?? '');
+                        if ($j && !in_array($j, $availableJenjangs)) {
+                            $availableJenjangs[] = $j;
+                        }
+                    }
+                }
+            }
+        }
 
-        $summary = [
-            'paud' => [],
-            'sd' => [],
-            'smp' => [],
-        ];
+        // If no data or api failed, fallback to default mock jenjangs
+        if (empty($availableJenjangs)) {
+            $availableJenjangs = ['paud', 'sd', 'smp'];
+        }
+
+        // Sort jenjangs if needed (optional, or just leave as discovered)
+        sort($availableJenjangs);
+
+        // Prepare tables and summary structures
+        $tables = [];
+        $summary = [];
+
+        foreach ($availableJenjangs as $level) {
+            $tables[$level] = [];
+            $summary[$level] = [];
+        }
 
         $chartLabels = [];
         $chartSeries = [];
+        $grandTotalPenerima = 0; // Total overall recipients for Pimpinan Dashboard
 
         // Build data structure
         foreach ($kecamatanMap as $code => $name) {
             $chartLabels[] = $name;
             $subdistrictTotal = 0;
 
-            foreach (['paud', 'sd', 'smp'] as $level) {
+            foreach ($availableJenjangs as $level) {
                 $jumlah_perempuan = 0;
                 $jumlah_laki = 0;
                 $jumlah_alergi = 0;
@@ -98,7 +115,7 @@ class MbgService implements InformationServiceInterface
 
                 if ($apiData && isset($apiData[$code]['jenjang'])) {
                     foreach ($apiData[$code]['jenjang'] as $item) {
-                        if (strtoupper($item['jenjang'] ?? '') === strtoupper($level)) {
+                        if (strtolower($item['jenjang'] ?? '') === strtolower($level)) {
                             $jumlah_perempuan = (int) ($item['jumlah_perempuan'] ?? 0);
                             $jumlah_laki = (int) ($item['jumlah_laki'] ?? 0);
                             $jumlah_alergi = (int) ($item['jumlah_alergi'] ?? 0);
@@ -131,10 +148,11 @@ class MbgService implements InformationServiceInterface
             }
 
             $chartSeries[] = $subdistrictTotal;
+            $grandTotalPenerima += $subdistrictTotal;
         }
 
         // Calculate summary statistics dynamically
-        foreach (['paud', 'sd', 'smp'] as $level) {
+        foreach ($availableJenjangs as $level) {
             $total_perempuan = 0;
             $total_laki = 0;
             $total_alergi = 0;
@@ -182,7 +200,9 @@ class MbgService implements InformationServiceInterface
             'chart' => [
                 'labels' => $chartLabels,
                 'series' => $chartSeries,
-            ]
+            ],
+            'grand_total_penerima' => $grandTotalPenerima,
+            'available_jenjangs' => $availableJenjangs,
         ];
     }
 
