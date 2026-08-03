@@ -58,6 +58,8 @@ const resolveStreamUrl = (streamUrl) => {
 
 const selectedCCTV = ref(null)
 const video = ref(null)
+const streamError = ref(false)
+const streamLoading = ref(false)
 let hls = null
 let loadedMetadataHandler = null
 
@@ -66,6 +68,8 @@ const center = [-2.45, 106.15]
 
 const openCCTV = async (cctv) => {
     selectedCCTV.value = cctv
+    streamError.value = false
+    streamLoading.value = true
     await nextTick()
     if (hls) {
         hls.destroy()
@@ -73,24 +77,53 @@ const openCCTV = async (cctv) => {
     }
     const resolvedUrl = resolveStreamUrl(cctv.stream)
     if (Hls.isSupported() && video.value) {
-        hls = new Hls()
+        hls = new Hls({
+            manifestLoadingTimeOut: 10000,
+            manifestLoadingMaxRetry: 3,
+            manifestLoadingRetryDelay: 2000,
+            levelLoadingTimeOut: 10000,
+            fragLoadingTimeOut: 20000,
+        })
         hls.loadSource(resolvedUrl)
         hls.attachMedia(video.value)
 
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
+            streamLoading.value = false
+            streamError.value = false
             video.value.play().catch(e => console.log('Autoplay handled:', e))
+        })
+
+        hls.on(Hls.Events.ERROR, (event, data) => {
+            if (data.fatal) {
+                streamLoading.value = false
+                streamError.value = true
+                console.warn('HLS fatal error:', data.type, data.details)
+                hls.destroy()
+                hls = null
+            }
         })
     } else if (video.value && video.value.canPlayType('application/vnd.apple.mpegurl')) {
         // Native HLS support for Safari on macOS / iOS
-        // Remove previous handler to prevent listener accumulation
         if (loadedMetadataHandler) {
             video.value.removeEventListener('loadedmetadata', loadedMetadataHandler)
         }
         video.value.src = resolvedUrl
         loadedMetadataHandler = () => {
+            streamLoading.value = false
+            streamError.value = false
             video.value.play().catch(e => console.log('Autoplay handled:', e))
         }
         video.value.addEventListener('loadedmetadata', loadedMetadataHandler)
+        video.value.addEventListener('error', () => {
+            streamLoading.value = false
+            streamError.value = true
+        }, { once: true })
+    }
+}
+
+const retryCCTV = () => {
+    if (selectedCCTV.value) {
+        openCCTV(selectedCCTV.value)
     }
 }
 
@@ -262,7 +295,31 @@ const goBack = () => {
                     </button>
                 </div>
 
-                <div class="rounded-2xl overflow-hidden bg-black shadow-lg aspect-video max-w-4xl mx-auto">
+                <div class="rounded-2xl overflow-hidden bg-black shadow-lg aspect-video max-w-4xl mx-auto relative">
+                    <!-- Loading Overlay -->
+                    <div v-if="streamLoading && !streamError" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/80 z-10">
+                        <svg class="animate-spin h-10 w-10 text-cyan-400 mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                        </svg>
+                        <span class="text-white text-sm font-medium">Menghubungkan ke kamera...</span>
+                    </div>
+
+                    <!-- Error Overlay -->
+                    <div v-if="streamError" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/90 z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 text-rose-400 mb-3">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" />
+                        </svg>
+                        <span class="text-white text-sm font-semibold mb-1">Stream Tidak Tersedia</span>
+                        <span class="text-slate-400 text-xs mb-4 text-center px-6">Kamera sedang offline atau tidak dapat dijangkau dari jaringan ini.</span>
+                        <button
+                            @click="retryCCTV"
+                            class="rounded-lg bg-cyan-600 px-5 py-2 text-sm font-semibold text-white hover:bg-cyan-700 transition cursor-pointer"
+                        >
+                            Coba Lagi
+                        </button>
+                    </div>
+
                     <video
                         ref="video"
                         controls
@@ -274,8 +331,8 @@ const goBack = () => {
 
                 <div class="mt-4 flex items-center justify-between text-xs text-slate-500 max-w-4xl mx-auto">
                     <span class="flex items-center gap-1.5 font-medium">
-                        <span class="h-2 w-2 rounded-full bg-green-500"></span>
-                        Status: Live Online
+                        <span class="h-2 w-2 rounded-full" :class="streamError ? 'bg-rose-500' : 'bg-green-500 animate-pulse'"></span>
+                        Status: {{ streamError ? 'Offline' : 'Live Online' }}
                     </span>
 
                     <span class="font-mono text-slate-400">

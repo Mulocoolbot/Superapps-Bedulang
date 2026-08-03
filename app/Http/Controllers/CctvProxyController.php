@@ -34,72 +34,75 @@ class CctvProxyController extends Controller
             $contentType = 'video/MP2T';
         }
 
-        // Translate IP / Domain to localhost dynamically with fallback to allow both local development and remote deployment
-        $localUrl = $targetUrl;
-        $isLocalReplacementPossible = false;
+        // Build list of URLs to try (local first, then remote)
+        $urlsToTry = [];
+
+        // If the target points to the production IP or domain, try localhost first
         if (str_contains($targetUrl, '157.10.109.241') || str_contains($targetUrl, 'bedulang.bangkatengahkab.go.id')) {
             $localUrl = str_replace(
                 ['157.10.109.241', 'bedulang.bangkatengahkab.go.id'],
                 '127.0.0.1',
                 $targetUrl
             );
-            $isLocalReplacementPossible = true;
+            $urlsToTry[] = ['url' => $localUrl, 'timeout' => 3, 'label' => 'localhost'];
         }
 
-        $fp = null;
-        $streamUrl = $targetUrl;
+        // Always add the original URL as fallback
+        $urlsToTry[] = ['url' => $targetUrl, 'timeout' => 8, 'label' => 'remote'];
 
-        try {
-            if ($isLocalReplacementPossible) {
-                // 1. Attempt to stream from localhost first with a quick timeout
-                $localContext = stream_context_create([
-                    'http' => [
-                        'timeout' => 2.0, // 2 seconds timeout for fast local fallback
-                        'follow_location' => 1,
-                    ]
+        // Try each URL using cURL for proper HTTP status handling
+        foreach ($urlsToTry as $attempt) {
+            $result = $this->fetchWithCurl($attempt['url'], $attempt['timeout']);
+
+            if ($result !== null) {
+                Log::debug("CCTV Proxy: Serving from {$attempt['label']}: {$attempt['url']}");
+
+                return response($result['body'], 200, [
+                    'Content-Type' => $contentType,
+                    'Content-Length' => strlen($result['body']),
+                    'Cache-Control' => 'no-cache, no-store, must-revalidate',
+                    'Pragma' => 'no-cache',
+                    'Expires' => '0',
+                    'Access-Control-Allow-Origin' => '*',
                 ]);
-                $fp = @fopen($localUrl, 'rb', false, $localContext);
-                if ($fp) {
-                    $streamUrl = $localUrl;
-                }
             }
-
-            // 2. If localhost fails or isn't applicable, fallback to the original URL
-            if (!$fp) {
-                $context = stream_context_create([
-                    'http' => [
-                        'timeout' => 5.0, // 5 seconds timeout
-                        'follow_location' => 1,
-                    ]
-                ]);
-                $fp = @fopen($targetUrl, 'rb', false, $context);
-            }
-
-            if (!$fp) {
-                Log::warning("CCTV Proxy: Failed to open stream at URL: {$targetUrl}");
-                return response()->json(['error' => 'CCTV stream offline or unavailable'], 404);
-            }
-
-            // Return streamed response block-by-block directly to the browser
-            return response()->stream(function () use ($fp) {
-                while (!feof($fp)) {
-                    echo fread($fp, 8192); // stream in 8KB chunks
-                    ob_flush();
-                    flush();
-                }
-                fclose($fp);
-            }, 200, [
-                'Content-Type' => $contentType,
-                'Cache-Control' => 'no-cache, no-store, must-revalidate',
-                'Pragma' => 'no-cache',
-                'Expires' => '0',
-                'Access-Control-Allow-Origin' => '*',
-            ]);
-
-        } catch (\Exception $e) {
-            Log::error("CCTV Proxy exception: " . $e->getMessage());
-            return response()->json(['error' => 'Internal stream error'], 500);
         }
+
+        // All attempts failed
+        Log::warning("CCTV Proxy: All attempts failed for: {$targetUrl}");
+        return response()->json(['error' => 'CCTV stream offline or unavailable'], 404);
+    }
+
+    /**
+     * Fetch URL content with cURL. Returns ['body' => string, 'status' => int] on success, null on failure.
+     */
+    private function fetchWithCurl(string $url, int $timeout): ?array
+    {
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS => 5,
+            CURLOPT_TIMEOUT => $timeout,
+            CURLOPT_CONNECTTIMEOUT => $timeout,
+            CURLOPT_FAILONERROR => false,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => 0,
+            CURLOPT_USERAGENT => 'BedulangCCTVProxy/1.0',
+        ]);
+
+        $body = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+
+        if ($body === false || $httpCode < 200 || $httpCode >= 400) {
+            Log::debug("CCTV Proxy: Attempt failed for {$url} - HTTP {$httpCode} - {$error}");
+            return null;
+        }
+
+        return ['body' => $body, 'status' => $httpCode];
     }
 
     private function base64UrlDecode($data)
