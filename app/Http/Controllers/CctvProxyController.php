@@ -34,21 +34,14 @@ class CctvProxyController extends Controller
             $contentType = 'video/MP2T';
         }
 
-        // Build list of URLs to try (local first, then remote)
-        $urlsToTry = [];
+        // Add original target URL as primary target
+        $urlsToTry[] = ['url' => $targetUrl, 'timeout' => 5, 'label' => 'remote'];
 
-        // If the target points to the production IP or domain, try localhost first
-        if (str_contains($targetUrl, '157.10.109.241') || str_contains($targetUrl, 'bedulang.bangkatengahkab.go.id')) {
-            $localUrl = str_replace(
-                ['157.10.109.241', 'bedulang.bangkatengahkab.go.id'],
-                '127.0.0.1',
-                $targetUrl
-            );
-            $urlsToTry[] = ['url' => $localUrl, 'timeout' => 3, 'label' => 'localhost'];
+        // If target points to production domain, try localhost as fallback
+        if (str_contains($targetUrl, 'bedulang.bangkatengahkab.go.id')) {
+            $localUrl = str_replace('bedulang.bangkatengahkab.go.id', '127.0.0.1', $targetUrl);
+            $urlsToTry[] = ['url' => $localUrl, 'timeout' => 2, 'label' => 'localhost'];
         }
-
-        // Always add the original URL as fallback
-        $urlsToTry[] = ['url' => $targetUrl, 'timeout' => 8, 'label' => 'remote'];
 
         // Try each URL using cURL for proper HTTP status handling
         foreach ($urlsToTry as $attempt) {
