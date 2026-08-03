@@ -27,11 +27,7 @@ const apps = [
         name: 'PERINDAGKOP-UKM',
         slug: 'perindagkop-ukm',
         logo: '/services/perindagkop.svg',
-    },
-    {
-        name: 'KDMP',
-        slug: 'kdmp',
-        logo: '/services/kdmp.png',
+        allowGuest: true
     },
     {
         name: 'SOSIAL',
@@ -58,6 +54,7 @@ const apps = [
         name: 'Informasi Publik',
         slug: 'informasi-publik',
         logo: '/services/informasi publik.svg',
+        allowGuest: true
     },
     {
         name: 'PARIWISATA',
@@ -74,6 +71,11 @@ const apps = [
         name: 'Makanan Bergizi Gratis',
         slug: 'makanan-bergizi-gratis',
         logo: '/services/bgn.png',
+    },
+    {
+        name: 'KDMP',
+        slug: 'kdmp',
+        logo: '/services/kdmp.png',
     },
 ]
 
@@ -152,23 +154,27 @@ onUnmounted(() => {
 <section
     id="layanan"
     data-aos="fade-up"
-    class="py-16 dark:from-gray-950 dark:via-slate-900/40 dark:to-slate-950 transition-colors duration-300">
+    class="relative bg-cover bg-center bg-no-repeat py-24 overflow-hidden flex items-center transition-colors duration-300"
+    style="background-image: url('/services/bg2.png');"
+>
+    <!-- Blue opacity overlay to match welcome banner -->
+    <div class="absolute inset-0 bg-gradient-to-b from-[#0F3D77]/95 via-[#0F3D77]/85 to-[#0b2b52]/95 dark:from-slate-950/95 dark:via-slate-950/90 dark:to-slate-955 z-0"></div>
 
-    <div class="w-full max-w-[1400px] mx-auto px-6 lg:px-8">
+    <div class="w-full max-w-[1400px] mx-auto px-6 lg:px-8 relative z-10">
 
         <!-- Header -->
         <div class="max-w-2xl mx-auto text-center mb-12">
-            <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-                Layanan <span class="text-blue-600 dark:text-blue-400">Bedulang</span>
+            <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight text-white">
+                Layanan <span class="text-blue-300 dark:text-blue-400">Bedulang</span>
             </h2>
         </div>
 
         <!-- Switch Tab Selector -->
         <div class="flex justify-center mb-12">
-            <div class="relative flex p-1.5 bg-gray-200/80 dark:bg-gray-800/80 rounded-2xl backdrop-blur-sm border border-gray-300/30 dark:border-gray-700/50">
+            <div class="relative flex p-1.5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15">
                 <!-- Sliding Background -->
                 <div 
-                    class="absolute top-1.5 bottom-1.5 left-1.5 rounded-xl bg-white dark:bg-gray-700 shadow-md transition-all duration-300 ease-out"
+                    class="absolute top-1.5 bottom-1.5 left-1.5 rounded-xl bg-white dark:bg-slate-800 shadow-md transition-all duration-300 ease-out"
                     :style="{
                         width: '220px',
                         transform: activeTab === 'info' ? 'translateX(0px)' : 'translateX(220px)'
@@ -178,7 +184,7 @@ onUnmounted(() => {
                 <button 
                     @click="setTab('info')"
                     class="relative z-10 w-[220px] py-4 text-base font-bold rounded-xl transition duration-300 text-center cursor-pointer"
-                    :class="activeTab === 'info' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'"
+                    :class="activeTab === 'info' ? 'text-blue-950 dark:text-white' : 'text-blue-100/70 hover:text-white dark:text-slate-400 dark:hover:text-slate-200'"
                 >
                     Informasi & Data
                 </button>
@@ -186,7 +192,7 @@ onUnmounted(() => {
                 <button 
                     @click="setTab('publik')"
                     class="relative z-10 w-[220px] py-4 text-base font-bold rounded-xl transition duration-300 text-center cursor-pointer"
-                    :class="activeTab === 'publik' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'"
+                    :class="activeTab === 'publik' ? 'text-blue-950 dark:text-white' : 'text-blue-100/70 hover:text-white dark:text-slate-400 dark:hover:text-slate-200'"
                 >
                     Layanan Publik
                 </button>
@@ -194,7 +200,7 @@ onUnmounted(() => {
         </div>
 
         <!-- Main Outer Box Wrapper -->
-        <div class="rounded-3xl border border-blue-200/50 dark:border-blue-900/30 bg-white/60 dark:bg-slate-900/40 backdrop-blur-md shadow-xl p-8 md:p-10 transition duration-300">
+        <div class="rounded-3xl border border-white/10 dark:border-blue-900/30 bg-white/90 dark:bg-slate-900/80 backdrop-blur-md shadow-xl p-8 md:p-10 transition duration-300">
             
             <Transition
                 enter-active-class="transition duration-300 ease-out"
@@ -211,7 +217,7 @@ onUnmounted(() => {
                         <h3 class="text-2xl md:text-3xl font-extrabold text-blue-950 dark:text-white">
                             {{ activeTab === 'info' ? 'Layanan Informasi & Data' : 'Layanan Publik' }}
                         </h3>
-                        <p class="mt-2 text-slate-500 dark:text-slate-400 font-semibold text-sm md:text-base">
+                        <p class="mt-2 text-slate-650 dark:text-slate-350 font-semibold text-sm md:text-base">
                             {{ activeTab === 'info' ? 'Pilih kategori untuk melihat informasi dan data Kabupaten Bangka Tengah.' : 'Akses berbagai portal pelayanan publik terpadu Kabupaten Bangka Tengah.' }}
                         </p>
                     </div>

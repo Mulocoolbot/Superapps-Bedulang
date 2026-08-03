@@ -114,7 +114,7 @@ const componentsList = computed(() => {
 })
 
 const bloodTypesList = computed(() => {
-    return utdData.value?.blood_types || ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']
+    return utdData.value?.blood_types || ['A+', 'B+', 'O+', 'AB+']
 })
 
 const lastUpdatedText = computed(() => {
@@ -550,7 +550,7 @@ const getAvailabilityStatus = (amount) => {
                                         </div>
                                     </th>
 
-                                    <!-- X-Axis Headers: Golongan Darah (A+, A-, B+, B-, O+, O-, AB+, AB-) -->
+                                    <!-- X-Axis Headers: Golongan Darah (A+, B+, O+, AB+) -->
                                     <th v-for="bt in bloodTypesList" :key="bt" class="py-4 px-3 text-center border-r border-slate-200/60 dark:border-slate-800 font-black">
                                         <span class="inline-flex items-center justify-center px-2 py-0.5 rounded-lg bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300 border border-rose-200 dark:border-rose-900 font-black text-xs">
                                             {{ bt }}

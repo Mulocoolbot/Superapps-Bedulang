@@ -156,7 +156,7 @@ const selectVillage = (desa, pan = true) => {
                 weight: isSel ? 3 : 2,
                 color: '#ffffff'
             })
-            if (isSel && pan) {
+            if (isSel) {
                 marker.openPopup()
             }
         }
@@ -269,6 +269,21 @@ const updateMapMarkers = () => {
 }
 
 // Watchers
+watch(filteredVillages, (newList) => {
+    // Automatically select the first village of the filtered kecamatan/search list if the current selection is no longer valid
+    if (newList.length > 0) {
+        const stillExists = newList.some(
+            v => v.name === selectedDesa.value?.name && v.kecamatan === selectedDesa.value?.kecamatan
+        )
+        if (!stillExists) {
+            // Select first matching village without panning map, keeping map zoom focus on bounds
+            selectVillage(newList[0], false)
+        }
+    } else {
+        selectedDesa.value = null
+    }
+}, { deep: true })
+
 watch(selectedKecamatan, () => {
     updateMapMarkers()
     

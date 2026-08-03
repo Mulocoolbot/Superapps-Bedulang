@@ -17,8 +17,17 @@ let timeoutId = null
 const resolveStreamUrl = (streamUrl) => {
     if (!streamUrl) return ''
     try {
-        const url = new URL(streamUrl)
-        return `${url.protocol}//${window.location.hostname}:8888${url.pathname}${url.search}`
+        const lastSlashIndex = streamUrl.lastIndexOf('/')
+        const baseUrl = streamUrl.substring(0, lastSlashIndex)
+        const filename = streamUrl.substring(lastSlashIndex + 1)
+        
+        // Base64 Url Encode the baseUrl
+        const base64Url = btoa(baseUrl)
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=+$/, '')
+            
+        return `/cctv-stream/${base64Url}/${filename}`
     } catch (e) {
         return streamUrl
     }
