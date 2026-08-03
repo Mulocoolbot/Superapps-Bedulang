@@ -161,13 +161,13 @@ defineProps({
                         </div>
                         <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Realisasi Anggaran Daerah Terbaru</p>
                         <h3 class="text-3xl font-bold text-slate-800 dark:text-white mt-1">
-                            Rp118,23 Miliar
+                            Rp0 Miliar
                         </h3>
                         <div class="mt-2 flex items-center gap-2">
                             <span class="px-2 py-0.5 rounded-md text-xs font-semibold bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400">
-                                81.16%
+                                0%
                             </span>
-                            <span class="text-xs text-slate-500">Target APBD 2025 (Rp145,68 Miliar)</span>
+                            <span class="text-xs text-slate-500">Target APBD 2025 (Rp0 Miliar)</span>
                         </div>
                         <p class="text-xs text-slate-400 mt-2">Update Januari 2026</p>
                     </div>
@@ -212,10 +212,10 @@ defineProps({
                                 <div>
                                     <p class="text-sm font-medium text-slate-500 dark:text-slate-400">Jumlah KDMP</p>
                                     <h3 class="text-3xl font-bold text-slate-800 dark:text-white mt-1">
-                                        {{ new Intl.NumberFormat('id-ID').format(recap.kdmp?.total || 1248) }} <span class="text-base font-medium text-slate-500">Dokumen</span>
+                                        63 <span class="text-base font-medium text-slate-500">KDMP</span>
                                     </h3>
                                     <div class="mt-2 flex items-center gap-2">
-                                        <span class="text-xs text-slate-500">Dokumen Hukum & Regulasi</span>
+                                        <span class="text-xs text-slate-500">Koperasi Merah Putih</span>
                                     </div>
                                 </div>
                                 <div class="p-3 bg-teal-100 text-teal-600 rounded-xl dark:bg-teal-900/30 dark:text-teal-400 flex-shrink-0">

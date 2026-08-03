@@ -3,34 +3,24 @@
 namespace App\Services;
 
 use App\Services\KdmpService;
+use App\Services\KesehatanService;
+use App\Services\PendidikanService;
 use InvalidArgumentException;
 
 class InformationServiceRegistry
 {
     protected array $services = [
         'pemerintahan' => PemerintahanService::class,
-        'pendidikan' => [
-            'name' => 'Pendidikan',
-            'icon' => '🎓',
-            'description' => 'Dashboard informasi Pendidikan Kabupaten Bangka Tengah.',
-            'filters' => [
-                ['label' => 'Jumlah Siswa', 'value' => 'jumlah-siswa'],
-                ['label' => 'Kelahiran', 'value' => 'kelahiran'],
-                ['label' => 'Gender', 'value' => 'gender'],
-            ],
-        ],
-        'kesehatan' => [
-            'name' => 'Kesehatan',
-            'icon' => '🏥',
-            'description' => 'Dashboard informasi Kesehatan Kabupaten Bangka Tengah.',
-            'filters' => [
-                ['label' => 'Kematian', 'value' => 'kematian'],
-                ['label' => 'Kelahiran', 'value' => 'kelahiran'],
-                ['label' => 'Gender', 'value' => 'gender'],
-            ],
-        ],
+        'pendidikan' => PendidikanService::class,
+        'kesehatan' => KesehatanService::class,
         'perindagkop-ukm' => PerindagService::class,
         'kdmp' => KdmpService::class,
+        'hukum' => [
+            'name' => 'Hukum',
+            'icon' => '⚖️',
+            'description' => 'Dashboard informasi Hukum & Regulasi Kabupaten Bangka Tengah.',
+            'filters' => [],
+        ],
         'sosial' => [
             'name' => 'Sosial',
             'icon' => '🤝',
