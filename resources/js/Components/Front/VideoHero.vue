@@ -29,7 +29,7 @@ const scrollToContent = () => {
             playsinline
             class="absolute inset-0 w-full h-full object-cover z-0 opacity-70 dark:opacity-70"
         >
-            <source src="/videos/hero-bg.mp4" type="video/mp4" />
+            <source src="/videos/hero-bg.MP4" type="video/MP4" />
         </video>
 
         <!-- LIGHT OVERLAY IN LIGHT MODE, DARK OVERLAY IN DARK MODE -->
