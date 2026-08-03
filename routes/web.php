@@ -34,6 +34,9 @@ Route::get('/', function () {
 });
 
 Route::get('/cctv', [CCTVController::class, 'index'])->name('cctv.index');
+Route::get('/cctv-stream/{base64_url}/{file}', [\App\Http\Controllers\CctvProxyController::class, 'proxy'])
+    ->where('file', '.*')
+    ->name('cctv.stream');
 
 Route::post('/complaints', [ComplaintController::class, 'store'])
     ->middleware(['auth', 'throttle:10,1'])
@@ -160,8 +163,7 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('data-sektoral.index');
     });
 
-    Route::get('/layanan/{slug}', [InformationServiceController::class, 'show'])
-        ->name('layanan.show');
+
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');

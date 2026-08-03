@@ -46,14 +46,9 @@
                             <span>(0718) 7362032</span>
                         </a>
 
-                        <a href="https://wa.me/6283128848371" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:underline hover:text-white transition">
-                            <span>💬</span>
-                            <span>+62 831-2884-8371 (WhatsApp)</span>
-                        </a>
-
                         <a href="mailto:diskominfo@bangkatengah.go.id" class="flex items-center gap-2 hover:underline hover:text-white transition">
                             <span>✉</span>
-                            <span>diskominfo@bangkatengah.go.id</span>
+                            <span>diskominfosta@bangkatengahkab.go.id</span>
                         </a>
 
                         <a href="https://bangkatengahkab.go.id" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 hover:underline hover:text-white transition">
@@ -138,11 +133,11 @@
                 class="border-t border-blue-700 dark:border-slate-800 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center text-sm text-white">
 
                 <p>
-                    © 2026 Pemerintah Kabupaten Bangka Tengah
+                    © 2026 Dinas Kominfosta. All rights reserved.
                 </p>
 
                 <p class="mt-3 md:mt-0">
-                    Dikelola oleh Dinas Komunikasi dan Informatika
+                    Dikelola oleh Dinas Komunikasi, Informatika, dan Statistik Kabupaten Bangka Tengah
                 </p>
 
             </div>
