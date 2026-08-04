@@ -23,6 +23,7 @@ const status = ref(initialStatus())
 const notes = ref(props.complaint.notes ?? '')
 const saving = ref(false)
 const successMessage = ref('')
+const errorMessage = ref('')
 const followupImage = ref(null)
 const imagePreview = ref(null)
 
@@ -45,104 +46,65 @@ const statusClass = (st) => ({
 }[st] ?? 'bg-slate-100 text-slate-700 border-slate-200')
 
 const handleImage = (event) => {
-
     const file = event.target.files[0]
-
-    if(file){
-
+    if (file) {
         followupImage.value = file
-
         imagePreview.value = URL.createObjectURL(file)
-
+        errorMessage.value = ''
     }
-
 }
 
 const save = () => {
+    errorMessage.value = ''
 
-
-    if(
+    if (
         status.value === 'resolved' &&
         !followupImage.value &&
         !props.complaint.followup_image
-    ){
-
-        alert(
-            'Bukti tindak lanjut wajib diunggah sebelum status Selesai.'
-        )
-
+    ) {
+        errorMessage.value = 'Wajib mengunggah foto bukti tindak lanjut sebelum mengubah status menjadi Selesai.'
         return
-
     }
-
 
     saving.value = true
 
-
     const form = new FormData()
+    form.append('status', status.value)
+    form.append('notes', notes.value)
 
-
-    form.append(
-        'status',
-        status.value
-    )
-
-
-    form.append(
-        'notes',
-        notes.value
-    )
-
-
-    if(followupImage.value){
-
-        form.append(
-            'followup_image',
-            followupImage.value
-        )
-
+    if (followupImage.value) {
+        form.append('followup_image', followupImage.value)
     }
 
-
-    form.append(
-        '_method',
-        'PUT'
-    )
-
-
+    form.append('_method', 'PUT')
 
     router.post(
         `/admin/complaints/${props.complaint.id}`,
         form,
         {
-
-            forceFormData:true,
-
-            preserveScroll:true,
-
-
-            onSuccess:()=>{
-
-                successMessage.value =
-                'Status dan tindak lanjut berhasil diperbarui!'
-
-
-                setTimeout(()=>{
-                    successMessage.value=''
-                },4000)
-
+            forceFormData: true,
+            preserveScroll: true,
+            onSuccess: () => {
+                errorMessage.value = ''
+                successMessage.value = 'Status dan tindak lanjut berhasil diperbarui!'
+                setTimeout(() => {
+                    successMessage.value = ''
+                }, 4000)
             },
-
-
-            onFinish:()=>{
-
-                saving.value=false
-
+            onError: (errs) => {
+                if (errs.followup_image) {
+                    errorMessage.value = errs.followup_image
+                } else if (errs.status) {
+                    errorMessage.value = errs.status
+                } else {
+                    errorMessage.value = Object.values(errs)[0] || 'Gagal menyimpan perubahan status.'
+                }
+            },
+            onFinish: () => {
+                saving.value = false
             }
-
         }
     )
-
 }
 
 const OPD_WHATSAPP_NUMBERS = {
@@ -203,6 +165,14 @@ Berikut adalah laporan pengaduan dari layanan *${complaint.service_name}* yang p
                 </svg>
                 <span>Kembali ke Monitoring Pengaduan</span>
             </Link>
+
+            <!-- Error Alert -->
+            <div v-if="errorMessage" class="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm font-medium flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-rose-600 shrink-0">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0zm-9 3.75h.008v.008H12v-.008z" />
+                </svg>
+                <span>{{ errorMessage }}</span>
+            </div>
 
             <!-- Success Alert -->
             <div v-if="successMessage" class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-medium flex items-center gap-3">
