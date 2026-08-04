@@ -79,6 +79,61 @@ class ComplaintSubmissionTest extends TestCase
         ]);
     }
 
+    public function test_admin_cannot_resolve_complaint_without_proof_image(): void
+    {
+        $user = User::factory()->create();
+        $admin = User::factory()->create(['role' => 'admin']);
+        $complaint = Complaint::create([
+            'user_id' => $user->id,
+            'service_slug' => 'kesehatan',
+            'title' => 'Layanan perlu diperbaiki',
+            'description' => 'Informasi layanan tidak dapat diakses sejak pagi.',
+            'category' => 'layanan',
+            'contact_person_name' => 'Budi Santoso',
+            'contact_email' => 'budi@example.test',
+            'contact_phone' => '08123456789',
+            'status' => 'processing',
+        ]);
+
+        $response = $this->actingAs($admin)->put("/admin/complaints/{$complaint->id}", [
+            'status' => 'resolved',
+            'notes' => 'Pekerjaan selesai.',
+        ]);
+
+        $response->assertSessionHasErrors('followup_image');
+        $this->assertEquals('processing', $complaint->fresh()->status);
+    }
+
+    public function test_admin_can_resolve_complaint_with_proof_image(): void
+    {
+        $user = User::factory()->create();
+        $admin = User::factory()->create(['role' => 'admin']);
+        $complaint = Complaint::create([
+            'user_id' => $user->id,
+            'service_slug' => 'kesehatan',
+            'title' => 'Layanan perlu diperbaiki',
+            'description' => 'Informasi layanan tidak dapat diakses sejak pagi.',
+            'category' => 'layanan',
+            'contact_person_name' => 'Budi Santoso',
+            'contact_email' => 'budi@example.test',
+            'contact_phone' => '08123456789',
+            'status' => 'processing',
+        ]);
+
+        $file = \Illuminate\Http\UploadedFile::fake()->create('proof.jpg', 100, 'image/jpeg');
+
+        $response = $this->actingAs($admin)->put("/admin/complaints/{$complaint->id}", [
+            'status' => 'resolved',
+            'notes' => 'Pekerjaan selesai dengan bukti foto.',
+            'followup_image' => $file,
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $complaint->refresh();
+        $this->assertEquals('resolved', $complaint->status);
+        $this->assertNotNull($complaint->followup_image);
+    }
+
     public function test_guest_cannot_submit_a_complaint(): void
     {
         $this->postJson('/complaints', [])->assertUnauthorized();

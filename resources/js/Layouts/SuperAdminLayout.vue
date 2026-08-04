@@ -1,9 +1,18 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { Link, usePage, router } from '@inertiajs/vue3'
 import ComplaintModal from '@/Components/ComplaintModal.vue'
 
 const isComplaintModalOpen = ref(false)
+const isSidebarOpen = ref(false)
+
+const toggleSidebar = () => {
+    isSidebarOpen.value = !isSidebarOpen.value
+}
+
+const closeSidebar = () => {
+    isSidebarOpen.value = false
+}
 
 const notificationDropdownRef = ref(null)
 const notificationBellRef = ref(null)
@@ -12,6 +21,10 @@ import Footer from '@/Components/Front/Footer.vue'
 const page = usePage()
 const notificationsOpen = ref(false)
 const activeNotificationTab = ref('unread')
+
+watch(() => page.url, () => {
+    isSidebarOpen.value = false
+})
 
 const markAllAsRead = () => {
     router.post('/notifications/read-all', {}, {
@@ -96,18 +109,39 @@ onUnmounted(() => {
 
 <template>
 <div class="min-h-screen bg-gray-100 flex flex-col justify-between">
-    <div class="flex flex-1">
+    <div class="flex flex-1 relative">
+        <!-- Mobile Sidebar Dark Overlay -->
+        <div
+            v-if="isSidebarOpen"
+            @click="closeSidebar"
+            class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-40 md:hidden transition-opacity"
+        ></div>
+
         <!-- Sidebar -->
-        <aside class="w-64 bg-white shadow-lg flex flex-col justify-between shrink-0">
+        <aside
+            class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-2xl flex flex-col justify-between transform transition-transform duration-300 ease-in-out md:static md:translate-x-0 md:shadow-lg shrink-0"
+            :class="isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
+        >
             <div>
-                <div class="p-6 border-b flex justify-center items-center">
-                    <Link href="/">
+                <div class="p-6 border-b flex justify-between items-center">
+                    <Link href="/" @click="closeSidebar">
                         <img
                             src="/services/logobateng3.png"
                             class="w-24 h-auto object-contain hover:scale-105 transition duration-300"
                             alt="Logo Bangka Tengah"
                         />
                     </Link>
+
+                    <!-- Mobile Close Button -->
+                    <button
+                        @click="closeSidebar"
+                        class="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 md:hidden transition"
+                        title="Tutup Menu"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                 </div>
 
                 <nav class="p-4 space-y-2">
@@ -191,9 +225,21 @@ onUnmounted(() => {
         <!-- Main Content -->
         <div class="flex-1 flex flex-col min-w-0">
             <!-- Navbar Header -->
-            <header class="bg-gray-900 shadow px-8 py-4 flex justify-between items-center relative">
-                <!-- Spacer to keep layout layout intact -->
-                <div></div>
+            <header class="bg-gray-900 shadow px-4 sm:px-8 py-3.5 flex justify-between items-center relative z-20">
+                <!-- Hamburger Button for Mobile Sidebar Toggle -->
+                <div class="flex items-center gap-3">
+                    <button
+                        @click="toggleSidebar"
+                        class="p-2 rounded-xl text-gray-300 hover:text-white hover:bg-gray-800 focus:outline-none transition md:hidden"
+                        title="Toggle Sidebar Menu"
+                        aria-label="Toggle Sidebar"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                        </svg>
+                    </button>
+                    <span class="text-sm font-bold text-gray-200 md:hidden">Menu SuperAdmin</span>
+                </div>
 
                 <div class="flex items-center gap-4">
                     <!-- Ajukan Pengaduan Button -->
@@ -357,7 +403,7 @@ onUnmounted(() => {
                 </div>
             </header>
 
-            <main class="p-8 flex-1 animate-fade-in-up">
+            <main class="p-4 sm:p-6 lg:p-8 flex-1 animate-fade-in-up">
                 <slot />
             </main>
         </div>

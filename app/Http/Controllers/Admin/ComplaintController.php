@@ -195,10 +195,14 @@ class ComplaintController extends Controller
             'status' => 'required|in:pending,processing,resolved,rejected,cancelled,terkirim',
             'notes' => 'nullable|string',
             'followup_image' => [
-                $request->status === 'resolved' ? 'required' : 'nullable',
+                ($request->status === 'resolved' && !$complaint->followup_image) ? 'required' : 'nullable',
                 'image',
                 'max:2048' // max 2MB
             ],
+        ], [
+            'followup_image.required' => 'Bukti foto tindak lanjut wajib diunggah ketika status Selesai.',
+            'followup_image.image' => 'File bukti harus berupa gambar (JPG, JPEG, PNG, dsb).',
+            'followup_image.max' => 'Ukuran gambar maksimal adalah 2MB.',
         ]);
 
         $currentStatus = $complaint->status;
