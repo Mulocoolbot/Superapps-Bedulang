@@ -206,7 +206,7 @@ onUnmounted(() => {
         style="background-image: url('/services/bg2.png');"
     >
         <!-- Blue opacity overlay -->
-        <div class="absolute inset-0 bg-gradient-to-b from-[#0F3D77]/95 via-[#0F3D77]/85 to-[#0b2b52]/95 dark:from-slate-950/95 dark:via-slate-950/90 dark:to-slate-955 z-0"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-[#0F3D77]/95 via-[#0F3D77]/85 to-[#0b2b52]/95 dark:from-slate-950/95 dark:via-slate-950/90 dark:to-slate-950 z-0"></div>
 
         <div 
             class="container mx-auto px-6 relative z-10 transition-all duration-[1200ms] transform ease-out"
@@ -316,13 +316,13 @@ onUnmounted(() => {
                                 ></h3>
 
                                 <p 
-                                    class="mt-6 text-base lg:text-lg leading-relaxed text-slate-600 dark:text-slate-350 min-h-[120px] font-medium"
+                                    class="mt-6 text-base lg:text-lg leading-relaxed text-slate-600 dark:text-slate-300 min-h-[120px] font-medium"
                                     v-if="slide.description"
                                 >
                                     {{ slide.description }}
                                 </p>
                                 <ul 
-                                    class="mt-6 text-base lg:text-lg leading-relaxed text-slate-600 dark:text-slate-350 min-h-[120px] list-decimal pl-6 space-y-1 font-medium"
+                                    class="mt-6 text-base lg:text-lg leading-relaxed text-slate-600 dark:text-slate-300 min-h-[120px] list-decimal pl-6 space-y-1 font-medium"
                                     v-else-if="slide.descriptionList"
                                 >
                                     <li v-for="(item, idx) in slide.descriptionList" :key="idx" class="pl-1">{{ item }}</li>

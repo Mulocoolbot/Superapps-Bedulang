@@ -75,8 +75,8 @@ const services = [
                     <div
                         class="flex h-16 w-16 items-center justify-center rounded-xl transition-colors duration-300"
                         :class="service.name === 'SIKOK DATA' 
-                            ? 'bg-slate-950 dark:bg-transparent' 
-                            : 'bg-blue-50/40 dark:bg-slate-950/40'"
+                            ? 'bg-slate-900 dark:bg-slate-800 p-2' 
+                            : 'bg-blue-50/40 dark:bg-slate-800/60'"
                     >
 
                         <img

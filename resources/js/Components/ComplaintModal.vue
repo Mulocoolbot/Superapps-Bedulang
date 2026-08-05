@@ -25,16 +25,16 @@
             leave-to="opacity-0 scale-95"
           >
             <DialogPanel
-              class="w-full max-w-2xl transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all"
+              class="w-full max-w-2xl transform overflow-hidden rounded-lg bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 p-6 shadow-xl transition-all"
             >
               <div class="flex items-center justify-between mb-4">
-                <DialogTitle class="text-xl font-bold text-gray-900">
+                <DialogTitle class="text-xl font-bold text-gray-900 dark:text-white">
                   📢 Form Pengaduan
                 </DialogTitle>
                 <button
                   type="button"
                   @click="closeModal"
-                  class="text-gray-400 hover:text-gray-500"
+                  class="text-gray-400 hover:text-gray-500 dark:text-gray-400 dark:hover:text-gray-200"
                 >
                   <svg
                     class="h-6 w-6"
@@ -52,21 +52,21 @@
                 </button>
               </div>
 
-              <p class="mb-6 text-sm text-gray-600">
+              <p class="mb-6 text-sm text-gray-600 dark:text-gray-300">
                 Kirimkan pengaduan Anda terkait layanan {{ serviceSlug ? serviceName : 'kami' }}. Data Anda akan
                 diproses dengan baik oleh tim kami.
               </p>
 
               <form @submit.prevent="submitComplaint" class="space-y-4">
-                <div v-if="errors.general" class="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                <div v-if="errors.general" class="rounded-md border border-red-200 bg-red-50 dark:bg-red-950/40 dark:border-red-900/50 p-3 text-sm text-red-700 dark:text-red-300">
                   {{ errors.general }}
                 </div>
                 <!-- Service Info -->
-                <div class="rounded-md bg-blue-50 p-4 mb-6">
+                <div class="rounded-md bg-blue-50 dark:bg-blue-950/40 border border-blue-100 dark:border-blue-900/40 p-4 mb-6">
                   <div class="flex">
                     <div class="flex-shrink-0">
                       <svg
-                        class="h-5 w-5 text-blue-400"
+                        class="h-5 w-5 text-blue-400 dark:text-blue-300"
                         viewBox="0 0 20 20"
                         fill="currentColor"
                       >
@@ -78,7 +78,7 @@
                       </svg>
                     </div>
                     <div class="ml-3">
-                      <p class="text-sm font-medium text-blue-800">
+                      <p class="text-sm font-medium text-blue-800 dark:text-blue-200">
                         Pengaduan Anda akan dicatat dan diteruskan kepada tim layanan.
                       </p>
                     </div>
@@ -87,12 +87,12 @@
 
                 <!-- Service Selection Dropdown if serviceSlug is empty -->
                 <div v-if="!serviceSlug">
-                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Pilih Layanan Terkait *
                   </label>
                   <select
                     v-model="selectedServiceSlug"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    class="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     required
                   >
                     <option value="">Pilih layanan...</option>
@@ -100,69 +100,68 @@
                       {{ s.name }}
                     </option>
                   </select>
-                  <span v-if="errors.service_slug" class="text-sm text-red-600">
+                  <span v-if="errors.service_slug" class="text-sm text-red-600 dark:text-red-400">
                     {{ errors.service_slug }}
                   </span>
                 </div>
 
                 <!-- Title -->
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Judul Pengaduan *
                   </label>
                   <input
                     v-model="form.title"
                     type="text"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    class="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Ringkas pengaduan Anda"
                     required
                   />
-                  <span v-if="errors.title" class="text-sm text-red-600">
+                  <span v-if="errors.title" class="text-sm text-red-600 dark:text-red-400">
                     {{ errors.title }}
                   </span>
                 </div>
 
                 <!-- Description -->
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Deskripsi Pengaduan *
                   </label>
                   <textarea
                     v-model="form.description"
                     rows="4"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    class="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Jelaskan pengaduan Anda secara detail"
                     required
                   ></textarea>
-                  <span v-if="errors.description" class="text-sm text-red-600">
+                  <span v-if="errors.description" class="text-sm text-red-600 dark:text-red-400">
                     {{ errors.description }}
                   </span>
                 </div>
 
                 <!-- Contact Name -->
-                <!-- Contact Name -->
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Nama Lengkap *
                   </label>
                   <input
                     v-model="form.contact_person_name"
                     type="text"
-                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    class="w-full px-4 py-2 border border-gray-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Nama Anda"
                     required
                   />
-                  <span v-if="errors.contact_person_name" class="text-sm text-red-600">
+                  <span v-if="errors.contact_person_name" class="text-sm text-red-600 dark:text-red-400">
                     {{ errors.contact_person_name }}
                   </span>
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="flex gap-3 mt-6 pt-4 border-t">
+                <div class="flex gap-3 mt-6 pt-4 border-t dark:border-slate-800">
                   <button
                     type="button"
                     @click="closeModal"
-                    class="flex-1 px-4 py-2.5 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 font-medium transition text-sm"
+                    class="flex-1 px-4 py-2.5 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-800 rounded-xl hover:bg-gray-200 dark:hover:bg-slate-700 font-medium transition text-sm"
                   >
                     Batal
                   </button>

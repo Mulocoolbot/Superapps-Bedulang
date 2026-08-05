@@ -714,7 +714,7 @@ const toggleDarkMode = () => {
         >
             <div
                 v-show="open"
-                class="md:hidden border-t border-gray-200 dark:border-gray-700 px-6 py-4 space-y-3 bg-white dark:bg-gray-800"
+                class="md:hidden border-t border-gray-200 dark:border-gray-700 px-6 py-4 space-y-3 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200"
             >
 
                 <a href="/#beranda" @click="open = false; navigateMenu($event, '#beranda')" class="block hover:text-blue-600">
@@ -722,7 +722,7 @@ const toggleDarkMode = () => {
                 </a>
 
                 <div class="space-y-1">
-                    <span class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mt-2 px-1">Tentang</span>
+                    <span class="block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-400 mt-2 px-1">Tentang</span>
                     <a 
                         href="javascript:void(0)" 
                         @click="open = false; selectAboutSlide(1)" 
@@ -864,7 +864,7 @@ const toggleDarkMode = () => {
 
                 <button
                     @click="toggleDarkMode"
-                    class="w-full mt-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg"
+                    class="w-full mt-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg"
                 >
                     {{ darkMode ? '☀️ Light Mode' : '🌙 Dark Mode' }}
                 </button>
@@ -872,14 +872,14 @@ const toggleDarkMode = () => {
                 <template v-if="authUser">
                     <Link
                         href="/profile"
-                        class="block text-center mt-2 px-4 py-2 bg-white text-gray-800 rounded-lg border border-gray-200 hover:bg-gray-50"
+                        class="block text-center mt-2 px-4 py-2 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
                     >
                         Profil
                     </Link>
 
                     <Link
                         href="/my-complaints"
-                        class="block text-center mt-2 px-4 py-2 bg-white text-gray-800 rounded-lg border border-gray-200 hover:bg-gray-50"
+                        class="block text-center mt-2 px-4 py-2 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
                     >
                         Riwayat Pengaduan
                     </Link>

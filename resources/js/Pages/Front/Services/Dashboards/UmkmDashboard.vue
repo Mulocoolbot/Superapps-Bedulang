@@ -472,7 +472,7 @@ const filteredProducts = computed(() => {
             <!-- FILTER CONTROLS -->
             <div class="bg-slate-50/50 dark:bg-slate-950/20 p-6 rounded-3xl border border-slate-200/60 dark:border-slate-800/85 space-y-4">
                 <div class="flex items-center justify-between border-b border-slate-200/40 pb-3 dark:border-slate-800/60">
-                    <h4 class="text-xs font-bold text-black uppercase tracking-wider text-slate-400 dark:text-slate-500">Filter Data UMKM</h4>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400">Filter Data UMKM</h4>
                     <button 
                         v-if="selectedSektor || selectedKecamatan || selectedDesa || selectedTahun"
                         @click="resetUmkmFilters"
@@ -485,11 +485,11 @@ const filteredProducts = computed(() => {
                 <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
                     <!-- Filter Sektor Usaha -->
                     <div class="space-y-1.5">
-                        <label class="block text-xs text-black font-semibold text-slate-500 dark:text-slate-400">Sektor Usaha</label>
+                        <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400">Sektor Usaha</label>
                         <div class="relative">
                             <select
                                 v-model="selectedSektor"
-                                class="custom-select w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-2.5 text-xs font-medium text-slate-700 dark:text-slate-350 focus:outline-hidden focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition cursor-pointer"
+                                class="custom-select w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-2.5 text-xs font-medium text-slate-700 dark:text-slate-300 focus:outline-hidden focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition cursor-pointer"
                             >
                                 <option value="">Semua Sektor</option>
                                 <option v-for="sektor in availableSektors" :key="sektor" :value="sektor">{{ sektor }}</option>
@@ -499,11 +499,11 @@ const filteredProducts = computed(() => {
 
                     <!-- Filter Kecamatan -->
                     <div class="space-y-1.5">
-                        <label class="block text-xs text-black font-semibold text-slate-500 dark:text-slate-400">Kecamatan</label>
+                        <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400">Kecamatan</label>
                         <div class="relative">
                             <select
                                 v-model="selectedKecamatan"
-                                class="custom-select w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-2.5 text-xs font-medium text-slate-700 dark:text-slate-350 focus:outline-hidden focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition cursor-pointer"
+                                class="custom-select w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-2.5 text-xs font-medium text-slate-700 dark:text-slate-300 focus:outline-hidden focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition cursor-pointer"
                             >
                                 <option value="">Semua Kecamatan</option>
                                 <option v-for="kec in availableKecamatans" :key="kec" :value="kec">Kec. {{ kec }}</option>
@@ -513,11 +513,11 @@ const filteredProducts = computed(() => {
 
                     <!-- Filter Desa / Kelurahan -->
                     <div class="space-y-1.5">
-                        <label class="block text-xs text-black font-semibold text-slate-500 dark:text-slate-400">Desa / Kelurahan</label>
+                        <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400">Desa / Kelurahan</label>
                         <div class="relative">
                             <select
                                 v-model="selectedDesa"
-                                class="custom-select w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-2.5 text-xs font-medium text-slate-700 dark:text-slate-350 focus:outline-hidden focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition cursor-pointer"
+                                class="custom-select w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-2.5 text-xs font-medium text-slate-700 dark:text-slate-300 focus:outline-hidden focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition cursor-pointer"
                             >
                                 <option value="">Semua Desa/Kel</option>
                                 <option v-for="desa in availableDesas" :key="desa" :value="desa">{{ desa }}</option>
@@ -527,11 +527,11 @@ const filteredProducts = computed(() => {
 
                     <!-- Filter Tahun -->
                     <div class="space-y-1.5">
-                        <label class="block text-xs text-black font-semibold text-slate-500 dark:text-slate-400">Tahun</label>
+                        <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400">Tahun</label>
                         <div class="relative">
                             <select
                                 v-model="selectedTahun"
-                                class="custom-select w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-2.5 text-xs font-medium text-slate-700 dark:text-slate-350 focus:outline-hidden focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition cursor-pointer"
+                                class="custom-select w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-2.5 text-xs font-medium text-slate-700 dark:text-slate-300 focus:outline-hidden focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition cursor-pointer"
                             >
                                 <option value="">Semua Tahun</option>
                                 <option v-for="year in availableYears" :key="year" :value="year">Tahun {{ year }}</option>
@@ -777,7 +777,7 @@ const filteredProducts = computed(() => {
         <Teleport to="body">
             <div 
                 v-if="selectedBrandForDetail"
-                class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-955/80 backdrop-blur-md transition-all duration-300 animate-fade-in"
+                class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md transition-all duration-300 animate-fade-in"
                 @click="closeBrandDetail"
             >
                 <div 

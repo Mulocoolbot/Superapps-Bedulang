@@ -199,14 +199,14 @@ const closeCertModal = () => {
                         <button 
                             @click="prevPage" 
                             :disabled="currentPage === 1"
-                            class="px-3 py-1.5 rounded-lg border border-slate-200 text-sm font-medium transition disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800"
+                            class="px-3 py-1.5 rounded-lg border border-slate-200 text-sm font-medium text-slate-700 dark:text-slate-200 transition disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800"
                         >
                             Sebelumnya
                         </button>
                         <button 
                             @click="nextPage" 
                             :disabled="currentPage === totalPages"
-                            class="px-3 py-1.5 rounded-lg border border-slate-200 text-sm font-medium transition disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800"
+                            class="px-3 py-1.5 rounded-lg border border-slate-200 text-sm font-medium text-slate-700 dark:text-slate-200 transition disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800"
                         >
                             Selanjutnya
                         </button>
