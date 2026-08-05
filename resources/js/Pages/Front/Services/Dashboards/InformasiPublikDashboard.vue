@@ -1,7 +1,7 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, defineAsyncComponent } from 'vue'
 import { usePage, router, Link } from '@inertiajs/vue3'
-import PerindagkopDashboard from './PerindagkopDashboard.vue'
+const PerindagkopDashboard = defineAsyncComponent(() => import('./PerindagkopDashboard.vue'))
 
 const props = defineProps({
     service: {

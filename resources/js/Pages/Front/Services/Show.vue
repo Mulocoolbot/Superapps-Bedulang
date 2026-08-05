@@ -1,22 +1,22 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, defineAsyncComponent } from 'vue'
 import { Head, Link } from '@inertiajs/vue3'
 import FrontLayout from '@/Layouts/FrontLayout.vue'
 import ComplaintModal from '@/Components/ComplaintModal.vue'
 import Footer from '@/Components/Front/Footer.vue'
 
-// Import Segmented Dashboard components
-import PerindagkopDashboard from './Dashboards/PerindagkopDashboard.vue'
-import MbgDashboard from './Dashboards/MbgDashboard.vue'
-import KepegawaianDashboard from './Dashboards/KepegawaianDashboard.vue'
-import DesaDashboard from './Dashboards/DesaDashboard.vue'
-import InformasiPublikDashboard from './Dashboards/InformasiPublikDashboard.vue'
-import PemerintahanDashboard from './Dashboards/PemerintahanDashboard.vue'
-import KdmpDashboard from './Dashboards/KdmpDashboard.vue'
-import KesehatanDashboard from './Dashboards/KesehatanDashboard.vue'
-import PendidikanDashboard from './Dashboards/PendidikanDashboard.vue'
-import PariwisataDashboard from './Dashboards/PariwisataDashboard.vue'
-import DefaultDashboard from './Dashboards/DefaultDashboard.vue'
+// Dynamic lazy-loading of Segmented Dashboard components
+const PerindagkopDashboard = defineAsyncComponent(() => import('./Dashboards/PerindagkopDashboard.vue'))
+const MbgDashboard = defineAsyncComponent(() => import('./Dashboards/MbgDashboard.vue'))
+const KepegawaianDashboard = defineAsyncComponent(() => import('./Dashboards/KepegawaianDashboard.vue'))
+const DesaDashboard = defineAsyncComponent(() => import('./Dashboards/DesaDashboard.vue'))
+const InformasiPublikDashboard = defineAsyncComponent(() => import('./Dashboards/InformasiPublikDashboard.vue'))
+const PemerintahanDashboard = defineAsyncComponent(() => import('./Dashboards/PemerintahanDashboard.vue'))
+const KdmpDashboard = defineAsyncComponent(() => import('./Dashboards/KdmpDashboard.vue'))
+const KesehatanDashboard = defineAsyncComponent(() => import('./Dashboards/KesehatanDashboard.vue'))
+const PendidikanDashboard = defineAsyncComponent(() => import('./Dashboards/PendidikanDashboard.vue'))
+const PariwisataDashboard = defineAsyncComponent(() => import('./Dashboards/PariwisataDashboard.vue'))
+const DefaultDashboard = defineAsyncComponent(() => import('./Dashboards/DefaultDashboard.vue'))
 
 const isComplaintModalOpen = ref(false)
 
