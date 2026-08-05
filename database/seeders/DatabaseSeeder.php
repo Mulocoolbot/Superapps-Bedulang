@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(KoperasiSeeder::class);
+        $this->call(KdmpRealSeeder::class);
 
         User::updateOrCreate(
             ['email' => 'bedulangsuperadmin@gmail.com'],

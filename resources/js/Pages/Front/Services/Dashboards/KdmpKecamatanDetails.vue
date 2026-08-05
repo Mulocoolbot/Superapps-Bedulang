@@ -22,16 +22,28 @@ const props = defineProps({
 const title = computed(() => `Koperasi Merah Putih Kecamatan ${props.kecamatan}`)
 const subtitle = computed(() => `Detail Data Koperasi untuk wilayah Kecamatan ${props.kecamatan}`)
 
-// Pagination for table
+// Search & Pagination for table
+const searchQuery = ref('')
+
+const filteredData = computed(() => {
+    if (!searchQuery.value) return props.koperasiDetails
+    const q = searchQuery.value.toLowerCase()
+    return props.koperasiDetails.filter(item => 
+        (item.koperasi && item.koperasi.toLowerCase().includes(q)) ||
+        (item.desa_kelurahan && item.desa_kelurahan.toLowerCase().includes(q)) ||
+        (item.kecamatan && item.kecamatan.toLowerCase().includes(q))
+    )
+})
+
 const currentPage = ref(1)
 const itemsPerPage = 10
 
-const totalPages = computed(() => Math.ceil(props.koperasiDetails.length / itemsPerPage))
+const totalPages = computed(() => Math.ceil(filteredData.value.length / itemsPerPage))
 
 const paginatedData = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage
     const end = start + itemsPerPage
-    return props.koperasiDetails.slice(start, end)
+    return filteredData.value.slice(start, end)
 })
 
 const prevPage = () => {
@@ -108,13 +120,30 @@ const closeCertModal = () => {
 
             <!-- Table Data Koperasi Detail -->
             <div class="mt-8 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 animate-fade-in-up [animation-delay:200ms]">
-                <h2 class="text-lg font-extrabold text-slate-900 dark:text-white mb-4">Daftar Koperasi</h2>
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                    <h2 class="text-lg font-extrabold text-slate-900 dark:text-white">Daftar Koperasi</h2>
+                    
+                    <!-- Search Input -->
+                    <div class="relative w-full sm:w-64">
+                        <input
+                            v-model="searchQuery"
+                            type="text"
+                            placeholder="Cari koperasi / desa..."
+                            class="w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2 pl-9 text-sm text-slate-900 shadow-sm focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder-slate-400"
+                        />
+                        <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-2.5 h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                        </svg>
+                    </div>
+                </div>
                 
                 <div class="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
                     <table class="w-full text-left text-sm text-slate-600 dark:text-slate-300">
                         <thead class="bg-slate-50 text-xs uppercase text-slate-500 dark:bg-slate-800 dark:text-slate-400">
                             <tr>
                                 <th scope="col" class="px-6 py-4 font-semibold">Koperasi</th>
+                                <th scope="col" class="px-6 py-4 font-semibold">Desa / Kelurahan</th>
+                                <th scope="col" class="px-6 py-4 font-semibold">Kecamatan</th>
                                 <th scope="col" class="px-6 py-4 font-semibold text-center">Operasional</th>
                                 <th scope="col" class="px-6 py-4 font-semibold text-center">No AHU</th>
                                 <th scope="col" class="px-6 py-4 font-semibold text-center text-cyan-600 dark:text-cyan-400">Jumlah Anggota</th>
@@ -122,31 +151,38 @@ const closeCertModal = () => {
                         </thead>
                         <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
                             <tr v-for="(item, index) in paginatedData" :key="index" @click="goToKoperasiDetail(item.id)" class="cursor-pointer hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-sm group">
-                                <td class="px-6 py-4 font-medium text-slate-900 dark:text-white whitespace-nowrap">
+                                <td class="px-6 py-4 font-medium text-slate-900 dark:text-white">
                                     <div class="flex items-center gap-2">
                                         {{ item.koperasi }}
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                                         </svg>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 text-center">
+                                <td class="px-6 py-4 font-medium text-slate-700 dark:text-slate-300 whitespace-nowrap">
+                                    {{ item.desa_kelurahan }}
+                                </td>
+                                <td class="px-6 py-4 text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                                    {{ item.kecamatan }}
+                                </td>
+                                <td class="px-6 py-4 text-center whitespace-nowrap">
                                     <span :class="item.operasional === 'Sudah' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400'" class="px-2 py-1 rounded-md text-xs font-semibold">
                                         {{ item.operasional }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 text-center">
-                                    <button @click="(e) => openCertModal(item.no_ahu, e)" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 font-medium text-xs transition border border-blue-200/50 dark:border-blue-700/50 shadow-sm hover:shadow">
+                                <td class="px-6 py-4 text-center whitespace-nowrap">
+                                    <button v-if="item.no_ahu && item.no_ahu !== 'Belum ada' && item.no_ahu !== '-'" @click="(e) => openCertModal(item.no_ahu, e)" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 font-medium text-xs transition border border-blue-200/50 dark:border-blue-700/50 shadow-sm hover:shadow">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                                         </svg>
                                         {{ item.no_ahu }}
                                     </button>
+                                    <span v-else class="text-xs text-slate-400 font-medium">Belum Ada</span>
                                 </td>
-                                <td class="px-6 py-4 text-center font-bold text-cyan-600 dark:text-cyan-400">{{ item.anggota }}</td>
+                                <td class="px-6 py-4 text-center font-bold text-cyan-600 dark:text-cyan-400 whitespace-nowrap">{{ item.anggota }}</td>
                             </tr>
                             <tr v-if="paginatedData.length === 0">
-                                <td colspan="4" class="px-6 py-8 text-center text-slate-500">Tidak ada data untuk ditampilkan</td>
+                                <td colspan="6" class="px-6 py-8 text-center text-slate-500">Tidak ada data untuk ditampilkan</td>
                             </tr>
                         </tbody>
                     </table>
@@ -156,8 +192,8 @@ const closeCertModal = () => {
                 <div class="mt-4 flex items-center justify-between px-2" v-if="totalPages > 1">
                     <div class="text-sm text-slate-500 dark:text-slate-400">
                         Menampilkan <span class="font-medium text-slate-900 dark:text-white">{{ ((currentPage - 1) * itemsPerPage) + 1 }}</span> 
-                        sampai <span class="font-medium text-slate-900 dark:text-white">{{ Math.min(currentPage * itemsPerPage, koperasiDetails.length) }}</span> 
-                        dari <span class="font-medium text-slate-900 dark:text-white">{{ koperasiDetails.length }}</span> data
+                        sampai <span class="font-medium text-slate-900 dark:text-white">{{ Math.min(currentPage * itemsPerPage, filteredData.length) }}</span> 
+                        dari <span class="font-medium text-slate-900 dark:text-white">{{ filteredData.length }}</span> data
                     </div>
                     <div class="flex gap-2">
                         <button 

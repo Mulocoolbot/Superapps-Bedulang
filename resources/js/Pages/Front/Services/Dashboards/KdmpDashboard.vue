@@ -4,7 +4,7 @@ import { router, usePage, Link } from '@inertiajs/vue3'
 
 const page = usePage()
 const user = computed(() => page.props.auth.user)
-const isKdmpAdmin = computed(() => user.value && ['admin_kdmp', 'admin_kecamatan', 'admin_kmp'].includes(user.value.kdmp_role))
+const isKdmpAdmin = computed(() => user.value && user.value.kdmp_role === 'admin_kdmp')
 
 const adminDashboardRoute = computed(() => {
     if (!user.value) return '#'

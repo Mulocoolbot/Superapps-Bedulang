@@ -18,6 +18,14 @@ class DashboardController extends Controller
             return redirect()->route('pimpinan.dashboard');
         }
 
+        if ($user && $user->kdmp_role === 'admin_kecamatan') {
+            return redirect()->route('admin.kdmp.kecamatan.dashboard');
+        }
+
+        if ($user && $user->kdmp_role === 'admin_kmp') {
+            return redirect()->route('admin.kdmp.kmp.dashboard');
+        }
+
         if ($user && !$user->isSuperAdmin() && $user->isAdminKoperasi()) {
             return redirect()->route('admin.koperasi.index');
         }
