@@ -79,16 +79,20 @@ class User extends Authenticatable
 
     public function canAccessService(?string $serviceSlug): bool
     {
-        if ($this->isSuperAdmin() || $this->isPimpinan() || empty($this->service_slug)) {
+        if ($this->isSuperAdmin() || $this->isPimpinan()) {
+            return true;
+        }
+
+        if ($this->isAdminKependudukan()) {
+            return $serviceSlug === 'kependudukan' || empty($serviceSlug);
+        }
+
+        if (empty($this->service_slug)) {
             return true;
         }
 
         if ($serviceSlug === 'pengaduan-bedulang') {
-            return (
-            $this->isAdmin()
-            ||
-            $this->isPimpinan()
-        );
+            return $this->isAdmin() || $this->isPimpinan();
         }
 
         return $this->service_slug === $serviceSlug;
@@ -113,5 +117,10 @@ class User extends Authenticatable
     public function isAdminKoperasi(): bool
     {
         return $this->role === 'admin_koperasi' || ($this->role === 'admin' && $this->service_slug === 'koperasi');
+    }
+
+    public function isAdminKependudukan(): bool
+    {
+        return $this->role === 'admin_kependudukan' || ($this->role === 'admin' && $this->service_slug === 'kependudukan');
     }
 }

@@ -225,9 +225,85 @@ const getAvailabilityStatus = (amount) => {
 <template>
     <div class="relative mt-6 min-h-[600px]">
 
-        <!-- COMPACT FLUSH SIDEBAR NAVIGATION (PERMANENTLY STUCK TO SCREEN LEFT EDGE) -->
+        <!-- MOBILE CATEGORY NAVIGATION DROPDOWN (ONLY SHOWN ON MOBILE < MD) -->
+        <div class="block md:hidden mb-6">
+            <button
+                @click="toggleSidebar"
+                class="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-md transition-all cursor-pointer"
+            >
+                <div class="flex items-center gap-3">
+                    <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:bg-blue-400/20 text-lg">
+                        {{ activeSidebarTab === 'bapok' ? '🛒' : activeSidebarTab === 'sawit' ? '🌴' : '🩸' }}
+                    </div>
+                    <div class="text-left">
+                        <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Kategori Data Terpilih</p>
+                        <p class="text-sm font-extrabold text-slate-900 dark:text-white">
+                            {{ activeSidebarTab === 'bapok' ? 'Bahan Pokok' : activeSidebarTab === 'sawit' ? 'Harga Sawit' : 'Stok Darah' }}
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 px-3 py-1 rounded-xl">
+                        {{ isSidebarOpen ? 'Sembunyikan' : 'Pilih Menu' }}
+                    </span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': isSidebarOpen }" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </div>
+            </button>
+
+            <!-- MOBILE COLLAPSIBLE MENU PANEL -->
+            <Transition
+                enter-active-class="transition duration-200 ease-out"
+                enter-from-class="transform scale-95 opacity-0 -translate-y-2"
+                enter-to-class="transform scale-100 opacity-100 translate-y-0"
+                leave-active-class="transition duration-150 ease-in"
+                leave-from-class="transform scale-100 opacity-100 translate-y-0"
+                leave-to-class="transform scale-95 opacity-0 -translate-y-2"
+            >
+                <div v-if="isSidebarOpen" class="mt-2.5 p-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xl space-y-1.5">
+                    <button
+                        @click="selectTab('bapok'); isSidebarOpen = false"
+                        class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                        :class="activeSidebarTab === 'bapok' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'"
+                    >
+                        <span class="text-base">🛒</span>
+                        <div class="flex-1 text-left">
+                            <div>Bahan Pokok</div>
+                            <div class="text-[10px] opacity-80 font-normal">Harga pasar & komoditas pangan</div>
+                        </div>
+                    </button>
+
+                    <button
+                        @click="selectTab('sawit'); isSidebarOpen = false"
+                        class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                        :class="activeSidebarTab === 'sawit' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'"
+                    >
+                        <span class="text-base">🌴</span>
+                        <div class="flex-1 text-left">
+                            <div>Harga Sawit</div>
+                            <div class="text-[10px] opacity-80 font-normal">Penetapan TBS pabrik & kecamatan</div>
+                        </div>
+                    </button>
+
+                    <button
+                        @click="selectTab('utd'); isSidebarOpen = false"
+                        class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                        :class="activeSidebarTab === 'utd' ? 'bg-rose-600 text-white shadow-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'"
+                    >
+                        <span class="text-base">🩸</span>
+                        <div class="flex-1 text-left">
+                            <div>Stok Darah</div>
+                            <div class="text-[10px] opacity-80 font-normal">Stok Kantong Darah UTD PMI</div>
+                        </div>
+                    </button>
+                </div>
+            </Transition>
+        </div>
+
+        <!-- DESKTOP COMPACT FLUSH SIDEBAR NAVIGATION (HIDDEN ON MOBILE, SHOWN ON MD+) -->
         <aside
-            class="fixed left-0 top-32 z-30 w-44 sm:w-48 transition-all duration-300"
+            class="hidden md:block fixed left-0 top-32 z-30 w-44 sm:w-48 transition-all duration-300"
         >
             <div class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-r-2xl rounded-l-none border-y border-r border-slate-200/80 dark:border-slate-800 p-2.5 shadow-xl space-y-1">
                 <div class="px-2 py-1 mb-1 border-b border-slate-100 dark:border-slate-800/80">
@@ -276,8 +352,8 @@ const getAvailabilityStatus = (amount) => {
             </div>
         </aside>
 
-        <!-- MAIN DISPLAY AREA (WITH LEFT PADDING FOR SIDEBAR) -->
-        <main class="w-full min-w-0 pl-48 sm:pl-52 transition-all duration-300">
+        <!-- MAIN DISPLAY AREA (FULL WIDTH ON MOBILE PL-0, LEFT PADDING PL-52 ON DESKTOP MD+) -->
+        <main class="w-full min-w-0 pl-0 md:pl-52 transition-all duration-300">
             <Transition name="tab-fade" mode="out-in">
                 <!-- 🛒 SUB-VIEW 1: HARGA PASAR & STOK BAPOK -->
                 <div v-if="activeSidebarTab === 'bapok'" key="bapok" class="space-y-8">

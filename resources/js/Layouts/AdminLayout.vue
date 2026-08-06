@@ -234,6 +234,19 @@ onUnmounted(() => {
                         </svg>
                         <span>Kelola Koperasi</span>
                     </Link>
+
+                    <!-- Panel Admin Kependudukan (Hanya muncul jika admin kependudukan / superadmin) -->
+                    <Link
+                        v-if="$page.props.auth?.user && ($page.props.auth.user.role === 'admin_kependudukan' || $page.props.auth.user.service_slug === 'kependudukan' || $page.props.auth.user.role === 'super_admin')"
+                        href="/admin/kependudukan"
+                        class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition"
+                        :class="page.url.startsWith('/admin/kependudukan') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 9A3 3 0 1 1 9 9a3 3 0 0 1 6 0ZM3.75 19.5a6.75 6.75 0 0 1 13.5 0M16.5 6.75h4.5m-4.5 3.75h4.5m-4.5 3.75h3" />
+                        </svg>
+                        <span>Kelola Kependudukan</span>
+                    </Link>
                 </nav>
             </div>
 

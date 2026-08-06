@@ -10,6 +10,7 @@ use App\Http\Controllers\UserComplaintController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PimpinanDashboardController;
 use App\Http\Controllers\Admin\KoperasiImportController;
+use App\Http\Controllers\Admin\KependudukanImportController;
 use App\Http\Controllers\KoperasiPimpinanController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -187,6 +188,18 @@ Route::middleware('auth')->group(function () {
         ->name('admin.koperasi.destroy');
     Route::delete('/admin/koperasi/log/{log}', [KoperasiImportController::class, 'destroyLog'])
         ->name('admin.koperasi.destroy_log');
+
+    // Admin Kependudukan routes
+    Route::get('/admin/kependudukan', [KependudukanImportController::class, 'index'])
+        ->name('admin.kependudukan.index');
+    Route::post('/admin/kependudukan/import', [KependudukanImportController::class, 'import'])
+        ->name('admin.kependudukan.import');
+    Route::post('/admin/kependudukan/sync-spreadsheets', [KependudukanImportController::class, 'syncSpreadsheets'])
+        ->name('admin.kependudukan.sync_spreadsheets');
+    Route::get('/admin/kependudukan/template/{category}', [KependudukanImportController::class, 'downloadTemplate'])
+        ->name('admin.kependudukan.template');
+    Route::delete('/admin/kependudukan/log/{log}', [KependudukanImportController::class, 'destroyLog'])
+        ->name('admin.kependudukan.destroy_log');
 
     Route::get('/dashboard/pad', [PimpinanDashboardController::class, 'pad'])
         ->name('pimpinan.pad');

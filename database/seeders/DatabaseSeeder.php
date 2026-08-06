@@ -30,14 +30,15 @@ class DatabaseSeeder extends Seeder
         );
 
         User::updateOrCreate(
-            ['email' => 'adminbedulang@gmail.com'],
+            ['email' => 'adminkependudukan@gmail.com'],
             [
-                'name' => 'Admin Website Bedulang',
-                'password' => Hash::make('adminbedulang12345678'),
-                'role' => 'admin',
-                'service_slug' => 'pengaduan-bedulang',
+                'name' => 'Admin Kependudukan',
+                'password' => Hash::make('password123'),
+                'role' => 'admin_kependudukan',
+                'service_slug' => 'kependudukan',
             ]
         );
+
 
         User::updateOrCreate(
             ['email' => 'adminkdmp36@gmail.com'],

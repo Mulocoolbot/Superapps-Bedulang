@@ -16,7 +16,13 @@ const handleScroll = () => {
 
 const page = usePage()
 const authUser = computed(() => page.props.auth?.user)
-const isAdmin = computed(() => authUser.value && (['admin', 'super_admin', 'pimpinan', 'admin_koperasi'].includes(authUser.value.role) || authUser.value.service_slug === 'koperasi'))
+const isAdmin = computed(() => authUser.value && (['admin', 'super_admin', 'pimpinan', 'admin_koperasi', 'admin_kependudukan'].includes(authUser.value.role) || ['koperasi', 'kependudukan'].includes(authUser.value.service_slug)))
+const adminPanelHref = computed(() => {
+    if (!authUser.value) return '/admin'
+    if (authUser.value.role === 'pimpinan') return '/pimpinan'
+    if (authUser.value.role === 'admin_koperasi' || authUser.value.service_slug === 'koperasi') return '/admin/koperasi'
+    return '/admin'
+})
 const userNotifications = computed(() => authUser.value?.notifications || [])
 const unreadCount = computed(() => authUser.value?.unread_notifications_count || 0)
 
@@ -661,7 +667,7 @@ const toggleDarkMode = () => {
                                 <div class="border-t border-gray-100 dark:border-gray-700"></div>
 
                                 <Link
-                                    :href="authUser.role === 'pimpinan' ? '/pimpinan' : ((authUser.role === 'admin_koperasi' || authUser.service_slug === 'koperasi') ? '/admin/koperasi' : '/admin')"
+                                    :href="adminPanelHref"
                                     class="block w-full px-5 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700 font-medium transition"
                                 >
                                     {{ authUser.role === 'pimpinan' ? 'Dashboard Pimpinan' : 'Admin Panel' }}
@@ -906,7 +912,7 @@ const toggleDarkMode = () => {
                         <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
 
                         <Link
-                            :href="authUser.role === 'pimpinan' ? '/pimpinan' : ((authUser.role === 'admin_koperasi' || authUser.service_slug === 'koperasi') ? '/admin/koperasi' : '/admin')"
+                            :href="adminPanelHref"
                             class="block text-center mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg"
                         >
                             {{ authUser.role === 'pimpinan' ? 'Dashboard Pimpinan' : 'Admin Panel' }}

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Services\KependudukanService;
 use App\Services\KdmpService;
 use App\Services\KesehatanService;
 use App\Services\PendidikanService;
@@ -31,16 +32,7 @@ class InformationServiceRegistry
                 ['label' => 'Gender', 'value' => 'gender'],
             ],
         ],
-        'kependudukan' => [
-            'name' => 'Kependudukan',
-            'icon' => '🪪',
-            'description' => 'Dashboard informasi Kependudukan Kabupaten Bangka Tengah.',
-            'filters' => [
-                ['label' => 'Kelahiran', 'value' => 'kelahiran'],
-                ['label' => 'Kematian', 'value' => 'kematian'],
-                ['label' => 'Gender', 'value' => 'gender'],
-            ],
-        ],
+        'kependudukan' => KependudukanService::class,
         'kepegawaian' => KepegawaianService::class,
         'pertanian' => PertanianService::class,
         'desa' => PertanianService::class,

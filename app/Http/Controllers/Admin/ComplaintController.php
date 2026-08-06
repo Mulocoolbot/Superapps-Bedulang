@@ -27,8 +27,12 @@ class ComplaintController extends Controller
         // Base scoped query for user domain (pimpinan and super_admin see all)
         $baseQuery = Complaint::query();
 
-        if (!$user->isSuperAdmin() && !$user->isPimpinan() && !empty($user->service_slug)) {
-            $baseQuery->where('service_slug', $user->service_slug);
+        if (!$user->isSuperAdmin() && !$user->isPimpinan()) {
+            if ($user->isAdminKependudukan()) {
+                $baseQuery->where('service_slug', 'kependudukan');
+            } elseif (!empty($user->service_slug)) {
+                $baseQuery->where('service_slug', $user->service_slug);
+            }
         }
 
         // Calculate summary statistics

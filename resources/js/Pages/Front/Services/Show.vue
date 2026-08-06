@@ -16,6 +16,7 @@ const KdmpDashboard = defineAsyncComponent(() => import('./Dashboards/KdmpDashbo
 const KesehatanDashboard = defineAsyncComponent(() => import('./Dashboards/KesehatanDashboard.vue'))
 const PendidikanDashboard = defineAsyncComponent(() => import('./Dashboards/PendidikanDashboard.vue'))
 const PariwisataDashboard = defineAsyncComponent(() => import('./Dashboards/PariwisataDashboard.vue'))
+const KependudukanDashboard = defineAsyncComponent(() => import('./Dashboards/KependudukanDashboard.vue'))
 const DefaultDashboard = defineAsyncComponent(() => import('./Dashboards/DefaultDashboard.vue'))
 
 const isComplaintModalOpen = ref(false)
@@ -51,6 +52,8 @@ const dashboardComponent = computed(() => {
             return KesehatanDashboard
         case 'pendidikan':
             return PendidikanDashboard
+        case 'kependudukan':
+            return KependudukanDashboard
         case 'hukum':
         case 'kdmp':
             return KdmpDashboard
