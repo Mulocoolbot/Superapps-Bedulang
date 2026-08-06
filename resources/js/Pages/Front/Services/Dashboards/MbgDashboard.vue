@@ -49,11 +49,11 @@ const formatNumber = (val) => {
 <template>
 
     <!-- Summary Statistics Grid -->
-    <div class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4 animate-fade-in-up [animation-delay:150ms]">
+    <div class="mt-6 grid gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-4 animate-fade-in-up [animation-delay:150ms]">
         <div 
             v-for="(card, index) in (dashboardData.summary?.[selectedType] || [])" 
             :key="index"
-            class="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 transition-all duration-300 hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700"
+            class="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 transition-all duration-300 hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700"
         >
             <!-- Highlight color based on index or title -->
             <div 
@@ -69,7 +69,7 @@ const formatNumber = (val) => {
                 <span class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">
                     {{ card.title }}
                 </span>
-                <p class="mt-2 text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+                <p class="mt-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
                     <AnimatedNumber :value="card.value"></AnimatedNumber>
                 </p>
                 <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">{{ card.meta }}</p>
@@ -78,9 +78,9 @@ const formatNumber = (val) => {
     </div>
 
     <!-- Main Grid for Makanan Bergizi Gratis (MBG) -->
-    <div class="mt-6 grid gap-6 lg:grid-cols-[2fr_1fr]">
+    <div class="mt-6 grid gap-6 lg:grid-cols-[2fr_1fr] w-full max-w-full overflow-hidden">
         <!-- Left Column: Table of subdistricts -->
-        <section class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 dark:border-slate-800 dark:bg-slate-900 animate-fade-in-up [animation-delay:200ms]">
+        <section class="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 animate-fade-in-up [animation-delay:200ms] w-full max-w-full overflow-hidden">
             <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Data Wilayah</p>
@@ -103,17 +103,22 @@ const formatNumber = (val) => {
                 </div>
             </div>
 
-            <div class="mt-6 overflow-hidden rounded-xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900">
-                <div class="overflow-x-auto custom-scrollbar">
-                    <table class="min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-800">
-                        <thead class="bg-slate-50 dark:bg-slate-800">
+            <div class="sm:hidden mt-2 flex items-center justify-end text-[11px] font-medium text-slate-400 dark:text-slate-500 gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+                <span>Geser kesamping untuk melihat data</span>
+            </div>
+
+            <div class="mt-4 sm:mt-6 overflow-hidden rounded-xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900">
+                <div class="overflow-x-auto custom-scrollbar touch-pan-x">
+                    <table class="w-full text-xs sm:text-sm divide-y divide-slate-200 dark:divide-slate-800 min-w-[500px] sm:min-w-[620px]">
+                        <thead class="bg-slate-50 dark:bg-slate-800 text-[11px] sm:text-xs">
                             <tr>
-                                <th class="px-4 py-3 text-left font-semibold text-slate-600 dark:text-slate-300">Kecamatan</th>
-                                <th class="px-4 py-3 text-right font-semibold text-slate-600 dark:text-slate-300">Perempuan</th>
-                                <th class="px-4 py-3 text-right font-semibold text-slate-600 dark:text-slate-300">Laki-laki</th>
-                                <th class="px-4 py-3 text-right font-semibold text-amber-600 dark:text-amber-400">Alergi</th>
-                                <th class="px-4 py-3 text-right font-semibold text-rose-600 dark:text-rose-400">Fobia</th>
-                                <th class="px-4 py-3 text-right font-semibold text-indigo-600 dark:text-indigo-400">Intoleran</th>
+                                <th class="px-3 py-2.5 sm:px-4 sm:py-3 text-left font-semibold text-slate-600 dark:text-slate-300">Kecamatan</th>
+                                <th class="px-3 py-2.5 sm:px-4 sm:py-3 text-right font-semibold text-slate-600 dark:text-slate-300 whitespace-nowrap">Perempuan</th>
+                                <th class="px-3 py-2.5 sm:px-4 sm:py-3 text-right font-semibold text-slate-600 dark:text-slate-300 whitespace-nowrap">Laki-laki</th>
+                                <th class="px-3 py-2.5 sm:px-4 sm:py-3 text-right font-semibold text-amber-600 dark:text-amber-400 whitespace-nowrap">Alergi</th>
+                                <th class="px-3 py-2.5 sm:px-4 sm:py-3 text-right font-semibold text-rose-600 dark:text-rose-400 whitespace-nowrap">Fobia</th>
+                                <th class="px-3 py-2.5 sm:px-4 sm:py-3 text-right font-semibold text-indigo-600 dark:text-indigo-400 whitespace-nowrap">Intoleran</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-200 bg-white dark:divide-slate-800 dark:bg-slate-900">
@@ -122,12 +127,12 @@ const formatNumber = (val) => {
                                 :key="row.kode_kecamatan" 
                                 class="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors"
                             >
-                                <td class="px-4 py-3.5 font-bold text-slate-800 dark:text-slate-200">{{ row.kecamatan }}</td>
-                                <td class="px-4 py-3.5 text-right text-slate-700 dark:text-slate-300">{{ formatNumber(row.jumlah_perempuan) }}</td>
-                                <td class="px-4 py-3.5 text-right text-slate-700 dark:text-slate-300">{{ formatNumber(row.jumlah_laki) }}</td>
-                                <td class="px-4 py-3.5 text-right font-semibold text-amber-600 dark:text-amber-400 bg-amber-50/20 dark:bg-amber-950/10">{{ formatNumber(row.jumlah_alergi) }}</td>
-                                <td class="px-4 py-3.5 text-right font-semibold text-rose-600 dark:text-rose-400 bg-rose-50/20 dark:bg-rose-950/10">{{ formatNumber(row.jumlah_fobia) }}</td>
-                                <td class="px-4 py-3.5 text-right font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50/20 dark:bg-indigo-950/10">{{ formatNumber(row.jumlah_intoleransi) }}</td>
+                                <td class="px-3 py-2.5 sm:px-4 sm:py-3.5 font-bold text-slate-800 dark:text-slate-200 whitespace-nowrap">{{ row.kecamatan }}</td>
+                                <td class="px-3 py-2.5 sm:px-4 sm:py-3.5 text-right text-slate-700 dark:text-slate-300 whitespace-nowrap">{{ formatNumber(row.jumlah_perempuan) }}</td>
+                                <td class="px-3 py-2.5 sm:px-4 sm:py-3.5 text-right text-slate-700 dark:text-slate-300 whitespace-nowrap">{{ formatNumber(row.jumlah_laki) }}</td>
+                                <td class="px-3 py-2.5 sm:px-4 sm:py-3.5 text-right font-semibold text-amber-600 dark:text-amber-400 bg-amber-50/20 dark:bg-amber-950/10 whitespace-nowrap">{{ formatNumber(row.jumlah_alergi) }}</td>
+                                <td class="px-3 py-2.5 sm:px-4 sm:py-3.5 text-right font-semibold text-rose-600 dark:text-rose-400 bg-rose-50/20 dark:bg-rose-950/10 whitespace-nowrap">{{ formatNumber(row.jumlah_fobia) }}</td>
+                                <td class="px-3 py-2.5 sm:px-4 sm:py-3.5 text-right font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50/20 dark:bg-indigo-950/10 whitespace-nowrap">{{ formatNumber(row.jumlah_intoleransi) }}</td>
                             </tr>
                         </tbody>
                     </table>

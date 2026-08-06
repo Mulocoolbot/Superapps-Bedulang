@@ -77,6 +77,14 @@ const confirmSent = async () => {
         alert('Gagal memperbarui status pengaduan.')
     }
 }
+
+const goBack = () => {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+        window.history.back()
+    } else {
+        window.location.href = '/'
+    }
+}
 </script>
 
 <template>
@@ -87,15 +95,16 @@ const confirmSent = async () => {
             <section class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
                 <!-- Back Link -->
                 <div class="mb-8">
-                    <Link
-                        href="/"
-                        class="inline-flex items-center gap-2 text-sm font-semibold text-blue-100 hover:text-white transition"
+                    <button
+                        type="button"
+                        @click="goBack"
+                        class="inline-flex items-center gap-2 text-sm font-semibold text-blue-100 hover:text-white transition cursor-pointer"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
                         </svg>
                         <span>Kembali</span>
-                    </Link>
+                    </button>
                 </div>
 
                 <!-- Header Card -->

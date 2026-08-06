@@ -801,7 +801,7 @@ const getPasarBarPercent = (val) => {
         <!-- Sidebar (Tab 1 / Harga Tables) -->
         <aside v-if="activeTab === 'harga'" :key="'harga-tables-' + selectedStartDate + '-' + selectedEndDate" class="space-y-6 animate-fade-in-up [animation-delay:300ms]">
             <!-- 1. Perbandingan Harga Barang Kebutuhan Pokok -->
-            <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 space-y-4 dark:border-slate-800 dark:bg-slate-900">
+            <div class="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-6 shadow-sm space-y-4 dark:border-slate-800 dark:bg-slate-900">
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Tabel Data</p>
                     <h3 class="mt-0.5 text-base font-extrabold text-slate-900 dark:text-white">Perbandingan Harga Barang Kebutuhan Pokok</h3>
@@ -811,26 +811,26 @@ const getPasarBarPercent = (val) => {
                 </div>
                 <div v-else class="overflow-hidden rounded-xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900">
                     <div class="overflow-x-auto max-h-[400px] overflow-y-auto custom-scrollbar">
-                        <table class="min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-800">
-                            <thead class="bg-slate-50 sticky top-0 z-10 dark:bg-slate-800">
+                        <table class="min-w-full divide-y divide-slate-200 text-xs sm:text-sm dark:divide-slate-800">
+                            <thead class="bg-slate-50 sticky top-0 z-10 dark:bg-slate-800 text-[10px] sm:text-xs">
                                 <tr>
-                                    <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Komoditas</th>
-                                    <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Awal</th>
-                                    <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Akhir</th>
-                                    <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Selisih</th>
-                                    <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Status</th>
+                                    <th class="px-2.5 sm:px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Komoditas</th>
+                                    <th class="px-2.5 sm:px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300 whitespace-nowrap">Awal</th>
+                                    <th class="px-2.5 sm:px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300 whitespace-nowrap">Akhir</th>
+                                    <th class="px-2.5 sm:px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300 whitespace-nowrap">Selisih</th>
+                                    <th class="px-2.5 sm:px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Status</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-200 bg-white dark:divide-slate-800 dark:bg-slate-900">
                                 <tr v-for="item in basicPriceTrends" :key="item.commodity" class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
-                                    <td class="px-3 py-2 font-medium text-slate-800 dark:text-slate-200">{{ item.commodity }}</td>
-                                    <td class="px-3 py-2 text-slate-700 dark:text-slate-300">{{ item.price_i }}</td>
-                                    <td class="px-3 py-2 text-slate-700 dark:text-slate-300">{{ item.price_ii }}</td>
-                                    <td class="px-3 py-2 whitespace-nowrap" :class="item.selisih === '-' ? 'text-slate-500' : (item.selisih > 0 ? 'text-emerald-600' : (item.selisih < 0 ? 'text-rose-600' : 'text-slate-500'))">
+                                    <td class="px-2.5 sm:px-3 py-2 font-medium text-slate-800 dark:text-slate-200">{{ item.commodity }}</td>
+                                    <td class="px-2.5 sm:px-3 py-2 text-slate-700 dark:text-slate-300 whitespace-nowrap">{{ item.price_i }}</td>
+                                    <td class="px-2.5 sm:px-3 py-2 text-slate-700 dark:text-slate-300 whitespace-nowrap">{{ item.price_ii }}</td>
+                                    <td class="px-2.5 sm:px-3 py-2 whitespace-nowrap font-semibold" :class="item.selisih === '-' ? 'text-slate-500' : (item.selisih > 0 ? 'text-emerald-600' : (item.selisih < 0 ? 'text-rose-600' : 'text-slate-500'))">
                                         {{ item.selisih === '-' ? '-' : (item.selisih > 0 ? '+' : '') + formatNumber(item.selisih) }}
                                     </td>
-                                    <td class="px-3 py-2">
-                                        <span class="font-bold text-lg">
+                                    <td class="px-2.5 sm:px-3 py-2">
+                                        <span class="font-bold text-base sm:text-lg">
                                             <span v-if="item.status === 'naik'" class="text-emerald-600" title="Naik">▲</span>
                                             <span v-else-if="item.status === 'turun'" class="text-rose-600" title="Turun">▼</span>
                                             <span v-else-if="item.status === 'tetap'" class="text-slate-400" title="Tetap">=</span>
@@ -845,7 +845,7 @@ const getPasarBarPercent = (val) => {
             </div>
 
             <!-- 2. Perbandingan Harga Barang Penting -->
-            <div class="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6 space-y-4 dark:border-slate-800 dark:bg-slate-900">
+            <div class="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-6 shadow-sm space-y-4 dark:border-slate-800 dark:bg-slate-900">
                 <div>
                     <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">Tabel Data</p>
                     <h3 class="mt-0.5 text-base font-extrabold text-slate-900 dark:text-white">Perbandingan Harga Barang Penting</h3>
@@ -855,26 +855,26 @@ const getPasarBarPercent = (val) => {
                 </div>
                 <div v-else class="overflow-hidden rounded-xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900">
                     <div class="overflow-x-auto max-h-[200px] overflow-y-auto custom-scrollbar">
-                        <table class="min-w-full divide-y divide-slate-200 text-sm dark:divide-slate-800">
-                            <thead class="bg-slate-50 sticky top-0 z-10 dark:bg-slate-800">
+                        <table class="min-w-full divide-y divide-slate-200 text-xs sm:text-sm dark:divide-slate-800">
+                            <thead class="bg-slate-50 sticky top-0 z-10 dark:bg-slate-800 text-[10px] sm:text-xs">
                                 <tr>
-                                    <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Komoditas</th>
-                                    <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Awal</th>
-                                    <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Akhir</th>
-                                    <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Selisih</th>
-                                    <th class="px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Status</th>
+                                    <th class="px-2.5 sm:px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Komoditas</th>
+                                    <th class="px-2.5 sm:px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300 whitespace-nowrap">Awal</th>
+                                    <th class="px-2.5 sm:px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300 whitespace-nowrap">Akhir</th>
+                                    <th class="px-2.5 sm:px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300 whitespace-nowrap">Selisih</th>
+                                    <th class="px-2.5 sm:px-3 py-2 text-left font-semibold text-slate-600 bg-slate-50 dark:bg-slate-800 dark:text-slate-300">Status</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-200 bg-white dark:divide-slate-800 dark:bg-slate-900">
                                 <tr v-for="item in importantPriceTrends" :key="item.commodity" class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
-                                    <td class="px-3 py-2 font-medium text-slate-800 dark:text-slate-200">{{ item.commodity }}</td>
-                                    <td class="px-3 py-2 text-slate-700 dark:text-slate-300">{{ item.price_i }}</td>
-                                    <td class="px-3 py-2 text-slate-700 dark:text-slate-300">{{ item.price_ii }}</td>
-                                    <td class="px-3 py-2 whitespace-nowrap" :class="item.selisih === '-' ? 'text-slate-500' : (item.selisih > 0 ? 'text-emerald-600' : (item.selisih < 0 ? 'text-rose-600' : 'text-slate-500'))">
+                                    <td class="px-2.5 sm:px-3 py-2 font-medium text-slate-800 dark:text-slate-200">{{ item.commodity }}</td>
+                                    <td class="px-2.5 sm:px-3 py-2 text-slate-700 dark:text-slate-300 whitespace-nowrap">{{ item.price_i }}</td>
+                                    <td class="px-2.5 sm:px-3 py-2 text-slate-700 dark:text-slate-300 whitespace-nowrap">{{ item.price_ii }}</td>
+                                    <td class="px-2.5 sm:px-3 py-2 whitespace-nowrap font-semibold" :class="item.selisih === '-' ? 'text-slate-500' : (item.selisih > 0 ? 'text-emerald-600' : (item.selisih < 0 ? 'text-rose-600' : 'text-slate-500'))">
                                         {{ item.selisih === '-' ? '-' : (item.selisih > 0 ? '+' : '') + formatNumber(item.selisih) }}
                                     </td>
-                                    <td class="px-3 py-2">
-                                        <span class="font-bold text-lg">
+                                    <td class="px-2.5 sm:px-3 py-2">
+                                        <span class="font-bold text-base sm:text-lg">
                                             <span v-if="item.status === 'naik'" class="text-emerald-600" title="Naik">▲</span>
                                             <span v-else-if="item.status === 'turun'" class="text-rose-600" title="Turun">▼</span>
                                             <span v-else-if="item.status === 'tetap'" class="text-slate-400" title="Tetap">=</span>

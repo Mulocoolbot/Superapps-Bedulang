@@ -189,12 +189,12 @@ const getSubcategoryGradient = (subcategory) => {
                 </div>
             </div>
 
-            <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="flex overflow-x-auto gap-4 pb-3 snap-x snap-mandatory scrollbar-none sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:overflow-visible sm:pb-0">
                 <Link
                     v-for="(dest, index) in featured"
                     :key="dest.id"
                     :href="route('layanan.pariwisata.destinasi', dest.id)"
-                    class="group relative overflow-hidden rounded-2xl border border-white/15 shadow-lg transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1 hover:border-white/30 cursor-pointer"
+                    class="group relative overflow-hidden rounded-2xl border border-white/15 shadow-lg transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-1 hover:border-white/30 cursor-pointer w-[82vw] max-w-[285px] shrink-0 snap-align-start sm:w-auto sm:max-w-none"
                     :style="{ animationDelay: `${200 + index * 100}ms` }"
                 >
                     <!-- Background Image or Gradient -->
@@ -381,12 +381,12 @@ const getSubcategoryGradient = (subcategory) => {
                     </div>
 
                     <!-- Destination Cards Grid (Max 6 per view) -->
-                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <div class="flex overflow-x-auto gap-4 pb-3 snap-x snap-mandatory scrollbar-none sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:overflow-visible sm:pb-0">
                         <Link
                             v-for="(dest, dIndex) in getDisplayedItems(group)"
                             :key="dest.id"
                             :href="route('layanan.pariwisata.destinasi', dest.id)"
-                            class="group relative overflow-hidden rounded-xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-sm transition-all duration-300 hover:bg-white/[0.07] hover:border-white/20 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-500/5 cursor-pointer"
+                            class="group relative overflow-hidden rounded-xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-sm transition-all duration-300 hover:bg-white/[0.07] hover:border-white/20 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-blue-500/5 cursor-pointer w-[80vw] max-w-[270px] shrink-0 snap-align-start sm:w-auto sm:max-w-none"
                             :style="{ animationDelay: `${dIndex * 50}ms` }"
                         >
                             <!-- Card Top: Visual -->

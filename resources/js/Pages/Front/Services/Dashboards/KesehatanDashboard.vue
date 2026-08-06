@@ -329,18 +329,18 @@ const getBadgeStyles = (jenis) => {
                 <table class="w-full text-left text-xs sm:text-sm">
                     <thead class="bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 font-black uppercase text-[11px] border-b border-slate-200 dark:border-slate-700">
                         <tr>
-                            <th class="py-3.5 px-4 text-center w-[50px]">No</th>
-                            <th class="py-3.5 px-4 w-[28%]">Unit Layanan</th>
-                            <th class="py-3.5 px-3 text-center w-[130px]">Jenis</th>
-                            <th class="py-3.5 px-4 w-[15%]">Desa/Kelurahan</th>
-                            <th class="py-3.5 px-4 w-[13%]">Kecamatan</th>
-                            <th class="py-3.5 px-4 w-[25%]">Alamat Lengkap</th>
-                            <th class="py-3.5 px-4 text-center w-[130px]">Aksi</th>
+                            <th class="py-3.5 px-4 text-center w-[50px] hidden sm:table-cell">No</th>
+                            <th class="py-3.5 px-4 sm:w-[28%]">Unit Layanan</th>
+                            <th class="py-3.5 px-3 text-center sm:w-[130px]">Jenis</th>
+                            <th class="py-3.5 px-4 w-[15%] hidden sm:table-cell">Desa/Kelurahan</th>
+                            <th class="py-3.5 px-4 w-[13%] hidden sm:table-cell">Kecamatan</th>
+                            <th class="py-3.5 px-4 w-[25%] hidden sm:table-cell">Alamat Lengkap</th>
+                            <th class="py-3.5 px-4 text-center sm:w-[130px]">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200 dark:divide-slate-800 text-slate-900 dark:text-slate-100 font-medium">
                         <tr v-for="(item, idx) in paginatedFaskes" :key="item.id" class="hover:bg-emerald-50/40 dark:hover:bg-emerald-950/20 transition-colors">
-                            <td class="py-3.5 px-4 text-center font-bold text-slate-500 dark:text-slate-400">
+                            <td class="py-3.5 px-4 text-center font-bold text-slate-500 dark:text-slate-400 hidden sm:table-cell">
                                 {{ (currentUnitPage - 1) * perUnitPage + idx + 1 }}
                             </td>
                             <td class="py-3.5 px-4 font-black text-slate-900 dark:text-white">
@@ -349,21 +349,21 @@ const getBadgeStyles = (jenis) => {
                                     {{ item.total_layanan }} Jenis Layanan Terdaftar
                                 </div>
                             </td>
-                            <td class="py-3.5 px-3 text-center">
+                            <td class="py-3.5 px-3 text-center whitespace-nowrap">
                                 <span class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-[11px]" :class="getBadgeStyles(item.jenis)">
                                     {{ item.jenis }}
                                 </span>
                             </td>
-                            <td class="py-3.5 px-4 font-bold text-slate-800 dark:text-slate-200">
+                            <td class="py-3.5 px-4 font-bold text-slate-800 dark:text-slate-200 hidden sm:table-cell">
                                 {{ item.desa || '-' }}
                             </td>
-                            <td class="py-3.5 px-4 font-extrabold text-slate-900 dark:text-slate-100">
+                            <td class="py-3.5 px-4 font-extrabold text-slate-900 dark:text-slate-100 hidden sm:table-cell">
                                 {{ item.kecamatan }}
                             </td>
-                            <td class="py-3.5 px-4 text-xs font-medium text-slate-700 dark:text-slate-300 leading-relaxed">
+                            <td class="py-3.5 px-4 text-xs font-medium text-slate-700 dark:text-slate-300 leading-relaxed hidden sm:table-cell">
                                 {{ item.alamat }}
                             </td>
-                            <td class="py-3.5 px-4 text-center">
+                            <td class="py-3.5 px-4 text-center whitespace-nowrap">
                                 <button
                                     @click="openUnitModal(item)"
                                     class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs transition-colors shadow-sm inline-flex items-center gap-1 cursor-pointer"
@@ -373,7 +373,10 @@ const getBadgeStyles = (jenis) => {
                             </td>
                         </tr>
                         <tr v-if="filteredFaskes.length === 0">
-                            <td colspan="7" class="py-10 text-center text-slate-500 dark:text-slate-400 text-sm font-bold">
+                            <td colspan="3" class="sm:hidden py-10 text-center text-slate-500 dark:text-slate-400 text-sm font-bold">
+                                Tidak ada data fasilitas kesehatan yang sesuai.
+                            </td>
+                            <td colspan="7" class="hidden sm:table-cell py-10 text-center text-slate-500 dark:text-slate-400 text-sm font-bold">
                                 Tidak ada data fasilitas kesehatan yang sesuai.
                             </td>
                         </tr>

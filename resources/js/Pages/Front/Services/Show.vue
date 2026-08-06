@@ -116,11 +116,11 @@ const handleTabChange = (tabId) => {
 
         <!-- Page background with bg layanan.svg -->
         <div 
-            class="relative bg-gradient-to-b from-[#0F3D77] via-[#0F3D77]/95 to-[#0b2b52] dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-white bg-cover bg-center bg-no-repeat bg-fixed min-h-screen w-full"
+            class="relative bg-gradient-to-b from-[#0F3D77] via-[#0F3D77]/95 to-[#0b2b52] dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-white bg-cover bg-center bg-no-repeat bg-fixed min-h-screen w-full max-w-full overflow-x-hidden"
             style="background-image: url('/services/bg layanan.svg');"
         >
 
-            <div class="relative z-10 mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8 lg:pb-24 pt-24 sm:pt-28">
+            <div class="relative z-10 mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8 lg:pb-24 pt-20 sm:pt-28 w-full max-w-full">
 
                 <Link
                     href="/"
@@ -140,7 +140,7 @@ const handleTabChange = (tabId) => {
                 </Link>
 
                 <!-- Header -->
-                <div class="relative overflow-hidden rounded-3xl border border-white/15 bg-white/10 dark:bg-slate-900/80 backdrop-blur-md p-8 shadow-md sm:p-10 mb-10 animate-fade-in-up">
+                <div class="relative overflow-hidden rounded-3xl border border-white/15 bg-white/10 dark:bg-slate-900/80 backdrop-blur-md p-5 sm:p-8 lg:p-10 shadow-md mb-8 sm:mb-10 animate-fade-in-up">
                     <div class="absolute -right-20 -top-20 h-64 w-64 rounded-full bg-blue-400/10 blur-3xl" />
                     <div class="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
                         <div>

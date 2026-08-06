@@ -341,34 +341,24 @@ const getJenjangBadgeClass = (jenjang) => {
                             <span class="font-bold text-slate-800 dark:text-white">{{ filteredSekolah.length }}</span> data
                         </div>
                         
-                        <div class="flex items-center gap-1.5" v-if="getTotalPages(filteredSekolah) > 1">
+                        <div class="flex items-center gap-2" v-if="getTotalPages(filteredSekolah) > 1">
                             <button
-                                v-if="currentPageSekolah > 1"
                                 @click="currentPageSekolah--"
-                                class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+                                :disabled="currentPageSekolah <= 1"
+                                class="px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-all inline-flex items-center gap-1.5 cursor-pointer shadow-xs"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                                 </svg>
+                                <span>Sebelumnya</span>
                             </button>
                             
                             <button
-                                v-for="page in getTotalPages(filteredSekolah)"
-                                :key="page"
-                                @click="currentPageSekolah = page"
-                                class="h-8 w-8 rounded-lg text-xs font-bold transition duration-200 flex items-center justify-center"
-                                :class="currentPageSekolah === page 
-                                    ? 'bg-indigo-600 text-white dark:bg-indigo-500 dark:text-white shadow-md' 
-                                    : 'border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'"
-                            >
-                                {{ page }}
-                            </button>
-                            
-                            <button
-                                v-if="currentPageSekolah < getTotalPages(filteredSekolah)"
                                 @click="currentPageSekolah++"
-                                class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+                                :disabled="currentPageSekolah >= getTotalPages(filteredSekolah)"
+                                class="px-3.5 py-1.5 rounded-xl bg-indigo-600 dark:bg-indigo-500 text-white text-xs font-bold hover:bg-indigo-700 dark:hover:bg-indigo-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all inline-flex items-center gap-1.5 cursor-pointer shadow-xs"
                             >
+                                <span>Selanjutnya</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                                 </svg>
@@ -495,16 +485,16 @@ const getJenjangBadgeClass = (jenjang) => {
                         </h3>
                     </div>
 
-                    <div class="w-full px-3 sm:px-6 py-4">
+                    <div class="w-full px-2 sm:px-6 py-3 sm:py-4">
                         <div class="overflow-x-auto rounded-xl border border-slate-100 dark:border-slate-800">
-                            <table class="w-full text-left text-xs sm:text-sm border-collapse min-w-[650px]">
-                                <thead class="bg-gradient-to-r from-indigo-50/90 via-purple-50/70 to-indigo-50/50 dark:from-indigo-950/80 dark:via-purple-950/60 dark:to-indigo-950/40 text-indigo-950 dark:text-indigo-200 font-extrabold uppercase text-[11px] tracking-wider border-b border-indigo-100 dark:border-slate-800">
+                            <table class="w-full text-left text-xs sm:text-sm border-collapse min-w-[600px] sm:min-w-full">
+                                <thead class="bg-gradient-to-r from-indigo-50/90 via-purple-50/70 to-indigo-50/50 dark:from-indigo-950/80 dark:via-purple-950/60 dark:to-indigo-950/40 text-indigo-950 dark:text-indigo-200 font-extrabold uppercase text-[10px] sm:text-[11px] tracking-wider border-b border-indigo-100 dark:border-slate-800">
                                     <tr>
-                                        <th class="py-4 px-3 w-[8%] text-center">No</th>
-                                        <th class="py-4 px-4 w-[40%] text-left">Nama Sekolah</th>
-                                        <th class="py-4 px-3 w-[15%] text-center">Jenjang</th>
-                                        <th class="py-4 px-3 w-[18%] text-center">Kecamatan</th>
-                                        <th class="py-4 px-4 w-[19%] text-center rounded-r-xl">Jumlah Siswa</th>
+                                        <th class="py-3 sm:py-4 px-2 sm:px-3 text-center">No</th>
+                                        <th class="py-3 sm:py-4 px-3 sm:px-4 text-left">Nama Sekolah</th>
+                                        <th class="py-3 sm:py-4 px-2 sm:px-3 text-center whitespace-nowrap">Jenjang</th>
+                                        <th class="py-3 sm:py-4 px-2 sm:px-3 text-center whitespace-nowrap">Kecamatan</th>
+                                        <th class="py-3 sm:py-4 px-3 sm:px-4 text-center rounded-r-xl whitespace-nowrap">Jumlah Siswa</th>
                                     </tr>
                                 </thead>
 
@@ -514,27 +504,24 @@ const getJenjangBadgeClass = (jenjang) => {
                                         :key="school.id"
                                         class="hover:bg-indigo-50/20 dark:hover:bg-indigo-950/20 transition-colors duration-200"
                                     >
-                                        <td class="py-3.5 px-3 text-center text-slate-500 dark:text-slate-400 font-bold font-sans">
+                                        <td class="py-2.5 sm:py-3.5 px-2 sm:px-3 text-center text-slate-500 dark:text-slate-400 font-bold font-sans">
                                             {{ (currentPageSiswa - 1) * perPage + idx + 1 }}
                                         </td>
-                                        <td class="py-3.5 px-4 font-bold text-slate-900 dark:text-white">
-                                            <div class="flex items-center gap-2.5">
-                                        
-                                                <div>
-                                                    {{ school.nama }}
-                                                </div>
+                                        <td class="py-2.5 sm:py-3.5 px-3 sm:px-4 font-bold text-slate-900 dark:text-white">
+                                            <div>
+                                                {{ school.nama }}
                                             </div>
                                         </td>
-                                        <td class="py-3.5 px-3 text-center">
-                                            <span class="inline-flex items-center justify-center px-3 py-0.5 rounded-full border text-[10px] font-extrabold tracking-wide uppercase" :class="getJenjangBadgeClass(school.jenjang)">
+                                        <td class="py-2.5 sm:py-3.5 px-2 sm:px-3 text-center whitespace-nowrap">
+                                            <span class="inline-flex items-center justify-center px-2.5 sm:px-3 py-0.5 rounded-full border text-[10px] font-extrabold tracking-wide uppercase" :class="getJenjangBadgeClass(school.jenjang)">
                                                 {{ school.jenjang }}
                                             </span>
                                         </td>
-                                        <td class="py-3.5 px-3 text-center font-semibold text-slate-700 dark:text-slate-300">
+                                        <td class="py-2.5 sm:py-3.5 px-2 sm:px-3 text-center font-semibold text-slate-700 dark:text-slate-300 whitespace-nowrap">
                                             {{ school.kecamatan }}
                                         </td>
-                                        <td class="py-3.5 px-4 text-center">
-                                            <span class="inline-flex items-center justify-center px-3 py-1 rounded-full bg-indigo-600 text-white text-xs font-black min-w-[50px] shadow-xs">
+                                        <td class="py-2.5 sm:py-3.5 px-3 sm:px-4 text-center whitespace-nowrap">
+                                            <span class="inline-flex items-center justify-center px-2.5 sm:px-3 py-1 rounded-full bg-indigo-600 text-white text-xs font-black min-w-[45px] sm:min-w-[50px] shadow-xs">
                                                 {{ formatNumber(school.jumlah_siswa) }}
                                             </span>
                                         </td>
@@ -558,34 +545,24 @@ const getJenjangBadgeClass = (jenjang) => {
                             <span class="font-bold text-slate-800 dark:text-white">{{ filteredSiswa.length }}</span> data
                         </div>
                         
-                        <div class="flex items-center gap-1.5" v-if="getTotalPages(filteredSiswa) > 1">
+                        <div class="flex items-center gap-2" v-if="getTotalPages(filteredSiswa) > 1">
                             <button
-                                v-if="currentPageSiswa > 1"
                                 @click="currentPageSiswa--"
-                                class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+                                :disabled="currentPageSiswa <= 1"
+                                class="px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-all inline-flex items-center gap-1.5 cursor-pointer shadow-xs"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                                 </svg>
+                                <span>Sebelumnya</span>
                             </button>
                             
                             <button
-                                v-for="page in getTotalPages(filteredSiswa)"
-                                :key="page"
-                                @click="currentPageSiswa = page"
-                                class="h-8 w-8 rounded-lg text-xs font-bold transition duration-200 flex items-center justify-center"
-                                :class="currentPageSiswa === page 
-                                    ? 'bg-indigo-600 text-white dark:bg-indigo-500 dark:text-white shadow-md' 
-                                    : 'border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'"
-                            >
-                                {{ page }}
-                            </button>
-                            
-                            <button
-                                v-if="currentPageSiswa < getTotalPages(filteredSiswa)"
                                 @click="currentPageSiswa++"
-                                class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+                                :disabled="currentPageSiswa >= getTotalPages(filteredSiswa)"
+                                class="px-3.5 py-1.5 rounded-xl bg-indigo-600 dark:bg-indigo-500 text-white text-xs font-bold hover:bg-indigo-700 dark:hover:bg-indigo-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all inline-flex items-center gap-1.5 cursor-pointer shadow-xs"
                             >
+                                <span>Selanjutnya</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                                 </svg>
@@ -712,16 +689,16 @@ const getJenjangBadgeClass = (jenjang) => {
                         </h3>
                     </div>
 
-                    <div class="w-full px-3 sm:px-6 py-4">
+                    <div class="w-full px-2 sm:px-6 py-3 sm:py-4">
                         <div class="overflow-x-auto rounded-xl border border-slate-100 dark:border-slate-800">
-                            <table class="w-full text-left text-xs sm:text-sm border-collapse min-w-[650px]">
-                                <thead class="bg-gradient-to-r from-indigo-50/90 via-purple-50/70 to-indigo-50/50 dark:from-indigo-950/80 dark:via-purple-950/60 dark:to-indigo-950/40 text-indigo-950 dark:text-indigo-200 font-extrabold uppercase text-[11px] tracking-wider border-b border-indigo-100 dark:border-slate-800">
+                            <table class="w-full text-left text-xs sm:text-sm border-collapse min-w-[600px] sm:min-w-full">
+                                <thead class="bg-gradient-to-r from-indigo-50/90 via-purple-50/70 to-indigo-50/50 dark:from-indigo-950/80 dark:via-purple-950/60 dark:to-indigo-950/40 text-indigo-950 dark:text-indigo-200 font-extrabold uppercase text-[10px] sm:text-[11px] tracking-wider border-b border-indigo-100 dark:border-slate-800">
                                     <tr>
-                                        <th class="py-4 px-3 w-[8%] text-center">No</th>
-                                        <th class="py-4 px-4 w-[40%] text-left">Nama Sekolah</th>
-                                        <th class="py-4 px-3 w-[15%] text-center">Jenjang</th>
-                                        <th class="py-4 px-3 w-[18%] text-center">Kecamatan</th>
-                                        <th class="py-4 px-4 w-[19%] text-center">Jumlah Guru</th>
+                                        <th class="py-3 sm:py-4 px-2 sm:px-3 text-center">No</th>
+                                        <th class="py-3 sm:py-4 px-3 sm:px-4 text-left">Nama Sekolah</th>
+                                        <th class="py-3 sm:py-4 px-2 sm:px-3 text-center whitespace-nowrap">Jenjang</th>
+                                        <th class="py-3 sm:py-4 px-2 sm:px-3 text-center whitespace-nowrap">Kecamatan</th>
+                                        <th class="py-3 sm:py-4 px-3 sm:px-4 text-center rounded-r-xl whitespace-nowrap">Jumlah Guru</th>
                                     </tr>
                                 </thead>
 
@@ -731,27 +708,24 @@ const getJenjangBadgeClass = (jenjang) => {
                                         :key="school.id"
                                         class="hover:bg-indigo-50/20 dark:hover:bg-indigo-950/20 transition-colors duration-200"
                                     >
-                                        <td class="py-3.5 px-3 text-center text-slate-500 dark:text-slate-400 font-bold font-sans">
+                                        <td class="py-2.5 sm:py-3.5 px-2 sm:px-3 text-center text-slate-500 dark:text-slate-400 font-bold font-sans">
                                             {{ (currentPageGuru - 1) * perPage + idx + 1 }}
                                         </td>
-                                        <td class="py-3.5 px-4 font-bold text-slate-900 dark:text-white">
-                                            <div class="flex items-center gap-2.5">
-                                                
-                                                <div>
-                                                    {{ school.nama }}
-                                                </div>
+                                        <td class="py-2.5 sm:py-3.5 px-3 sm:px-4 font-bold text-slate-900 dark:text-white">
+                                            <div>
+                                                {{ school.nama }}
                                             </div>
                                         </td>
-                                        <td class="py-3.5 px-3 text-center">
-                                            <span class="inline-flex items-center justify-center px-3 py-0.5 rounded-full border text-[10px] font-extrabold tracking-wide uppercase" :class="getJenjangBadgeClass(school.jenjang)">
+                                        <td class="py-2.5 sm:py-3.5 px-2 sm:px-3 text-center whitespace-nowrap">
+                                            <span class="inline-flex items-center justify-center px-2.5 sm:px-3 py-0.5 rounded-full border text-[10px] font-extrabold tracking-wide uppercase" :class="getJenjangBadgeClass(school.jenjang)">
                                                 {{ school.jenjang }}
                                             </span>
                                         </td>
-                                        <td class="py-3.5 px-3 text-center font-semibold text-slate-700 dark:text-slate-300">
+                                        <td class="py-2.5 sm:py-3.5 px-2 sm:px-3 text-center font-semibold text-slate-700 dark:text-slate-300 whitespace-nowrap">
                                             {{ school.kecamatan }}
                                         </td>
-                                        <td class="py-3.5 px-4 text-center">
-                                            <span class="inline-flex items-center justify-center px-3 py-1 rounded-full bg-purple-600 text-white text-xs font-black min-w-[50px] shadow-xs">
+                                        <td class="py-2.5 sm:py-3.5 px-3 sm:px-4 text-center whitespace-nowrap">
+                                            <span class="inline-flex items-center justify-center px-2.5 sm:px-3 py-1 rounded-full bg-purple-600 text-white text-xs font-black min-w-[45px] sm:min-w-[50px] shadow-xs">
                                                 {{ formatNumber(school.jumlah_guru) }}
                                             </span>
                                         </td>
@@ -775,34 +749,24 @@ const getJenjangBadgeClass = (jenjang) => {
                             <span class="font-bold text-slate-800 dark:text-white">{{ filteredGuru.length }}</span> data
                         </div>
                         
-                        <div class="flex items-center gap-1.5" v-if="getTotalPages(filteredGuru) > 1">
+                        <div class="flex items-center gap-2" v-if="getTotalPages(filteredGuru) > 1">
                             <button
-                                v-if="currentPageGuru > 1"
                                 @click="currentPageGuru--"
-                                class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+                                :disabled="currentPageGuru <= 1"
+                                class="px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition-all inline-flex items-center gap-1.5 cursor-pointer shadow-xs"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                                 </svg>
+                                <span>Sebelumnya</span>
                             </button>
                             
                             <button
-                                v-for="page in getTotalPages(filteredGuru)"
-                                :key="page"
-                                @click="currentPageGuru = page"
-                                class="h-8 w-8 rounded-lg text-xs font-bold transition duration-200 flex items-center justify-center"
-                                :class="currentPageGuru === page 
-                                    ? 'bg-indigo-600 text-white dark:bg-indigo-500 dark:text-white shadow-md' 
-                                    : 'border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'"
-                            >
-                                {{ page }}
-                            </button>
-                            
-                            <button
-                                v-if="currentPageGuru < getTotalPages(filteredGuru)"
                                 @click="currentPageGuru++"
-                                class="p-2 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+                                :disabled="currentPageGuru >= getTotalPages(filteredGuru)"
+                                class="px-3.5 py-1.5 rounded-xl bg-purple-600 dark:bg-purple-500 text-white text-xs font-bold hover:bg-purple-700 dark:hover:bg-purple-600 disabled:opacity-40 disabled:cursor-not-allowed transition-all inline-flex items-center gap-1.5 cursor-pointer shadow-xs"
                             >
+                                <span>Selanjutnya</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                                 </svg>

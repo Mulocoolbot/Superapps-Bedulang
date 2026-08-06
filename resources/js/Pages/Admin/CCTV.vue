@@ -66,6 +66,16 @@ let loadedMetadataHandler = null
 const zoom = 13
 const center = [-2.45, 106.15]
 
+const isMapInteractive = ref(false)
+const isMobile = ref(typeof window !== 'undefined' && window.innerWidth < 768)
+
+const mapOptions = computed(() => {
+    if (isMobile.value && !isMapInteractive.value) {
+        return { dragging: false, touchZoom: false, scrollWheelZoom: false }
+    }
+    return { dragging: true, touchZoom: true, scrollWheelZoom: false }
+})
+
 const openCCTV = async (cctv) => {
     selectedCCTV.value = cctv
     streamError.value = false
@@ -199,9 +209,34 @@ const goBack = () => {
                     </div>
 
                     <div class="h-[520px] w-full relative">
+                        <!-- Mobile Overlay hint to prevent scroll hijacking -->
+                        <div
+                            v-if="isMobile && !isMapInteractive"
+                            @click="isMapInteractive = true"
+                            class="absolute inset-0 bg-slate-900/10 backdrop-blur-[1px] z-10 flex items-center justify-center cursor-pointer p-4 transition-all"
+                        >
+                            <button
+                                type="button"
+                                class="px-4 py-2 bg-slate-900/85 text-white text-xs font-bold rounded-xl shadow-lg border border-white/20 flex items-center gap-2"
+                            >
+                                <span>👆 Klik untuk Interaksi Peta</span>
+                            </button>
+                        </div>
+
+                        <!-- Toggle back button when map is unlocked on mobile -->
+                        <button
+                            v-if="isMobile && isMapInteractive"
+                            @click="isMapInteractive = false"
+                            type="button"
+                            class="absolute top-3 right-3 z-10 px-3 py-1.5 bg-white/90 dark:bg-slate-800/90 text-slate-800 dark:text-white text-xs font-extrabold rounded-lg shadow-md border border-slate-200 dark:border-slate-700 flex items-center gap-1.5"
+                        >
+                            <span>🔒 Kunci Peta</span>
+                        </button>
+
                         <LMap
                             :zoom="zoom"
                             :center="center"
+                            :options="mapOptions"
                             class="h-full w-full z-0"
                         >
                             <LTileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"></LTileLayer>

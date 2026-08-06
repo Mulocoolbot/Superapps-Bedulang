@@ -28,13 +28,13 @@ const toggleDarkMode = () => {
 
 <template>
 
-    <div class="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
+    <div class="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300 overflow-x-hidden w-full max-w-full">
 
         <!-- NAVBAR -->
-        <Navbar ></Navbar>
+        <Navbar></Navbar>
 
         <!-- CONTENT -->
-        <main class="relative z-0 min-h-screen">
+        <main class="relative z-0 min-h-screen w-full max-w-full overflow-x-hidden">
             <!-- Flash Message Banner -->
             <div v-if="$page.props.flash?.warning" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 mb-2">
                 <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-sm font-medium flex items-center gap-3 shadow-sm">

@@ -303,7 +303,7 @@ const getAvailabilityStatus = (amount) => {
 
         <!-- DESKTOP COMPACT FLUSH SIDEBAR NAVIGATION (HIDDEN ON MOBILE, SHOWN ON MD+) -->
         <aside
-            class="hidden md:block fixed left-0 top-32 z-30 w-44 sm:w-48 transition-all duration-300"
+            class="hidden md:block fixed left-0 top-1/2 -translate-y-1/2 z-30 w-44 sm:w-48 transition-all duration-300"
         >
             <div class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-r-2xl rounded-l-none border-y border-r border-slate-200/80 dark:border-slate-800 p-2.5 shadow-xl space-y-1">
                 <div class="px-2 py-1 mb-1 border-b border-slate-100 dark:border-slate-800/80">
@@ -377,20 +377,20 @@ const getAvailabilityStatus = (amount) => {
                 <div v-else-if="activeSidebarTab === 'sawit'" key="sawit" class="space-y-8">
 
                     <!-- Stats Metric Bar Card -->
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-sm space-y-1">
-                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Rerata Harga Pabrik</span>
-                            <div class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">{{ formatRupiah(avgFactoryPrice) }} / kg</div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+                        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 shadow-sm space-y-1">
+                            <span class="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Rerata Harga Pabrik</span>
+                            <div class="text-xl sm:text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">{{ formatRupiah(avgFactoryPrice) }} / kg</div>
                             <p class="text-[11px] text-slate-400">Daftar {{ factoryPrices.length }} Pabrik Kelapa Sawit</p>
                         </div>
-                        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-sm space-y-1">
-                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Harga Tertinggi Pabrik</span>
-                            <div class="text-2xl font-extrabold text-teal-600 dark:text-teal-400 font-mono">{{ formatRupiah(maxFactoryPrice) }} / kg</div>
+                        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 shadow-sm space-y-1">
+                            <span class="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Harga Tertinggi Pabrik</span>
+                            <div class="text-xl sm:text-2xl font-extrabold text-teal-600 dark:text-teal-400 font-mono">{{ formatRupiah(maxFactoryPrice) }} / kg</div>
                             <p class="text-[11px] text-slate-400">Penetapan PKS Terbaik</p>
                         </div>
-                        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-sm space-y-1">
-                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Rerata Pekebun (Kecamatan)</span>
-                            <div class="text-2xl font-extrabold text-green-600 dark:text-green-400 font-mono">{{ formatRupiah(avgDistrictPrice) }} / kg</div>
+                        <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 shadow-sm space-y-1">
+                            <span class="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Rerata Pekebun (Kecamatan)</span>
+                            <div class="text-xl sm:text-2xl font-extrabold text-green-600 dark:text-green-400 font-mono">{{ formatRupiah(avgDistrictPrice) }} / kg</div>
                             <p class="text-[11px] text-slate-400">Rerata 6 Kecamatan Bangka Tengah</p>
                         </div>
                     </div>
@@ -398,10 +398,10 @@ const getAvailabilityStatus = (amount) => {
                     <!-- 2 Tabs Table Full Width Navbar Menu -->
                     <div class="space-y-6">
                         <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-1.5 rounded-xl w-full">
-                            <button @click="activeSawitTab = 1" class="flex-1 py-2.5 px-4 rounded-lg text-xs sm:text-sm font-bold transition cursor-pointer text-center" :class="activeSawitTab === 1 ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
+                            <button @click="activeSawitTab = 1" class="flex-1 py-2.5 px-3 sm:px-4 rounded-lg text-xs sm:text-sm font-bold transition cursor-pointer text-center" :class="activeSawitTab === 1 ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
                                 Pabrik Kelapa Sawit (PKS)
                             </button>
-                            <button @click="activeSawitTab = 2" class="flex-1 py-2.5 px-4 rounded-lg text-xs sm:text-sm font-bold transition cursor-pointer text-center" :class="activeSawitTab === 2 ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
+                            <button @click="activeSawitTab = 2" class="flex-1 py-2.5 px-3 sm:px-4 rounded-lg text-xs sm:text-sm font-bold transition cursor-pointer text-center" :class="activeSawitTab === 2 ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'">
                                 Rerata Pekebun Non Mitra
                             </button>
                         </div>
@@ -410,73 +410,77 @@ const getAvailabilityStatus = (amount) => {
                         <Transition name="subtab-fade" mode="out-in">
                             <!-- TAB 1: PABRIK KELAPA SAWIT -->
                             <div v-if="activeSawitTab === 1" key="sawit-pks" class="overflow-hidden rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
-                                <table class="w-full text-left text-xs sm:text-sm">
-                                    <thead class="bg-slate-50 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 font-bold uppercase text-[11px] tracking-wider border-b border-slate-200 dark:border-slate-800">
-                                        <tr>
-                                            <th class="py-3.5 px-6">Nama Perusahaan / PKS</th>
-                                            <th class="py-3.5 px-6 text-right">Harga Hari Ini</th>
-                                            <th class="py-3.5 px-6 text-right">Harga Kemarin</th>
-                                            <th class="py-3.5 px-6 text-right">Selisih</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-800 dark:text-slate-200">
-                                        <tr v-for="item in filteredFactoryPrices" :key="item.id" class="hover:bg-emerald-50/40 dark:hover:bg-slate-800/40 transition">
-                                            <td class="py-4 px-6 font-bold">
-                                                <div>
-                                                    <span class="text-slate-900 dark:text-white block">{{ item.name }}</span>
-                                                    <span v-if="item.location" class="text-xs font-normal text-slate-400 block mt-0.5">{{ item.location }}</span>
-                                                </div>
-                                            </td>
-                                            <td class="py-4 px-6 text-right font-extrabold text-slate-900 dark:text-white">{{ formatRupiah(item.today) }} /kg</td>
-                                            <td class="py-4 px-6 text-right font-medium text-slate-500">{{ formatRupiah(item.yesterday) }} /kg</td>
-                                            <td class="py-4 px-6 text-right font-bold">
-                                                <span v-if="getDiff(item.today, item.yesterday) > 0" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
-                                                    ▲ +{{ formatRupiah(getDiff(item.today, item.yesterday)) }}
-                                                </span>
-                                                <span v-else-if="getDiff(item.today, item.yesterday) < 0" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-extrabold bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-400">
-                                                    ▼ {{ formatRupiah(getDiff(item.today, item.yesterday)) }}
-                                                </span>
-                                                <span v-else class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-                                                    = Rp 0
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left text-xs sm:text-sm min-w-[480px] sm:min-w-full">
+                                        <thead class="bg-slate-50 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 font-bold uppercase text-[10px] sm:text-[11px] tracking-wider border-b border-slate-200 dark:border-slate-800">
+                                            <tr>
+                                                <th class="py-3 sm:py-3.5 px-3 sm:px-6">Nama Perusahaan / PKS</th>
+                                                <th class="py-3 sm:py-3.5 px-3 sm:px-6 text-right whitespace-nowrap">Harga Hari Ini</th>
+                                                <th class="py-3 sm:py-3.5 px-3 sm:px-6 text-right whitespace-nowrap">Harga Kemarin</th>
+                                                <th class="py-3 sm:py-3.5 px-3 sm:px-6 text-right whitespace-nowrap">Selisih</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-800 dark:text-slate-200">
+                                            <tr v-for="item in filteredFactoryPrices" :key="item.id" class="hover:bg-emerald-50/40 dark:hover:bg-slate-800/40 transition">
+                                                <td class="py-3 sm:py-4 px-3 sm:px-6 font-bold">
+                                                    <div>
+                                                        <span class="text-slate-900 dark:text-white block">{{ item.name }}</span>
+                                                        <span v-if="item.location" class="text-xs font-normal text-slate-400 block mt-0.5">{{ item.location }}</span>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3 sm:py-4 px-3 sm:px-6 text-right font-extrabold text-slate-900 dark:text-white whitespace-nowrap">{{ formatRupiah(item.today) }} /kg</td>
+                                                <td class="py-3 sm:py-4 px-3 sm:px-6 text-right font-medium text-slate-500 whitespace-nowrap">{{ formatRupiah(item.yesterday) }} /kg</td>
+                                                <td class="py-3 sm:py-4 px-3 sm:px-6 text-right font-bold whitespace-nowrap">
+                                                    <span v-if="getDiff(item.today, item.yesterday) > 0" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
+                                                        ▲ +{{ formatRupiah(getDiff(item.today, item.yesterday)) }}
+                                                    </span>
+                                                    <span v-else-if="getDiff(item.today, item.yesterday) < 0" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-extrabold bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-400">
+                                                        ▼ {{ formatRupiah(getDiff(item.today, item.yesterday)) }}
+                                                    </span>
+                                                    <span v-else class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                                                        = Rp 0
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
 
                             <!-- TAB 2: RERATA PEKEBUN -->
                             <div v-else key="sawit-pekebun" class="overflow-hidden rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
-                                <table class="w-full text-left text-xs sm:text-sm">
-                                    <thead class="bg-slate-50 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 font-bold uppercase text-[11px] tracking-wider border-b border-slate-200 dark:border-slate-800">
-                                        <tr>
-                                            <th class="py-3.5 px-6">Kecamatan</th>
-                                            <th class="py-3.5 px-6 text-right">Harga Hari Ini</th>
-                                            <th class="py-3.5 px-6 text-right">Harga Kemarin</th>
-                                            <th class="py-3.5 px-6 text-right">Selisih</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-800 dark:text-slate-200">
-                                        <tr v-for="item in filteredDistrictPrices" :key="item.id" class="hover:bg-teal-50/40 dark:hover:bg-slate-800/40 transition">
-                                            <td class="py-4 px-6 font-bold">
-                                                <span class="text-slate-900 dark:text-white">{{ item.district }}</span>
-                                            </td>
-                                            <td class="py-4 px-6 text-right font-extrabold text-slate-900 dark:text-white">{{ formatRupiah(item.today) }} /kg</td>
-                                            <td class="py-4 px-6 text-right font-medium text-slate-500">{{ formatRupiah(item.yesterday) }} /kg</td>
-                                            <td class="py-4 px-6 text-right font-bold">
-                                                <span v-if="getDiff(item.today, item.yesterday) > 0" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
-                                                    ▲ +{{ formatRupiah(getDiff(item.today, item.yesterday)) }}
-                                                </span>
-                                                <span v-else-if="getDiff(item.today, item.yesterday) < 0" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-extrabold bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-400">
-                                                    ▼ {{ formatRupiah(getDiff(item.today, item.yesterday)) }}
-                                                </span>
-                                                <span v-else class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-                                                    = Rp 0
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left text-xs sm:text-sm min-w-[480px] sm:min-w-full">
+                                        <thead class="bg-slate-50 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 font-bold uppercase text-[10px] sm:text-[11px] tracking-wider border-b border-slate-200 dark:border-slate-800">
+                                            <tr>
+                                                <th class="py-3 sm:py-3.5 px-3 sm:px-6">Kecamatan</th>
+                                                <th class="py-3 sm:py-3.5 px-3 sm:px-6 text-right whitespace-nowrap">Harga Hari Ini</th>
+                                                <th class="py-3 sm:py-3.5 px-3 sm:px-6 text-right whitespace-nowrap">Harga Kemarin</th>
+                                                <th class="py-3 sm:py-3.5 px-3 sm:px-6 text-right whitespace-nowrap">Selisih</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-800 dark:text-slate-200">
+                                            <tr v-for="item in filteredDistrictPrices" :key="item.id" class="hover:bg-teal-50/40 dark:hover:bg-slate-800/40 transition">
+                                                <td class="py-3 sm:py-4 px-3 sm:px-6 font-bold">
+                                                    <span class="text-slate-900 dark:text-white">{{ item.district }}</span>
+                                                </td>
+                                                <td class="py-3 sm:py-4 px-3 sm:px-6 text-right font-extrabold text-slate-900 dark:text-white whitespace-nowrap">{{ formatRupiah(item.today) }} /kg</td>
+                                                <td class="py-3 sm:py-4 px-3 sm:px-6 text-right font-medium text-slate-500 whitespace-nowrap">{{ formatRupiah(item.yesterday) }} /kg</td>
+                                                <td class="py-3 sm:py-4 px-3 sm:px-6 text-right font-bold whitespace-nowrap">
+                                                    <span v-if="getDiff(item.today, item.yesterday) > 0" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400">
+                                                        ▲ +{{ formatRupiah(getDiff(item.today, item.yesterday)) }}
+                                                    </span>
+                                                    <span v-else-if="getDiff(item.today, item.yesterday) < 0" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-extrabold bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-400">
+                                                        ▼ {{ formatRupiah(getDiff(item.today, item.yesterday)) }}
+                                                    </span>
+                                                    <span v-else class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                                                        = Rp 0
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </Transition>
                     </div>

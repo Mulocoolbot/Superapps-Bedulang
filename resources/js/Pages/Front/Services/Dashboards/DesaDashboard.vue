@@ -92,6 +92,22 @@ const searchQuery = ref('')
 const selectedDesa = ref(villages[0]) // Default selection (Nibung)
 const mapContainer = ref(null)
 
+const isMobile = ref(typeof window !== 'undefined' && window.innerWidth < 768)
+const isMapInteractive = ref(false)
+
+const toggleMapInteraction = () => {
+    isMapInteractive.value = !isMapInteractive.value
+    if (mapInstance) {
+        if (isMapInteractive.value) {
+            mapInstance.dragging.enable()
+            if (mapInstance.touchZoom) mapInstance.touchZoom.enable()
+        } else {
+            mapInstance.dragging.disable()
+            if (mapInstance.touchZoom) mapInstance.touchZoom.disable()
+        }
+    }
+}
+
 const showSuggestions = ref(false)
 let mapInstance = null
 let markersLayer = null
@@ -303,7 +319,11 @@ watch(searchQuery, () => {
 
 onMounted(() => {
     // Initialize map
-    mapInstance = L.map(mapContainer.value).setView([-2.38, 106.20], 10)
+    mapInstance = L.map(mapContainer.value, {
+        scrollWheelZoom: false,
+        dragging: !isMobile.value,
+        touchZoom: !isMobile.value
+    }).setView([-2.38, 106.20], 10)
     
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
@@ -419,7 +439,33 @@ onMounted(() => {
                     </span>
                 </div>
                 <!-- Leaflet container -->
-                <div class="h-[460px] w-full z-0" ref="mapContainer"></div>
+                <div class="h-[460px] w-full relative z-0">
+                    <!-- Mobile Overlay hint to prevent scroll hijacking -->
+                    <div
+                        v-if="isMobile && !isMapInteractive"
+                        @click="toggleMapInteraction"
+                        class="absolute inset-0 bg-slate-900/10 backdrop-blur-[1px] z-10 flex items-center justify-center cursor-pointer p-4 transition-all"
+                    >
+                        <button
+                            type="button"
+                            class="px-4 py-2 bg-slate-900/85 text-white text-xs font-bold rounded-xl shadow-lg border border-white/20 flex items-center gap-2"
+                        >
+                            <span>👆 Klik untuk Interaksi Peta</span>
+                        </button>
+                    </div>
+
+                    <!-- Toggle back button when map is unlocked on mobile -->
+                    <button
+                        v-if="isMobile && isMapInteractive"
+                        @click="toggleMapInteraction"
+                        type="button"
+                        class="absolute top-3 right-3 z-10 px-3 py-1.5 bg-white/90 dark:bg-slate-800/90 text-slate-800 dark:text-white text-xs font-extrabold rounded-lg shadow-md border border-slate-200 dark:border-slate-700 flex items-center gap-1.5"
+                    >
+                        <span>🔒 Kunci Peta</span>
+                    </button>
+
+                    <div class="h-full w-full" ref="mapContainer"></div>
+                </div>
             </div>
 
             <!-- Detail Info Card (Right) -->

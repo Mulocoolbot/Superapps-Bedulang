@@ -249,16 +249,16 @@ watch(searchQuery, () => {
                 </div>
 
                 <!-- Table Container with inner side padding to pull content away from outer card edges -->
-                <div class="w-full min-h-[640px] flex flex-col justify-between px-3 sm:px-6 py-2">
-                    <table class="w-full table-fixed text-left text-sm sm:text-base border-collapse">
-                        <thead class="bg-gradient-to-r from-indigo-50/90 via-purple-50/70 to-pink-50/50 dark:from-indigo-950/80 dark:via-purple-950/60 dark:to-pink-950/40 text-indigo-950 dark:text-indigo-200 font-extrabold uppercase text-[11px] sm:text-xs tracking-wider border-b border-indigo-100 dark:border-slate-800 rounded-xl overflow-hidden">
+                <div class="w-full min-h-[500px] sm:min-h-[640px] flex flex-col justify-between px-1 sm:px-6 py-2 overflow-x-auto">
+                    <table class="w-full text-left text-xs sm:text-base border-collapse min-w-[580px] sm:min-w-full">
+                        <thead class="bg-gradient-to-r from-indigo-50/90 via-purple-50/70 to-pink-50/50 dark:from-indigo-950/80 dark:via-purple-950/60 dark:to-pink-950/40 text-indigo-950 dark:text-indigo-200 font-extrabold uppercase text-[10px] sm:text-xs tracking-wider border-b border-indigo-100 dark:border-slate-800 rounded-xl overflow-hidden">
                             <tr>
-                                <th class="py-4 px-3 w-[8%] text-center rounded-l-xl">No</th>
-                                <th class="py-4 px-4 w-[44%] text-left">Nama UPD</th>
-                                <th class="py-4 px-2 w-[12%] text-center">PNS</th>
-                                <th class="py-4 px-2 w-[12%] text-center">P3K</th>
-                                <th class="py-4 px-2 w-[12%] text-center">P3K PW</th>
-                                <th class="py-4 px-3 w-[12%] text-center rounded-r-xl">Total</th>
+                                <th class="py-3 sm:py-4 px-2 sm:px-3 sm:w-[8%] text-center rounded-l-xl">No</th>
+                                <th class="py-3 sm:py-4 px-3 sm:px-4 sm:w-[44%] text-left">Nama UPD</th>
+                                <th class="py-3 sm:py-4 px-2 sm:w-[12%] text-center whitespace-nowrap">PNS</th>
+                                <th class="py-3 sm:py-4 px-2 sm:w-[12%] text-center whitespace-nowrap">P3K</th>
+                                <th class="py-3 sm:py-4 px-2 sm:w-[12%] text-center whitespace-nowrap">P3K PW</th>
+                                <th class="py-3 sm:py-4 px-2 sm:px-3 sm:w-[12%] text-center rounded-r-xl whitespace-nowrap">Total</th>
                             </tr>
                         </thead>
 
@@ -270,12 +270,12 @@ watch(searchQuery, () => {
                                     :key="item.id"
                                     class="hover:bg-indigo-50/40 dark:hover:bg-indigo-950/30 transition-colors duration-200"
                                 >
-                                    <td class="py-3.5 px-3 w-[8%] text-center text-slate-500 dark:text-slate-400 font-bold font-sans align-middle text-xs sm:text-sm">
+                                    <td class="py-2.5 sm:py-3.5 px-2 sm:px-3 text-center text-slate-500 dark:text-slate-400 font-bold font-sans align-middle text-xs sm:text-sm">
                                         {{ (currentPage - 1) * perPage + idx + 1 }}
                                     </td>
-                                    <td class="py-3.5 px-4 w-[44%] font-bold align-middle">
-                                        <div class="flex items-start sm:items-center gap-2.5">
-                                            <span class="p-1.5 rounded-xl bg-indigo-100 dark:bg-indigo-900/60 text-indigo-600 dark:text-indigo-300 shrink-0 shadow-sm text-sm sm:text-base mt-0.5 sm:mt-0">
+                                    <td class="py-2.5 sm:py-3.5 px-3 sm:px-4 font-bold align-middle">
+                                        <div class="flex items-start sm:items-center gap-2">
+                                            <span class="p-1 sm:p-1.5 rounded-xl bg-indigo-100 dark:bg-indigo-900/60 text-indigo-600 dark:text-indigo-300 shrink-0 shadow-xs text-xs sm:text-base mt-0.5 sm:mt-0">
                                                 🏢
                                             </span>
                                             <div class="font-sans text-slate-900 dark:text-white leading-normal text-xs sm:text-sm md:text-base whitespace-normal break-words">
@@ -283,23 +283,23 @@ watch(searchQuery, () => {
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="py-3.5 px-2 w-[12%] text-center align-middle">
-                                        <span class="inline-flex items-center justify-center px-2.5 sm:px-3 py-1 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-100 dark:border-blue-900/40 text-xs sm:text-sm font-extrabold min-w-[36px] sm:min-w-[44px]">
+                                    <td class="py-2.5 sm:py-3.5 px-2 text-center align-middle whitespace-nowrap">
+                                        <span class="inline-flex items-center justify-center px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-100 dark:border-blue-900/40 text-xs sm:text-sm font-extrabold min-w-[32px] sm:min-w-[44px]">
                                             {{ formatNumber(item.jumlah_pns) }}
                                         </span>
                                     </td>
-                                    <td class="py-3.5 px-2 w-[12%] text-center align-middle">
-                                        <span class="inline-flex items-center justify-center px-2.5 sm:px-3 py-1 rounded-full bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-100 dark:border-purple-900/40 text-xs sm:text-sm font-extrabold min-w-[36px] sm:min-w-[44px]">
+                                    <td class="py-2.5 sm:py-3.5 px-2 text-center align-middle whitespace-nowrap">
+                                        <span class="inline-flex items-center justify-center px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-100 dark:border-purple-900/40 text-xs sm:text-sm font-extrabold min-w-[32px] sm:min-w-[44px]">
                                             {{ formatNumber(item.jumlah_p3k) }}
                                         </span>
                                     </td>
-                                    <td class="py-3.5 px-2 w-[12%] text-center align-middle">
-                                        <span class="inline-flex items-center justify-center px-2.5 sm:px-3 py-1 rounded-full bg-pink-50 text-pink-700 dark:bg-pink-950/60 dark:text-pink-300 border border-pink-100 dark:border-pink-900/40 text-xs sm:text-sm font-extrabold min-w-[36px] sm:min-w-[44px]">
+                                    <td class="py-2.5 sm:py-3.5 px-2 text-center align-middle whitespace-nowrap">
+                                        <span class="inline-flex items-center justify-center px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-pink-50 text-pink-700 dark:bg-pink-950/60 dark:text-pink-300 border border-pink-100 dark:border-pink-900/40 text-xs sm:text-sm font-extrabold min-w-[32px] sm:min-w-[44px]">
                                             {{ formatNumber(item.jumlah_p3k_pw) }}
                                         </span>
                                     </td>
-                                    <td class="py-3.5 px-3 w-[12%] text-center align-middle">
-                                        <span class="inline-flex items-center justify-center px-3 sm:px-3.5 py-1 rounded-full bg-indigo-600 text-white dark:bg-indigo-500 dark:text-white text-xs sm:text-sm font-black tracking-wide min-w-[40px] sm:min-w-[50px] shadow-sm">
+                                    <td class="py-2.5 sm:py-3.5 px-2 sm:px-3 text-center align-middle whitespace-nowrap">
+                                        <span class="inline-flex items-center justify-center px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full bg-indigo-600 text-white dark:bg-indigo-500 dark:text-white text-xs sm:text-sm font-black tracking-wide min-w-[36px] sm:min-w-[50px] shadow-xs">
                                             {{ formatNumber(item.total) }}
                                         </span>
                                     </td>
