@@ -159,15 +159,15 @@ const goBack = () => {
 <template>
     <component :is="layoutComponent">
         <Head title="CCTV Monitoring" />
-        <div :class="isAdmin ? 'space-y-6' : 'mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 space-y-6'">
+        <div :class="isAdmin ? 'space-y-6' : 'mx-auto max-w-7xl px-4 pt-24 sm:pt-28 pb-8 sm:px-6 lg:px-8 space-y-6'">
 
             <!-- HEADER -->
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6">
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div class="flex items-center gap-4">
                         <Link
                             href="/"
-                            class="inline-flex justify-center items-center p-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition shadow-sm cursor-pointer"
+                            class="inline-flex justify-center items-center p-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 transition shadow-sm cursor-pointer"
                             title="Kembali ke Landing Page"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
@@ -175,17 +175,17 @@ const goBack = () => {
                             </svg>
                         </Link>
                         <div>
-                            <h1 class="text-2xl font-bold text-slate-900">
+                            <h1 class="text-2xl font-bold text-slate-900 dark:text-white">
                                 CCTV Monitoring
                             </h1>
-                            <p class="text-sm text-slate-500">
+                            <p class="text-sm text-slate-500 dark:text-slate-400">
                                 Live monitoring kamera CCTV administrator
                             </p>
                         </div>
                     </div>
 
                     <div class="flex items-center gap-2">
-                        <div class="flex items-center gap-2 bg-green-50 text-green-700 px-4 py-2 rounded-xl text-sm font-semibold">
+                        <div class="flex items-center gap-2 bg-green-50 dark:bg-green-950/80 text-green-700 dark:text-green-300 px-4 py-2 rounded-xl text-sm font-semibold border border-green-200 dark:border-green-900">
                             <span class="h-2.5 w-2.5 rounded-full bg-green-500 animate-pulse"></span>
                             {{ cctvs?.length || 0 }} Kamera Aktif
                         </div>
