@@ -146,6 +146,7 @@ onUnmounted(() => {
 
                 <nav class="p-4 space-y-2">
                     <Link
+                        v-if="!$page.props.auth?.user?.kdmp_role || !['admin_kecamatan', 'admin_kmp'].includes($page.props.auth.user.kdmp_role)"
                         :href="$page.props.auth?.user?.role === 'pimpinan' ? '/pimpinan' : (($page.props.auth?.user?.role === 'admin_koperasi' || $page.props.auth?.user?.service_slug === 'koperasi') ? '/admin/koperasi' : '/admin')"
                         class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition"
                         :class="(page.url === '/admin' || page.url === '/pimpinan' || page.url === '/admin/koperasi') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'"
@@ -157,6 +158,7 @@ onUnmounted(() => {
                     </Link>
 
                     <Link
+                        v-if="!$page.props.auth?.user?.kdmp_role || !['admin_kecamatan', 'admin_kmp'].includes($page.props.auth.user.kdmp_role)"
                         href="/admin/cctv"
                         class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition"
                         :class="page.url.startsWith('/admin/cctv') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'"
@@ -168,6 +170,7 @@ onUnmounted(() => {
                     </Link>
 
                     <Link
+                        v-if="!$page.props.auth?.user?.kdmp_role || !['admin_kecamatan', 'admin_kmp'].includes($page.props.auth.user.kdmp_role)"
                         href="/admin/complaints"
                         class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition"
                         :class="page.url.startsWith('/admin/complaints') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'"
@@ -230,6 +233,19 @@ onUnmounted(() => {
                             <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 0 0 3.75-.615A2.999 2.999 0 0 0 9.75 9.75c.896 0 1.7-.393 2.25-1.016a2.999 2.999 0 0 0 2.25 1.016c.896 0 1.7-.393 2.25-1.016a3.001 3.001 0 0 0 3.75.614m-16.5 0a3.004 3.004 0 0 1-.621-4.72L4.318 3.44A1.5 1.5 0 0 1 5.378 3h13.243a1.5 1.5 0 0 1 1.06.44l1.19 1.189a3 3 0 0 1-.621 4.72m-13.5 8.65h3.75a.75.75 0 0 0 .75-.75V13.5a.75.75 0 0 0-.75-.75H6.75a.75.75 0 0 0-.75.75v3.75c0 .415.336.75.75.75Z" />
                         </svg>
                         <span>Kelola Koperasi</span>
+                    </Link>
+
+                    <!-- Panel Admin Kependudukan (Hanya muncul jika admin kependudukan / superadmin) -->
+                    <Link
+                        v-if="$page.props.auth?.user && ($page.props.auth.user.role === 'admin_kependudukan' || $page.props.auth.user.service_slug === 'kependudukan' || $page.props.auth.user.role === 'super_admin')"
+                        href="/admin/kependudukan"
+                        class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition"
+                        :class="page.url.startsWith('/admin/kependudukan') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 9A3 3 0 1 1 9 9a3 3 0 0 1 6 0ZM3.75 19.5a6.75 6.75 0 0 1 13.5 0M16.5 6.75h4.5m-4.5 3.75h4.5m-4.5 3.75h3" />
+                        </svg>
+                        <span>Kelola Kependudukan</span>
                     </Link>
                 </nav>
             </div>

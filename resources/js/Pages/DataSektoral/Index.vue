@@ -89,6 +89,16 @@ const cardColors = [
 // ==========================================
 const virtualOffset = ref(1000)
 
+// Computed: current list based on step
+const currentList = computed(() => {
+    if (currentStep.value === 1) return urusanList.value
+    if (currentStep.value === 2) return subUrusanList.value
+    if (currentStep.value === 3) return indikatorList.value
+    return []
+})
+
+const showCarouselArrows = computed(() => currentList.value.length > 4)
+
 const getVisibleCards = (list) => {
     if (!list || list.length === 0) return []
     if (list.length <= 4) return list
@@ -114,6 +124,36 @@ const prevSlide = () => {
     slideDirection.value = 'prev'
     slideAnimKey.value++
     virtualOffset.value--
+}
+
+// Touch / Swipe Handling for Tablet & iPad
+const touchStartX = ref(0)
+const touchStartY = ref(0)
+
+const handleTouchStart = (e) => {
+    if (!e.touches || e.touches.length === 0) return
+    touchStartX.value = e.touches[0].clientX
+    touchStartY.value = e.touches[0].clientY
+}
+
+const handleTouchEnd = (e) => {
+    if (!e.changedTouches || e.changedTouches.length === 0) return
+    const touchEndX = e.changedTouches[0].clientX
+    const touchEndY = e.changedTouches[0].clientY
+
+    const diffX = touchStartX.value - touchEndX
+    const diffY = touchStartY.value - touchEndY
+
+    // Only trigger swipe if horizontal movement is dominant and > 40px
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 40) {
+        if (showCarouselArrows.value) {
+            if (diffX > 0) {
+                nextSlide()
+            } else {
+                prevSlide()
+            }
+        }
+    }
 }
 
 // ==========================================
@@ -286,6 +326,7 @@ const handleBack = () => {
 
     setTimeout(() => {
         isCarouselSliding.value = false
+        virtualOffset.value = 1000
         if (currentStep.value === 4) {
             currentStep.value = 3
             sektoralData.value = null
@@ -583,103 +624,136 @@ fetchUrusan()
                         </p>
                     </div>
 
-                    <!-- Cards Container with Tall Vertical Glass Floating Arrow Controls -->
-                    <div class="relative flex items-center justify-center">
-                        
-                        <!-- Left Arrow (Tall Vertical Bar, Glassmorphism & Floating) -->
-                        <button 
-                            v-if="currentStep > 1 && (currentStep === 2 ? subUrusanList.length : indikatorList.length) > 4"
-                            @click="prevSlide"
-                            class="absolute -left-4 sm:-left-6 z-20 h-full w-12 md:w-16 flex items-center justify-center rounded-2xl border border-white/50 bg-white/40 backdrop-blur-md shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:bg-white/60 dark:border-gray-700/50 dark:bg-gray-800/40 dark:hover:bg-gray-800/60 cursor-pointer group"
-                            aria-label="Previous Slide"
-                        >
-                            <div class="flex items-center justify-center group-hover:scale-125 transition-transform duration-300">
-                                <svg class="h-8 w-8 text-gray-800 dark:text-white drop-shadow-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                                </svg>
-                            </div>
-                        </button>
+                    <!-- ===== DESKTOP & TABLET CARDS (md+): Carousel max 4 visible with Touch/Swipe & Hover Arrows ===== -->
+                    <div 
+                        @touchstart="handleTouchStart"
+                        @touchend="handleTouchEnd"
+                        class="hidden md:flex items-center justify-center relative touch-pan-y"
+                    >
 
-                        <!-- Cards Grid with Individual Card Slot Cascade Animation -->
-                        <div class="overflow-hidden py-2 w-full relative min-h-[240px]">
+                        <!-- Left Hover Zone -->
+                        <div 
+                            v-if="showCarouselArrows"
+                            class="group/left absolute left-0 z-20 h-full w-[15%] flex items-center justify-start"
+                        >
+                            <button 
+                                @click="prevSlide"
+                                class="-ml-4 sm:-ml-6 h-full w-12 md:w-16 flex items-center justify-center rounded-2xl border border-white/50 bg-white/40 backdrop-blur-md shadow-lg cursor-pointer opacity-0 group-hover/left:opacity-100 translate-x-4 group-hover/left:translate-x-0 transition-all duration-300 hover:bg-white/60 dark:border-gray-700/50 dark:bg-gray-800/40 dark:hover:bg-gray-800/60"
+                                aria-label="Previous Slide"
+                            >
+                                <div class="flex items-center justify-center hover:scale-125 transition-transform duration-300">
+                                    <svg class="h-8 w-8 text-gray-800 dark:text-white drop-shadow-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                                    </svg>
+                                </div>
+                            </button>
+                        </div>
+
+                        <!-- Desktop/Tablet Cards Grid (keyed by step to prevent overlap) -->
+                        <div class="overflow-hidden py-2 w-full relative min-h-[240px]" :key="'desktop-' + currentStep">
                             <TransitionGroup 
-                                :name="slideDirection === 'next' ? 'card-list-next' : 'card-list-prev'" 
+                                :name="isCarouselSliding ? (slideDirection === 'next' ? 'card-list-next' : 'card-list-prev') : ''" 
                                 tag="div" 
-                                class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4 relative"
+                                class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 relative"
                             >
                                 <div 
-                                    v-for="(item, index) in (
-                                        currentStep === 1 ? urusanList : 
-                                        currentStep === 2 ? getVisibleCards(subUrusanList) : 
-                                        getVisibleCards(indikatorList)
-                                    )" 
+                                    v-for="(item, index) in getVisibleCards(currentList)" 
                                     :key="item.label"
                                     @click="handleCardClick($event, item, currentStep)"
-                                    class="group cursor-pointer rounded-2xl bg-gradient-to-br p-6 shadow-lg transition-all duration-300 hover:-translate-y-3 hover:shadow-2xl flex flex-col justify-between min-h-[220px] border border-white/20"
+                                    class="group cursor-pointer rounded-2xl bg-gradient-to-br p-5 lg:p-6 shadow-lg transition-all duration-300 hover:-translate-y-3 hover:shadow-2xl flex flex-col justify-between min-h-[200px] lg:min-h-[220px] border border-white/20 select-none"
                                     :class="[item.colorClass, isCarouselSliding ? '' : 'popup-anim']"
                                     :style="isCarouselSliding ? '' : `animation-delay: ${0.08 * (index + 1)}s`"
                                 >
                                     <div class="text-white/80">
-                                        <svg class="h-10 w-10 mb-4 opacity-80 group-hover:scale-110 transition-transform duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                        <svg class="h-8 w-8 lg:h-10 lg:w-10 mb-3 lg:mb-4 opacity-80 group-hover:scale-110 transition-transform duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                                         </svg>
                                     </div>
-                                    <h3 class="text-xl font-bold leading-snug text-white group-hover:text-white/90">
+                                    <h3 class="text-lg lg:text-xl font-bold leading-snug text-white group-hover:text-white/90">
                                         {{ item.label }}
                                     </h3>
                                 </div>
                             </TransitionGroup>
                         </div>
 
-                        <!-- Right Arrow (Tall Vertical Bar, Glassmorphism & Floating) -->
-                        <button 
-                            v-if="currentStep > 1 && (currentStep === 2 ? subUrusanList.length : indikatorList.length) > 4"
-                            @click="nextSlide"
-                            class="absolute -right-4 sm:-right-6 z-20 h-full w-12 md:w-16 flex items-center justify-center rounded-2xl border border-white/50 bg-white/40 backdrop-blur-md shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:bg-white/60 dark:border-gray-700/50 dark:bg-gray-800/40 dark:hover:bg-gray-800/60 cursor-pointer group"
-                            aria-label="Next Slide"
+                        <!-- Right Hover Zone -->
+                        <div 
+                            v-if="showCarouselArrows"
+                            class="group/right absolute right-0 z-20 h-full w-[15%] flex items-center justify-end"
                         >
-                            <div class="flex items-center justify-center group-hover:scale-125 transition-transform duration-300">
-                                <svg class="h-8 w-8 text-gray-800 dark:text-white drop-shadow-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                                </svg>
+                            <button 
+                                @click="nextSlide"
+                                class="-mr-4 sm:-mr-6 h-full w-12 md:w-16 flex items-center justify-center rounded-2xl border border-white/50 bg-white/40 backdrop-blur-md shadow-lg cursor-pointer opacity-0 group-hover/right:opacity-100 -translate-x-4 group-hover/right:translate-x-0 transition-all duration-300 hover:bg-white/60 dark:border-gray-700/50 dark:bg-gray-800/40 dark:hover:bg-gray-800/60"
+                                aria-label="Next Slide"
+                            >
+                                <div class="flex items-center justify-center hover:scale-125 transition-transform duration-300">
+                                    <svg class="h-8 w-8 text-gray-800 dark:text-white drop-shadow-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ===== MOBILE CARDS (<md): Scrollable 2-col grid ===== -->
+                    <div class="md:hidden w-full" :key="'mobile-' + currentStep">
+                        <div class="max-h-[55vh] overflow-y-auto rounded-2xl px-1 pb-2 scrollbar-hide">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div 
+                                    v-for="(item, index) in currentList" 
+                                    :key="item.label"
+                                    @click="handleCardClick($event, item, currentStep)"
+                                    class="group cursor-pointer rounded-2xl bg-gradient-to-br p-4 shadow-lg transition-all duration-300 hover:shadow-2xl flex flex-col justify-between min-h-[150px] border border-white/20 popup-anim"
+                                    :class="[item.colorClass]"
+                                    :style="`animation-delay: ${0.06 * (index + 1)}s`"
+                                >
+                                    <div class="text-white/80">
+                                        <svg class="h-8 w-8 mb-3 opacity-80" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-sm font-bold leading-snug text-white">
+                                        {{ item.label }}
+                                    </h3>
+                                </div>
                             </div>
-                        </button>
+                        </div>
                     </div>
                 </div>
 
                 <!-- STEP 4: DATASET TABLE DASHBOARD -->
-                <div v-else-if="currentStep === 4" class="popup-anim mt-10">
-                    <div class="rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-800 lg:p-10 border border-gray-100 dark:border-gray-700">
+                <div v-else-if="currentStep === 4" class="popup-anim mt-4 lg:mt-10">
+                    <div class="rounded-2xl bg-white p-4 shadow-xl dark:bg-gray-800 lg:p-10 border border-gray-100 dark:border-gray-700">
                         
                         <!-- Header & Title -->
-                        <div class="mb-6">
-                            <h2 class="text-3xl font-bold text-gray-900 dark:text-white">{{ selectedIndikator }}</h2>
-                            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                        <div class="mb-4 lg:mb-6">
+                            <h2 class="text-xl lg:text-3xl font-bold text-gray-900 dark:text-white leading-tight">{{ selectedIndikator }}</h2>
+                            <p class="mt-1 lg:mt-2 text-xs lg:text-sm text-gray-500 dark:text-gray-400">
                                 {{ selectedUrusan }} &raquo; {{ selectedSubUrusan }}
                             </p>
                         </div>
                         
-                        <!-- Automatic Filter Controls Bar (Year Range & Download PDF) -->
-                        <div class="mb-8 flex flex-wrap items-center justify-between gap-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700">
-                            <!-- Year Inputs (Automatic fetch on change) -->
-                            <div class="flex items-center gap-3">
+                        <!-- Filter Controls Bar -->
+                        <div class="mb-4 lg:mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 lg:p-4 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700">
+                            <!-- Year Inputs -->
+                            <div class="flex items-center gap-2 lg:gap-3">
                                 <div>
-                                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Tahun Awal</label>
+                                    <label class="block text-[10px] lg:text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Tahun Awal</label>
                                     <input 
                                         v-model.number="tahunAwal" 
                                         @change="fetchData"
                                         type="number" 
-                                        class="w-24 rounded-lg border-gray-300 py-1.5 text-sm font-semibold dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                                        class="w-20 lg:w-24 rounded-lg border-gray-300 py-1.5 text-xs lg:text-sm font-semibold dark:bg-gray-800 dark:border-gray-600 dark:text-white"
                                     >
                                 </div>
                                 <span class="text-gray-400 font-bold mt-4">-</span>
                                 <div>
-                                    <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Tahun Akhir</label>
+                                    <label class="block text-[10px] lg:text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Tahun Akhir</label>
                                     <input 
                                         v-model.number="tahunAkhir" 
                                         @change="fetchData"
                                         type="number" 
-                                        class="w-24 rounded-lg border-gray-300 py-1.5 text-sm font-semibold dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                                        class="w-20 lg:w-24 rounded-lg border-gray-300 py-1.5 text-xs lg:text-sm font-semibold dark:bg-gray-800 dark:border-gray-600 dark:text-white"
                                     >
                                 </div>
                             </div>
@@ -689,9 +763,9 @@ fetchUrusan()
                                 <a 
                                     :href="pdfDownloadUrl"
                                     target="_blank"
-                                    class="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:bg-red-700 hover:shadow-md dark:bg-red-500 dark:hover:bg-red-600 cursor-pointer"
+                                    class="inline-flex items-center gap-1.5 lg:gap-2 rounded-lg bg-red-600 px-3 lg:px-4 py-1.5 lg:py-2 text-xs lg:text-sm font-semibold text-white shadow-sm transition-all hover:bg-red-700 hover:shadow-md dark:bg-red-500 dark:hover:bg-red-600 cursor-pointer"
                                 >
-                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <svg class="h-3.5 w-3.5 lg:h-4 lg:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
                                     Unduh PDF
@@ -701,8 +775,8 @@ fetchUrusan()
                         </div>
 
                         <!-- Year Filter Validation Error Alert -->
-                        <div v-if="yearValidationError" class="mb-6 p-4 rounded-xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-sm text-red-600 dark:text-red-400 font-semibold flex items-center gap-2">
-                            <svg class="h-5 w-5 shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <div v-if="yearValidationError" class="mb-4 lg:mb-6 p-3 lg:p-4 rounded-xl bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 text-xs lg:text-sm text-red-600 dark:text-red-400 font-semibold flex items-center gap-2">
+                            <svg class="h-4 w-4 lg:h-5 lg:w-5 shrink-0 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
                             <span>{{ yearValidationError }}</span>
@@ -716,10 +790,10 @@ fetchUrusan()
                             </svg>
                         </div>
                         <div v-else-if="paginatedGroups?.length">
-                            <div v-for="(group, gIdx) in paginatedGroups" :key="gIdx" class="mb-8 last:mb-0">
+                            <div v-for="(group, gIdx) in paginatedGroups" :key="gIdx" class="mb-6 lg:mb-8 last:mb-0">
                                 <!-- Hierarchy Title & Dropdown -->
-                                <div class="mb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                    <div class="text-gray-900 dark:text-gray-100 font-bold leading-relaxed text-sm">
+                                <div class="mb-2 lg:mb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2 lg:gap-4">
+                                    <div class="text-gray-900 dark:text-gray-100 font-bold leading-relaxed text-xs lg:text-sm">
                                         <template v-for="(level, lvlIdx) in group.hierarchy" :key="lvlIdx">
                                             <div v-if="shouldShowLevel(gIdx, lvlIdx)" :style="{ marginLeft: (lvlIdx * 12) + 'px' }">
                                                 {{ lvlIdx === 0 ? level : '- ' + level }}
@@ -730,7 +804,7 @@ fetchUrusan()
                                     <div v-if="getGroupUniqueLeaves(group).length > 0" class="shrink-0 w-full sm:w-auto">
                                         <select 
                                             v-model="selectedLeaves[group.key]"
-                                            class="w-full sm:w-auto rounded-lg border-gray-300 py-1.5 pl-3 pr-10 text-sm font-medium dark:bg-gray-800 dark:border-gray-600 dark:text-white cursor-pointer bg-white"
+                                            class="w-full sm:w-auto rounded-lg border-gray-300 py-1.5 pl-3 pr-10 text-xs lg:text-sm font-medium dark:bg-gray-800 dark:border-gray-600 dark:text-white cursor-pointer bg-white"
                                         >
                                             <option v-for="leaf in getGroupUniqueLeaves(group)" :key="leaf" :value="leaf">
                                                 {{ leaf }}
@@ -739,57 +813,58 @@ fetchUrusan()
                                     </div>
                                 </div>
                                 
-                                <!-- Group Table -->
-                                <div class="overflow-x-auto rounded-lg border border-[#c2dfbc] dark:border-gray-700 shadow-sm">
-                                    <table class="w-full text-left text-sm table-fixed">
-                                        <thead class="bg-[#d5ebd1] text-gray-900 dark:bg-gray-700/50 dark:text-gray-200 uppercase font-bold text-[11px] tracking-wider">
+                                <!-- Group Table (horizontally scrollable on mobile) -->
+                                <div class="overflow-x-auto rounded-lg border border-[#c2dfbc] dark:border-gray-700 shadow-sm -mx-1 px-1">
+                                    <table class="w-full text-left text-xs lg:text-sm" style="min-width: 600px;">
+                                        <thead class="bg-[#d5ebd1] text-gray-900 dark:bg-gray-700/50 dark:text-gray-200 uppercase font-bold text-[10px] lg:text-[11px] tracking-wider">
                                             <tr>
-                                                <th class="px-4 py-3 border-r border-[#c2dfbc] dark:border-gray-600 w-[10%]">TAHUN</th>
-                                                <th class="px-4 py-3 border-r border-[#c2dfbc] dark:border-gray-600 w-[25%]">DATA</th>
-                                                <th class="px-4 py-3 border-r border-[#c2dfbc] dark:border-gray-600 w-[12%]">SATUAN</th>
-                                                <th class="px-4 py-3 border-r border-[#c2dfbc] dark:border-gray-600 w-[28%]">SUMBER DATA</th>
-                                                <th class="px-4 py-3 w-[25%]">OPD</th>
+                                                <th class="px-3 lg:px-4 py-2.5 lg:py-3 border-r border-[#c2dfbc] dark:border-gray-600 w-[10%] whitespace-nowrap">TAHUN</th>
+                                                <th class="px-3 lg:px-4 py-2.5 lg:py-3 border-r border-[#c2dfbc] dark:border-gray-600 w-[25%] whitespace-nowrap">DATA</th>
+                                                <th class="px-3 lg:px-4 py-2.5 lg:py-3 border-r border-[#c2dfbc] dark:border-gray-600 w-[12%] whitespace-nowrap">SATUAN</th>
+                                                <th class="px-3 lg:px-4 py-2.5 lg:py-3 border-r border-[#c2dfbc] dark:border-gray-600 w-[28%] whitespace-nowrap">SUMBER DATA</th>
+                                                <th class="px-3 lg:px-4 py-2.5 lg:py-3 w-[25%] whitespace-nowrap">OPD</th>
                                             </tr>
                                         </thead>
                                         <tbody class="divide-y divide-[#c2dfbc] dark:divide-gray-700 bg-white dark:bg-gray-800">
                                             <tr v-for="(row, rIdx) in getGroupRows(group)" :key="rIdx" class="hover:bg-[#f2f8f0] dark:hover:bg-gray-700/50 transition">
-                                                <td class="px-4 py-3 border-r border-[#c2dfbc] dark:border-gray-700 font-semibold">{{ row.tahun || '-' }}</td>
-                                                <td class="px-4 py-3 border-r border-[#c2dfbc] dark:border-gray-700 break-words">{{ row.dataset || '0' }}</td>
-                                                <td class="px-4 py-3 border-r border-[#c2dfbc] dark:border-gray-700">{{ row.satuan || '-' }}</td>
-                                                <td class="px-4 py-3 border-r border-[#c2dfbc] dark:border-gray-700 break-words">{{ row.sumberdata || '-' }}</td>
-                                                <td class="px-4 py-3 break-words">{{ row.opd || '-' }}</td>
+                                                <td class="px-3 lg:px-4 py-2.5 lg:py-3 border-r border-[#c2dfbc] dark:border-gray-700 font-semibold whitespace-nowrap">{{ row.tahun || '-' }}</td>
+                                                <td class="px-3 lg:px-4 py-2.5 lg:py-3 border-r border-[#c2dfbc] dark:border-gray-700">{{ row.dataset || '0' }}</td>
+                                                <td class="px-3 lg:px-4 py-2.5 lg:py-3 border-r border-[#c2dfbc] dark:border-gray-700 whitespace-nowrap">{{ row.satuan || '-' }}</td>
+                                                <td class="px-3 lg:px-4 py-2.5 lg:py-3 border-r border-[#c2dfbc] dark:border-gray-700">{{ row.sumberdata || '-' }}</td>
+                                                <td class="px-3 lg:px-4 py-2.5 lg:py-3">{{ row.opd || '-' }}</td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
                         </div>
-                        <div v-else class="py-16 text-center text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded-xl">
+                        <div v-else class="py-12 lg:py-16 text-center text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded-xl text-xs lg:text-sm">
                             Tidak ada data ditemukan untuk filter yang dipilih.
                         </div>
 
                         <!-- Table Pagination Controls -->
-                        <div class="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-gray-100 dark:border-gray-700" v-if="groupedData.length > itemsPerPage">
-                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                        <div class="mt-4 lg:mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 lg:gap-4 pt-4 border-t border-gray-100 dark:border-gray-700" v-if="groupedData.length > itemsPerPage">
+                            <div class="text-xs lg:text-sm text-gray-500 dark:text-gray-400">
                                 Menampilkan <span class="font-bold text-gray-900 dark:text-white">{{ ((currentPage - 1) * itemsPerPage) + 1 }}</span> 
-                                sampai <span class="font-bold text-gray-900 dark:text-white">{{ Math.min(currentPage * itemsPerPage, groupedData.length) }}</span> 
-                                dari <span class="font-bold text-gray-900 dark:text-white">{{ groupedData.length }}</span> tabel data
+                                - <span class="font-bold text-gray-900 dark:text-white">{{ Math.min(currentPage * itemsPerPage, groupedData.length) }}</span> 
+                                dari <span class="font-bold text-gray-900 dark:text-white">{{ groupedData.length }}</span>
                             </div>
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-1.5 lg:gap-2">
                                 <button 
                                     @click="prevPage" 
                                     :disabled="currentPage === 1"
-                                    class="px-4 py-2 rounded-lg border border-gray-200 text-sm font-semibold transition disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700 cursor-pointer"
+                                    class="px-2.5 lg:px-4 py-1.5 lg:py-2 rounded-lg border border-gray-200 text-xs lg:text-sm font-semibold transition disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700 cursor-pointer"
                                 >
-                                    Sebelumnya
+                                    <span class="hidden sm:inline">Sebelumnya</span>
+                                    <svg class="sm:hidden h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
                                 </button>
-                                <div class="flex items-center gap-1">
+                                <div class="flex items-center gap-0.5 lg:gap-1">
                                     <template v-for="(page, pIdx) in visiblePageNumbers" :key="pIdx">
-                                        <span v-if="page === '...'" class="px-2 text-gray-400 font-bold">...</span>
+                                        <span v-if="page === '...'" class="px-1.5 lg:px-2 text-gray-400 font-bold text-xs">...</span>
                                         <button
                                             v-else
                                             @click="currentPage = page"
-                                            class="h-8 w-8 rounded-lg text-xs font-bold transition flex items-center justify-center cursor-pointer"
+                                            class="h-7 w-7 lg:h-8 lg:w-8 rounded-lg text-[10px] lg:text-xs font-bold transition flex items-center justify-center cursor-pointer"
                                             :class="currentPage === page ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'"
                                         >
                                             {{ page }}
@@ -799,15 +874,16 @@ fetchUrusan()
                                 <button 
                                     @click="nextPage" 
                                     :disabled="currentPage === totalPages"
-                                    class="px-4 py-2 rounded-lg border border-gray-200 text-sm font-semibold transition disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700 cursor-pointer"
+                                    class="px-2.5 lg:px-4 py-1.5 lg:py-2 rounded-lg border border-gray-200 text-xs lg:text-sm font-semibold transition disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700 cursor-pointer"
                                 >
-                                    Selanjutnya
+                                    <span class="hidden sm:inline">Selanjutnya</span>
+                                    <svg class="sm:hidden h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
                                 </button>
                             </div>
                         </div>
 
                         <!-- Sumber Data -->
-                        <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                        <div class="mt-6 lg:mt-8 pt-4 lg:pt-6 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row items-center justify-between text-[10px] lg:text-xs text-gray-500 dark:text-gray-400">
                             <div class="flex items-center gap-1.5">
                                 <span>Sumber Data:</span>
                                 <a 
@@ -916,6 +992,16 @@ fetchUrusan()
 .card-list-prev-leave-active {
     position: absolute;
     width: 23%;
+}
+
+
+/* Mobile scrollable card container */
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
 }
 
 /* Fade transition for back button */

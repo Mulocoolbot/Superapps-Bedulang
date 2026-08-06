@@ -158,7 +158,7 @@ onUnmounted(() => {
     style="background-image: url('/services/bg2.png');"
 >
     <!-- Blue opacity overlay to match welcome banner -->
-    <div class="absolute inset-0 bg-gradient-to-b from-[#0F3D77]/95 via-[#0F3D77]/85 to-[#0b2b52]/95 dark:from-slate-950/95 dark:via-slate-950/90 dark:to-slate-955 z-0"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-[#0F3D77]/95 via-[#0F3D77]/85 to-[#0b2b52]/95 dark:from-slate-950/95 dark:via-slate-950/90 dark:to-slate-950 z-0"></div>
 
     <div class="w-full max-w-[1400px] mx-auto px-6 lg:px-8 relative z-10">
 
@@ -217,7 +217,7 @@ onUnmounted(() => {
                         <h3 class="text-2xl md:text-3xl font-extrabold text-blue-950 dark:text-white">
                             {{ activeTab === 'info' ? 'Layanan Informasi & Data' : 'Layanan Publik' }}
                         </h3>
-                        <p class="mt-2 text-slate-650 dark:text-slate-350 font-semibold text-sm md:text-base">
+                        <p class="mt-2 text-slate-600 dark:text-slate-300 font-semibold text-sm md:text-base">
                             {{ activeTab === 'info' ? 'Pilih kategori untuk melihat informasi dan data Kabupaten Bangka Tengah.' : 'Akses berbagai portal pelayanan publik terpadu Kabupaten Bangka Tengah.' }}
                         </p>
                     </div>
@@ -247,7 +247,7 @@ onUnmounted(() => {
                                     </div>
 
                                     <!-- Thumbnail -->
-                                    <div class="h-28 flex items-center justify-center bg-blue-50/40 dark:bg-slate-950/40 relative">
+                                    <div class="h-28 flex items-center justify-center bg-blue-50/40 dark:bg-slate-800/80 relative">
                                         <img :src="app.logo" :alt="app.name" class="w-[90%] h-[90%] object-contain transition-transform duration-500 ease-out group-hover:scale-105" :class="{ 'opacity-80': !isAuthenticated && !app.allowGuest }" />
                                     </div>
                                     <!-- Footer -->
@@ -287,7 +287,7 @@ onUnmounted(() => {
                                     </div>
 
                                     <!-- Thumbnail -->
-                                    <div class="h-28 flex items-center justify-center bg-blue-50/40 dark:bg-slate-950/40 relative">
+                                    <div class="h-28 flex items-center justify-center bg-blue-50/40 dark:bg-slate-800/80 relative">
                                         <img :src="app.logo" :alt="app.name" class="w-[70%] h-[70%] object-contain transition-transform duration-500 ease-out group-hover:scale-105" :class="{ 'opacity-80': !isAuthenticated && !app.allowGuest }" />
                                     </div>
                                     <!-- Footer -->

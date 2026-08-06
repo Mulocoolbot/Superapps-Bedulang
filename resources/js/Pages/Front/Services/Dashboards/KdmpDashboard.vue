@@ -4,7 +4,7 @@ import { router, usePage, Link } from '@inertiajs/vue3'
 
 const page = usePage()
 const user = computed(() => page.props.auth.user)
-const isKdmpAdmin = computed(() => user.value && ['admin_kdmp', 'admin_kecamatan', 'admin_kmp'].includes(user.value.kdmp_role))
+const isKdmpAdmin = computed(() => user.value && user.value.kdmp_role === 'admin_kdmp')
 
 const adminDashboardRoute = computed(() => {
     if (!user.value) return '#'
@@ -192,14 +192,14 @@ const goToKecamatanDetail = (kecamatan) => {
                     <button 
                         @click="prevPage" 
                         :disabled="currentPage === 1"
-                        class="px-3 py-1.5 rounded-lg border border-slate-200 text-sm font-medium transition disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800"
+                        class="px-3 py-1.5 rounded-lg border border-slate-200 text-sm font-medium text-slate-700 dark:text-slate-200 transition disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800"
                     >
                         Sebelumnya
                     </button>
                     <button 
                         @click="nextPage" 
                         :disabled="currentPage === totalPages"
-                        class="px-3 py-1.5 rounded-lg border border-slate-200 text-sm font-medium transition disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800"
+                        class="px-3 py-1.5 rounded-lg border border-slate-200 text-sm font-medium text-slate-700 dark:text-slate-200 transition disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800"
                     >
                         Selanjutnya
                     </button>

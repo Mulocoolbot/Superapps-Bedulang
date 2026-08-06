@@ -31,7 +31,7 @@ class InformationServiceController extends Controller
             abort(404);
         }
 
-        if ($slug !== 'pertanian' && $slug !== 'desa' && $slug !== 'pariwisata' && $slug !== 'informasi-publik' && $slug !== 'perindagkop-ukm' && !auth()->check()) {
+        if ($slug !== 'pertanian' && $slug !== 'desa' && $slug !== 'pariwisata' && $slug !== 'informasi-publik' && $slug !== 'perindagkop-ukm' && $slug !== 'kependudukan' && !auth()->check()) {
             return redirect()->guest(route('login'));
         }
 

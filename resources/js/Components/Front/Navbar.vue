@@ -16,7 +16,13 @@ const handleScroll = () => {
 
 const page = usePage()
 const authUser = computed(() => page.props.auth?.user)
-const isAdmin = computed(() => authUser.value && (['admin', 'super_admin', 'pimpinan', 'admin_koperasi'].includes(authUser.value.role) || authUser.value.service_slug === 'koperasi'))
+const isAdmin = computed(() => authUser.value && (['admin', 'super_admin', 'pimpinan', 'admin_koperasi', 'admin_kependudukan'].includes(authUser.value.role) || ['koperasi', 'kependudukan'].includes(authUser.value.service_slug)))
+const adminPanelHref = computed(() => {
+    if (!authUser.value) return '/admin'
+    if (authUser.value.role === 'pimpinan') return '/pimpinan'
+    if (authUser.value.role === 'admin_koperasi' || authUser.value.service_slug === 'koperasi') return '/admin/koperasi'
+    return '/admin'
+})
 const userNotifications = computed(() => authUser.value?.notifications || [])
 const unreadCount = computed(() => authUser.value?.unread_notifications_count || 0)
 
@@ -661,7 +667,7 @@ const toggleDarkMode = () => {
                                 <div class="border-t border-gray-100 dark:border-gray-700"></div>
 
                                 <Link
-                                    :href="authUser.role === 'pimpinan' ? '/pimpinan' : ((authUser.role === 'admin_koperasi' || authUser.service_slug === 'koperasi') ? '/admin/koperasi' : '/admin')"
+                                    :href="adminPanelHref"
                                     class="block w-full px-5 py-3 text-left text-sm text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-gray-700 font-medium transition"
                                 >
                                     {{ authUser.role === 'pimpinan' ? 'Dashboard Pimpinan' : 'Admin Panel' }}
@@ -714,7 +720,7 @@ const toggleDarkMode = () => {
         >
             <div
                 v-show="open"
-                class="md:hidden border-t border-gray-200 dark:border-gray-700 px-6 py-4 space-y-3 bg-white dark:bg-gray-800"
+                class="md:hidden border-t border-gray-200 dark:border-gray-700 px-6 py-4 space-y-3 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200"
             >
 
                 <a href="/#beranda" @click="open = false; navigateMenu($event, '#beranda')" class="block hover:text-blue-600">
@@ -722,7 +728,7 @@ const toggleDarkMode = () => {
                 </a>
 
                 <div class="space-y-1">
-                    <span class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mt-2 px-1">Tentang</span>
+                    <span class="block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-400 mt-2 px-1">Tentang</span>
                     <a 
                         href="javascript:void(0)" 
                         @click="open = false; selectAboutSlide(1)" 
@@ -864,7 +870,7 @@ const toggleDarkMode = () => {
 
                 <button
                     @click="toggleDarkMode"
-                    class="w-full mt-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg"
+                    class="w-full mt-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg"
                 >
                     {{ darkMode ? '☀️ Light Mode' : '🌙 Dark Mode' }}
                 </button>
@@ -872,14 +878,14 @@ const toggleDarkMode = () => {
                 <template v-if="authUser">
                     <Link
                         href="/profile"
-                        class="block text-center mt-2 px-4 py-2 bg-white text-gray-800 rounded-lg border border-gray-200 hover:bg-gray-50"
+                        class="block text-center mt-2 px-4 py-2 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
                     >
                         Profil
                     </Link>
 
                     <Link
                         href="/my-complaints"
-                        class="block text-center mt-2 px-4 py-2 bg-white text-gray-800 rounded-lg border border-gray-200 hover:bg-gray-50"
+                        class="block text-center mt-2 px-4 py-2 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
                     >
                         Riwayat Pengaduan
                     </Link>
@@ -906,7 +912,7 @@ const toggleDarkMode = () => {
                         <div class="border-t border-gray-200 dark:border-gray-700 my-2"></div>
 
                         <Link
-                            :href="authUser.role === 'pimpinan' ? '/pimpinan' : ((authUser.role === 'admin_koperasi' || authUser.service_slug === 'koperasi') ? '/admin/koperasi' : '/admin')"
+                            :href="adminPanelHref"
                             class="block text-center mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg"
                         >
                             {{ authUser.role === 'pimpinan' ? 'Dashboard Pimpinan' : 'Admin Panel' }}

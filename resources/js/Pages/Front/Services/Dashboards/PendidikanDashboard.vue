@@ -177,7 +177,7 @@ const getJenjangBadgeClass = (jenjang) => {
                         <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-pink-500" />
                         <div class="pl-2 flex items-center justify-between">
                             <div>
-                                <span class="text-xs font-bold text-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Sekolah PAUD</span>
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Sekolah PAUD</span>
                                 <p class="mt-2 text-3xl font-black text-slate-900 dark:text-white font-sans tracking-tight">
                                     {{ summary.total_paud_schools }} <span class="text-xs font-medium text-slate-400">Unit</span>
                                 </p>
@@ -192,7 +192,7 @@ const getJenjangBadgeClass = (jenjang) => {
                         <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-blue-500" />
                         <div class="pl-2 flex items-center justify-between">
                             <div>
-                                <span class="text-xs font-bold text-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Sekolah SD</span>
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Sekolah SD</span>
                                 <p class="mt-2 text-3xl font-black text-slate-900 dark:text-white font-sans tracking-tight">
                                     {{ summary.total_sd_schools }} <span class="text-xs font-medium text-slate-400">Sekolah</span>
                                 </p>
@@ -207,7 +207,7 @@ const getJenjangBadgeClass = (jenjang) => {
                         <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-indigo-500" />
                         <div class="pl-2 flex items-center justify-between">
                             <div>
-                                <span class="text-xs font-bold text-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Sekolah SMP</span>
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Sekolah SMP</span>
                                 <p class="mt-2 text-3xl font-black text-slate-900 dark:text-white font-sans tracking-tight">
                                     {{ summary.total_smp_schools }} <span class="text-xs font-medium text-slate-400">Sekolah</span>
                                 </p>
@@ -387,11 +387,11 @@ const getJenjangBadgeClass = (jenjang) => {
                         <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-pink-500" />
                         <div class="pl-2 flex items-center justify-between">
                             <div>
-                                <span class="text-xs font-bold text-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Siswa PAUD</span>
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Siswa PAUD</span>
                                 <p class="mt-2 text-3xl font-black text-slate-900 dark:text-white font-sans tracking-tight">
                                     {{ formatNumber(summary.total_paud_students) }} <span class="text-xs font-medium text-slate-400">Anak</span>
                                 </p>
-                                <p class="mt-1 text-[11px] font-semibold text-pink-600 dark:text-pink-400">Total Siswa PAUD</p>
+                                <p class="mt-1 text-[11px] font-semibold text-pink-600 dark:text-pink-400">Pendidikan Anak Usia Dini</p>
                             </div>
                             
                         </div>
@@ -402,11 +402,11 @@ const getJenjangBadgeClass = (jenjang) => {
                         <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-blue-500" />
                         <div class="pl-2 flex items-center justify-between">
                             <div>
-                                <span class="text-xs font-bold text-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Siswa SD</span>
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Siswa SD</span>
                                 <p class="mt-2 text-3xl font-black text-slate-900 dark:text-white font-sans tracking-tight">
                                     {{ formatNumber(summary.total_sd_students) }} <span class="text-xs font-medium text-slate-400">Siswa</span>
                                 </p>
-                                <p class="mt-1 text-[11px] font-semibold text-blue-600 dark:text-blue-400">Total Siswa SD</p>
+                                <p class="mt-1 text-[11px] font-semibold text-blue-600 dark:text-blue-400">Sekolah Dasar</p>
                             </div>
                         
                         </div>
@@ -417,7 +417,7 @@ const getJenjangBadgeClass = (jenjang) => {
                         <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-indigo-500" />
                         <div class="pl-2 flex items-center justify-between">
                             <div>
-                                <span class="text-xs font-bold text-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Siswa SMP</span>
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Siswa SMP</span>
                                 <p class="mt-2 text-3xl font-black text-slate-900 dark:text-white font-sans tracking-tight">
                                     {{ formatNumber(summary.total_smp_students) }} <span class="text-xs font-medium text-slate-400">Siswa</span>
                                 </p>
@@ -604,7 +604,7 @@ const getJenjangBadgeClass = (jenjang) => {
                         <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-pink-500" />
                         <div class="pl-2 flex items-center justify-between">
                             <div>
-                                <span class="text-xs font-bold text-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Pendidik PAUD</span>
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Pendidik PAUD</span>
                                 <p class="mt-2 text-3xl font-black text-slate-900 dark:text-white font-sans tracking-tight">
                                     {{ formatNumber(summary.total_paud_teachers) }} <span class="text-xs font-medium text-slate-400">Guru</span>
                                 </p>
@@ -619,7 +619,7 @@ const getJenjangBadgeClass = (jenjang) => {
                         <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-blue-500" />
                         <div class="pl-2 flex items-center justify-between">
                             <div>
-                                <span class="text-xs font-bold text-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Pendidik SD</span>
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Pendidik SD</span>
                                 <p class="mt-2 text-3xl font-black text-slate-900 dark:text-white font-sans tracking-tight">
                                     {{ formatNumber(summary.total_sd_teachers) }} <span class="text-xs font-medium text-slate-400">Guru</span>
                                 </p>
@@ -634,7 +634,7 @@ const getJenjangBadgeClass = (jenjang) => {
                         <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-indigo-500" />
                         <div class="pl-2 flex items-center justify-between">
                             <div>
-                                <span class="text-xs font-bold text-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Pendidik SMP</span>
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Pendidik SMP</span>
                                 <p class="mt-2 text-3xl font-black text-slate-900 dark:text-white font-sans tracking-tight">
                                     {{ formatNumber(summary.total_smp_teachers) }} <span class="text-xs font-medium text-slate-400">Guru</span>
                                 </p>

@@ -1,7 +1,7 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, defineAsyncComponent } from 'vue'
 import { usePage, router, Link } from '@inertiajs/vue3'
-import PerindagkopDashboard from './PerindagkopDashboard.vue'
+const PerindagkopDashboard = defineAsyncComponent(() => import('./PerindagkopDashboard.vue'))
 
 const props = defineProps({
     service: {
@@ -26,7 +26,6 @@ const toggleSidebar = () => {
 
 const selectTab = (tab) => {
     activeSidebarTab.value = tab
-    isSidebarOpen.value = false
 }
 
 // -------------------------------------------------------------
@@ -226,114 +225,135 @@ const getAvailabilityStatus = (amount) => {
 <template>
     <div class="relative mt-6 min-h-[600px]">
 
-        <!-- FIXED EDGE OPEN BUTTON (SHOWN ON SCREEN'S LEFT EDGE WHEN SIDEBAR IS COLLAPSED) -->
-        <button
-            v-if="!isSidebarOpen"
-            @click="toggleSidebar"
-            class="fixed left-0 top-44 z-40 flex items-center gap-2 py-3.5 px-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-r-2xl shadow-2xl transition-all duration-300 transform hover:translate-x-1 cursor-pointer group border-y border-r border-blue-400/30 animate-fade-in-up"
-            title="Buka Sidebar Kategori"
-        >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5 transition-transform duration-300 group-hover:scale-125">
-                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-            </svg>
-            <div class="flex flex-col text-left">
-                <span class="text-[10px] font-black uppercase tracking-wider text-blue-200">Kategori</span>
-                <span class="text-xs font-black uppercase tracking-tight">{{ activeSidebarTab }}</span>
-            </div>
-        </button>
-
-        <!-- BACKDROP OVERLAY FOR MOBILE WHEN FIXED SIDEBAR IS OPEN -->
-        <div
-            v-if="isSidebarOpen"
-            @click="toggleSidebar"
-            class="fixed inset-0 z-30 bg-slate-900/30 backdrop-blur-xs transition-opacity duration-300 lg:hidden"
-        />
-
-        <!-- FIXED SCREEN-LOCKED SIDEBAR NAVIGATION (DRAWER PANEL ON LEFT EDGE) -->
-        <Transition name="sidebar-fade">
-            <aside
-                v-if="isSidebarOpen"
-                class="fixed left-0 top-24 z-40 w-80 max-w-[90vw] h-[calc(100vh-7rem)] overflow-y-auto p-4 transition-all duration-300"
+        <!-- MOBILE CATEGORY NAVIGATION DROPDOWN (ONLY SHOWN ON MOBILE < MD) -->
+        <div class="block md:hidden mb-6">
+            <button
+                @click="toggleSidebar"
+                class="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-md transition-all cursor-pointer"
             >
-                <div class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 shadow-2xl space-y-2">
-                    <div class="px-3 py-2 border-b border-slate-100 dark:border-slate-800 mb-2 flex items-center justify-between">
-                        <h3 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-                            Kategori Informasi
-                        </h3>
-
-                        <button
-                            @click="toggleSidebar"
-                            class="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer flex items-center gap-1 text-[11px] font-semibold"
-                            title="Sembunyikan Sidebar"
-                        >
-                            <span class="hidden sm:inline">Tutup</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-                            </svg>
-                        </button>
+                <div class="flex items-center gap-3">
+                    <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:bg-blue-400/20 text-lg">
+                        {{ activeSidebarTab === 'bapok' ? '🛒' : activeSidebarTab === 'sawit' ? '🌴' : '🩸' }}
                     </div>
-
-                    <nav class="space-y-1.5">
-                        <!-- Tab 1: Harga Pasar & Stok Bapok -->
-                        <button
-                            @click="selectTab('bapok')"
-                            class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold transition-all text-left cursor-pointer"
-                            :class="activeSidebarTab === 'bapok'
-                                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                                : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'"
-                        >
-                            <div class="flex items-center gap-3">
-                                <span class="text-base">🛒</span>
-                                <span>Harga Pasar & Stok Bapok</span>
-                            </div>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                            </svg>
-                        </button>
-
-                        <!-- Tab 2: Harga Sawit -->
-                        <button
-                            @click="selectTab('sawit')"
-                            class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold transition-all text-left cursor-pointer"
-                            :class="activeSidebarTab === 'sawit'
-                                ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/20'
-                                : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'"
-                        >
-                            <div class="flex items-center gap-3">
-                                <span class="text-base">🌴</span>
-                                <span>Harga Sawit</span>
-                            </div>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                            </svg>
-                        </button>
-
-                        <!-- Tab 4: Unit Transfusi Darah -->
-                        <button
-                            @click="selectTab('utd')"
-                            class="w-full flex items-center justify-between px-4 py-3 rounded-xl text-xs font-bold transition-all text-left cursor-pointer"
-                            :class="activeSidebarTab === 'utd'
-                                ? 'bg-rose-600 text-white shadow-md shadow-rose-500/20'
-                                : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'"
-                        >
-                            <div class="flex items-center gap-3">
-                                <span class="text-base">🩸</span>
-                                <span>Unit Transfusi Darah</span>
-                            </div>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                            </svg>
-                        </button>
-                    </nav>
+                    <div class="text-left">
+                        <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Kategori Data Terpilih</p>
+                        <p class="text-sm font-extrabold text-slate-900 dark:text-white">
+                            {{ activeSidebarTab === 'bapok' ? 'Bahan Pokok' : activeSidebarTab === 'sawit' ? 'Harga Sawit' : 'Stok Darah' }}
+                        </p>
+                    </div>
                 </div>
-            </aside>
-        </Transition>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/60 px-3 py-1 rounded-xl">
+                        {{ isSidebarOpen ? 'Sembunyikan' : 'Pilih Menu' }}
+                    </span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-slate-400 transition-transform duration-200" :class="{ 'rotate-180': isSidebarOpen }" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </div>
+            </button>
 
-        <!-- MAIN DISPLAY AREA (DYNAMIC MARGIN PADDING WHEN SIDEBAR IS OPEN) -->
-        <main
-            class="w-full min-w-0 transition-all duration-300"
-            :class="isSidebarOpen ? 'lg:pl-84' : 'pl-0'"
+            <!-- MOBILE COLLAPSIBLE MENU PANEL -->
+            <Transition
+                enter-active-class="transition duration-200 ease-out"
+                enter-from-class="transform scale-95 opacity-0 -translate-y-2"
+                enter-to-class="transform scale-100 opacity-100 translate-y-0"
+                leave-active-class="transition duration-150 ease-in"
+                leave-from-class="transform scale-100 opacity-100 translate-y-0"
+                leave-to-class="transform scale-95 opacity-0 -translate-y-2"
+            >
+                <div v-if="isSidebarOpen" class="mt-2.5 p-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xl space-y-1.5">
+                    <button
+                        @click="selectTab('bapok'); isSidebarOpen = false"
+                        class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                        :class="activeSidebarTab === 'bapok' ? 'bg-blue-600 text-white shadow-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'"
+                    >
+                        <span class="text-base">🛒</span>
+                        <div class="flex-1 text-left">
+                            <div>Bahan Pokok</div>
+                            <div class="text-[10px] opacity-80 font-normal">Harga pasar & komoditas pangan</div>
+                        </div>
+                    </button>
+
+                    <button
+                        @click="selectTab('sawit'); isSidebarOpen = false"
+                        class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                        :class="activeSidebarTab === 'sawit' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'"
+                    >
+                        <span class="text-base">🌴</span>
+                        <div class="flex-1 text-left">
+                            <div>Harga Sawit</div>
+                            <div class="text-[10px] opacity-80 font-normal">Penetapan TBS pabrik & kecamatan</div>
+                        </div>
+                    </button>
+
+                    <button
+                        @click="selectTab('utd'); isSidebarOpen = false"
+                        class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                        :class="activeSidebarTab === 'utd' ? 'bg-rose-600 text-white shadow-sm' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'"
+                    >
+                        <span class="text-base">🩸</span>
+                        <div class="flex-1 text-left">
+                            <div>Stok Darah</div>
+                            <div class="text-[10px] opacity-80 font-normal">Stok Kantong Darah UTD PMI</div>
+                        </div>
+                    </button>
+                </div>
+            </Transition>
+        </div>
+
+        <!-- DESKTOP COMPACT FLUSH SIDEBAR NAVIGATION (HIDDEN ON MOBILE, SHOWN ON MD+) -->
+        <aside
+            class="hidden md:block fixed left-0 top-32 z-30 w-44 sm:w-48 transition-all duration-300"
         >
+            <div class="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md rounded-r-2xl rounded-l-none border-y border-r border-slate-200/80 dark:border-slate-800 p-2.5 shadow-xl space-y-1">
+                <div class="px-2 py-1 mb-1 border-b border-slate-100 dark:border-slate-800/80">
+                    <h3 class="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+                        Kategori
+                    </h3>
+                </div>
+
+                <nav class="space-y-1">
+                    <!-- Tab 1: Bahan Pokok -->
+                    <button
+                        @click="selectTab('bapok')"
+                        class="w-full flex items-center gap-2.5 text-left px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                        :class="activeSidebarTab === 'bapok'
+                            ? 'bg-blue-600 text-white shadow-sm'
+                            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'"
+                    >
+                        <span class="text-sm shrink-0">🛒</span>
+                        <span>Bahan Pokok</span>
+                    </button>
+
+                    <!-- Tab 2: Harga Sawit -->
+                    <button
+                        @click="selectTab('sawit')"
+                        class="w-full flex items-center gap-2.5 text-left px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                        :class="activeSidebarTab === 'sawit'
+                            ? 'bg-emerald-600 text-white shadow-sm'
+                            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'"
+                    >
+                        <span class="text-sm shrink-0">🌴</span>
+                        <span>Harga Sawit</span>
+                    </button>
+
+                    <!-- Tab 3: Stok Darah -->
+                    <button
+                        @click="selectTab('utd')"
+                        class="w-full flex items-center gap-2.5 text-left px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                        :class="activeSidebarTab === 'utd'
+                            ? 'bg-rose-600 text-white shadow-sm'
+                            : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'"
+                    >
+                        <span class="text-sm shrink-0">🩸</span>
+                        <span>Stok Darah</span>
+                    </button>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- MAIN DISPLAY AREA (FULL WIDTH ON MOBILE PL-0, LEFT PADDING PL-52 ON DESKTOP MD+) -->
+        <main class="w-full min-w-0 pl-0 md:pl-52 transition-all duration-300">
             <Transition name="tab-fade" mode="out-in">
                 <!-- 🛒 SUB-VIEW 1: HARGA PASAR & STOK BAPOK -->
                 <div v-if="activeSidebarTab === 'bapok'" key="bapok" class="space-y-8">

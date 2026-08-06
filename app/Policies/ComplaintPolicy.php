@@ -12,7 +12,7 @@ class ComplaintPolicy
      */
     public function viewAny(User $user): bool
     {
-        return in_array($user->role, ['admin', 'super_admin', 'pimpinan'], true);
+        return in_array($user->role, ['admin', 'super_admin', 'pimpinan', 'admin_kependudukan'], true) || $user->isAdminKependudukan();
     }
 
     /**
@@ -20,7 +20,8 @@ class ComplaintPolicy
      */
     public function view(User $user, Complaint $complaint): bool
     {
-        return in_array($user->role, ['admin', 'super_admin', 'pimpinan'], true) && $user->canAccessService($complaint->service_slug);
+        return (in_array($user->role, ['admin', 'super_admin', 'pimpinan', 'admin_kependudukan'], true) || $user->isAdminKependudukan())
+            && $user->canAccessService($complaint->service_slug);
     }
 
     /**
@@ -36,7 +37,8 @@ class ComplaintPolicy
      */
     public function update(User $user, Complaint $complaint): bool
     {
-        return in_array($user->role, ['admin', 'super_admin'], true) && $user->canAccessService($complaint->service_slug);
+        return (in_array($user->role, ['admin', 'super_admin', 'admin_kependudukan'], true) || $user->isAdminKependudukan())
+            && $user->canAccessService($complaint->service_slug);
     }
 
     /**
@@ -44,7 +46,7 @@ class ComplaintPolicy
      */
     public function delete(User $user, Complaint $complaint): bool
     {
-        return $user->isSuperAdmin() || ($user->isAdmin() && $user->canAccessService($complaint->service_slug));
+        return $user->isSuperAdmin() || (($user->isAdmin() || $user->isAdminKependudukan()) && $user->canAccessService($complaint->service_slug));
     }
 
     /**

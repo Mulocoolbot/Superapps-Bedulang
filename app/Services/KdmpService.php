@@ -99,6 +99,8 @@ class KdmpService implements InformationServiceInterface
             $koperasiList[] = [
                 'id' => $kmp->id,
                 'koperasi' => $kmp->nama_koperasi,
+                'desa_kelurahan' => $kmp->desa_kelurahan,
+                'kecamatan' => $kmp->kecamatan,
                 'type' => $kmp->jenis,
                 'operasional' => $kmp->status_operasional ? 'Sudah' : 'Belum',
                 'no_ahu' => $kmp->no_ahu ?? 'Belum ada',
