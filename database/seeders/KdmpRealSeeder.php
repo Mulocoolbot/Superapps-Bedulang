@@ -511,7 +511,7 @@ class KdmpRealSeeder extends Seeder
 
         foreach ($items as $item) {
             Kmp::create([
-                'user_id' => $adminKdmp->id,
+                'user_id' => null,
                 'kecamatan' => $item['kecamatan'],
                 'desa_kelurahan' => $item['desa_kelurahan'],
                 'jenis' => $item['jenis'],

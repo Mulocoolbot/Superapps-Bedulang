@@ -115,9 +115,12 @@ const verifyAdmin = (adminId, action) => {
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
                 <!-- Tabs -->
-                <div class="flex border-b border-gray-200 dark:border-gray-700">
+                <div class="flex border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
                     <Link :href="route('admin.kdmp.dashboard')" class="border-indigo-500 text-indigo-600 dark:text-indigo-400 whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm transition-colors">
-                        Pengelolaan Data
+                        Pengelolaan Data Admin
+                    </Link>
+                    <Link :href="route('admin.kdmp.import_kmp')" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm transition-colors">
+                        Import Data KMP
                     </Link>
                     <Link :href="route('admin.kdmp.history')" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm transition-colors">
                         History Log

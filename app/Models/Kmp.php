@@ -11,6 +11,7 @@ class Kmp extends Model
 
     protected $fillable = [
         'user_id',
+        'import_log_id',
         'kecamatan',
         'desa_kelurahan',
         'jenis',
@@ -42,4 +43,10 @@ class Kmp extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function importLog()
+    {
+        return $this->belongsTo(KmpImportLog::class, 'import_log_id');
+    }
 }
+

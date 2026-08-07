@@ -114,6 +114,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/kdmp/admin/{user}/verify', [\App\Http\Controllers\Kdmp\AdminKdmpController::class, 'verifyAdminKmp'])->name('admin.kdmp.verify_admin');
     Route::get('/admin/kdmp/history', [\App\Http\Controllers\Kdmp\AdminKdmpController::class, 'historyLog'])->name('admin.kdmp.history');
 
+    // KDMP Data Import
+    Route::get('/admin/kdmp/import', [\App\Http\Controllers\Kdmp\KmpImportController::class, 'index'])->name('admin.kdmp.import_kmp');
+    Route::post('/admin/kdmp/import', [\App\Http\Controllers\Kdmp\KmpImportController::class, 'import'])->name('admin.kdmp.import_kmp.store');
+    Route::get('/admin/kdmp/import/template', [\App\Http\Controllers\Kdmp\KmpImportController::class, 'downloadTemplate'])->name('admin.kdmp.import_kmp.template');
+    Route::put('/admin/kdmp/import/{kmp}', [\App\Http\Controllers\Kdmp\KmpImportController::class, 'update'])->name('admin.kdmp.import_kmp.update');
+    Route::delete('/admin/kdmp/import/{kmp}', [\App\Http\Controllers\Kdmp\KmpImportController::class, 'destroy'])->name('admin.kdmp.import_kmp.destroy');
+    Route::delete('/admin/kdmp/import/log/{log}', [\App\Http\Controllers\Kdmp\KmpImportController::class, 'destroyLog'])->name('admin.kdmp.import_kmp.destroy_log');
+
     // KDMP Admin Kecamatan
     Route::get('/admin/kdmp/kecamatan', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'dashboard'])->name('admin.kdmp.kecamatan.dashboard');
     Route::get('/admin/kdmp/kecamatan/verifikasi-kmp', [\App\Http\Controllers\Kdmp\AdminKecamatanController::class, 'verifikasiKmp'])->name('admin.kdmp.kecamatan.verifikasi_kmp_page');
@@ -129,7 +137,6 @@ Route::middleware('auth')->group(function () {
 
     // KDMP Admin KMP
     Route::get('/admin/kdmp/kmp', [\App\Http\Controllers\Kdmp\AdminKmpController::class, 'dashboard'])->name('admin.kdmp.kmp.dashboard');
-    Route::post('/admin/kdmp/kmp', [\App\Http\Controllers\Kdmp\AdminKmpController::class, 'storeKmp'])->name('admin.kdmp.kmp.store');
     Route::post('/admin/kdmp/kmp/edit', [\App\Http\Controllers\Kdmp\AdminKmpController::class, 'requestEdit'])->name('admin.kdmp.kmp.request_edit');
     Route::post('/admin/kdmp/kmp/sertifikat', [\App\Http\Controllers\Kdmp\AdminKmpController::class, 'uploadSertifikat'])->name('admin.kdmp.kmp.upload_sertifikat');
     Route::post('/admin/kdmp/kmp/pelatihan', [\App\Http\Controllers\Kdmp\AdminKmpController::class, 'uploadPelatihan'])->name('admin.kdmp.kmp.upload_pelatihan');

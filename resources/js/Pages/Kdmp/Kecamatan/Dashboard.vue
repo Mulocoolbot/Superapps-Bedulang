@@ -14,12 +14,17 @@ import DangerButton from '@/Components/DangerButton.vue'
 const props = defineProps({
     kmpAdmins: Object,
     kecamatan: String,
+    kmpsInKecamatan: {
+        type: Array,
+        default: () => []
+    }
 })
 
 const form = useForm({
     name: '',
     email: '',
     password: '',
+    kmp_id: '',
 })
 
 const submitAdmin = () => {
@@ -34,6 +39,7 @@ const editForm = useForm({
     name: '',
     email: '',
     password: '',
+    kmp_id: '',
 })
 
 const openEditModal = (admin) => {
@@ -41,6 +47,7 @@ const openEditModal = (admin) => {
     editForm.name = admin.name
     editForm.email = admin.email
     editForm.password = ''
+    editForm.kmp_id = admin.kmp?.id || ''
 }
 
 const closeEditModal = () => {
@@ -106,13 +113,24 @@ const submitDelete = () => {
                 <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                     <header>
                         <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Tambah Akun Admin KMP</h2>
-                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Buat akun untuk pengurus KMP di kecamatan Anda.</p>
+                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Pilih KMP yang ada di kecamatan {{ kecamatan }} dan buatkan akun adminnya.</p>
                     </header>
 
                     <form @submit.prevent="submitAdmin" class="mt-6 space-y-6 max-w-xl">
                         <div>
-                            <InputLabel for="name" value="Nama" />
-                            <TextInput id="name" v-model="form.name" type="text" class="mt-1 block w-full" required autofocus />
+                            <InputLabel for="kmp_id" value="Pilih KMP" />
+                            <select id="kmp_id" v-model="form.kmp_id" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 rounded-md shadow-sm" required>
+                                <option value="" disabled>-- Pilih Koperasi Merah Putih --</option>
+                                <option v-for="kmpItem in kmpsInKecamatan" :key="kmpItem.id" :value="kmpItem.id">
+                                    {{ kmpItem.nama_koperasi }} ({{ kmpItem.desa_kelurahan }}) {{ kmpItem.user_id ? '• [Sudah ada akun]' : '' }}
+                                </option>
+                            </select>
+                            <InputError :message="form.errors.kmp_id" class="mt-2" />
+                        </div>
+
+                        <div>
+                            <InputLabel for="name" value="Nama Admin KMP" />
+                            <TextInput id="name" v-model="form.name" type="text" class="mt-1 block w-full" required />
                             <InputError :message="form.errors.name" class="mt-2" />
                         </div>
                         
@@ -129,7 +147,7 @@ const submitDelete = () => {
                         </div>
                         
                         <div class="flex items-center gap-4">
-                            <PrimaryButton :disabled="form.processing">Simpan Akun</PrimaryButton>
+                            <PrimaryButton :disabled="form.processing">Simpan Akun Admin KMP</PrimaryButton>
                             <Transition enter-active-class="transition ease-in-out" enter-from-class="opacity-0" leave-active-class="transition ease-in-out" leave-to-class="opacity-0">
                                 <p v-if="form.recentlySuccessful" class="text-sm text-gray-600 dark:text-gray-400">Berhasil ditambahkan.</p>
                             </Transition>
@@ -146,7 +164,8 @@ const submitDelete = () => {
                         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                 <tr>
-                                    <th class="px-6 py-3">Nama</th>
+                                    <th class="px-6 py-3">KMP / Koperasi</th>
+                                    <th class="px-6 py-3">Nama Admin</th>
                                     <th class="px-6 py-3">Email</th>
                                     <th class="px-6 py-3">Status</th>
                                     <th class="px-6 py-3">Terdaftar Pada</th>
@@ -155,6 +174,12 @@ const submitDelete = () => {
                             </thead>
                             <tbody>
                                 <tr v-for="admin in kmpAdmins.data" :key="admin.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                    <td class="px-6 py-4 font-semibold text-gray-900 dark:text-white">
+                                        {{ admin.kmp?.nama_koperasi || '-' }}
+                                        <span v-if="admin.kmp?.desa_kelurahan" class="block text-xs font-normal text-gray-500 dark:text-gray-400">
+                                            Desa/Kel: {{ admin.kmp.desa_kelurahan }}
+                                        </span>
+                                    </td>
                                     <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">{{ admin.name }}</td>
                                     <td class="px-6 py-4">{{ admin.email }}</td>
                                     <td class="px-6 py-4">
@@ -171,7 +196,7 @@ const submitDelete = () => {
                                     </td>
                                 </tr>
                                 <tr v-if="kmpAdmins.data.length === 0">
-                                    <td colspan="5" class="px-6 py-4 text-center">Belum ada Admin KMP.</td>
+                                    <td colspan="6" class="px-6 py-4 text-center">Belum ada Admin KMP.</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -191,6 +216,17 @@ const submitDelete = () => {
                         </h2>
                         
                         <form @submit.prevent="submitEdit" class="mt-6 space-y-6">
+                            <div>
+                                <InputLabel for="edit_kmp_id" value="KMP Terhubung" />
+                                <select id="edit_kmp_id" v-model="editForm.kmp_id" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 rounded-md shadow-sm">
+                                    <option value="">-- Tanpa KMP / Pilih Nanti --</option>
+                                    <option v-for="kmpItem in kmpsInKecamatan" :key="kmpItem.id" :value="kmpItem.id">
+                                        {{ kmpItem.nama_koperasi }} ({{ kmpItem.desa_kelurahan }})
+                                    </option>
+                                </select>
+                                <InputError :message="editForm.errors.kmp_id" class="mt-2" />
+                            </div>
+
                             <div>
                                 <InputLabel for="edit_name" value="Nama" />
                                 <TextInput id="edit_name" v-model="editForm.name" type="text" class="mt-1 block w-full" required />

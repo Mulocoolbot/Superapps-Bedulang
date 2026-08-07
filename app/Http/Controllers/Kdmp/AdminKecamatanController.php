@@ -22,11 +22,16 @@ class AdminKecamatanController extends Controller
         
         $kmpAdmins = User::where('kdmp_role', 'admin_kmp')
             ->where('kdmp_kecamatan', $user->kdmp_kecamatan)
+            ->with('kmp')
             ->paginate(10)->withQueryString();
+
+        $kmpsInKecamatan = Kmp::where('kecamatan', $user->kdmp_kecamatan)
+            ->get();
 
         return Inertia::render('Kdmp/Kecamatan/Dashboard', [
             'kmpAdmins' => $kmpAdmins,
             'kecamatan' => $user->kdmp_kecamatan,
+            'kmpsInKecamatan' => $kmpsInKecamatan,
         ]);
     }
 
@@ -107,7 +112,15 @@ class AdminKecamatanController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
+            'kmp_id' => 'required|exists:kmps,id',
+        ], [
+            'kmp_id.required' => 'Silakan pilih KMP yang ingin dibuatkan akun adminnya.',
+            'kmp_id.exists' => 'KMP yang dipilih tidak valid.',
         ]);
+
+        $kmp = Kmp::where('id', $validated['kmp_id'])
+            ->where('kecamatan', $user->kdmp_kecamatan)
+            ->firstOrFail();
 
         $newUser = User::create([
             'name' => $validated['name'],
@@ -120,21 +133,28 @@ class AdminKecamatanController extends Controller
             'kdmp_admin_status' => 'pending',
         ]);
 
+        // Assign user to KMP
+        $kmp->user_id = $newUser->id;
+        $kmp->save();
+
         $adminKdmps = User::where('kdmp_role', 'admin_kdmp')->orWhere('role', 'super_admin')->get();
         Notification::send($adminKdmps, new KdmpApprovalNotification(
-            "Akun Admin KMP baru ({$newUser->name}) dibuat oleh Admin Kecamatan {$user->kdmp_kecamatan} dan menunggu verifikasi.",
+            "Akun Admin KMP baru ({$newUser->name}) untuk {$kmp->nama_koperasi} dibuat oleh Admin Kecamatan {$user->kdmp_kecamatan} dan menunggu verifikasi.",
             "info"
         ));
 
-        return redirect()->back()->with('success', 'Admin KMP berhasil ditambahkan dan menunggu verifikasi admin pusat.');
+        return redirect()->back()->with('success', 'Admin KMP berhasil ditambahkan dan terhubung dengan KMP yang dipilih.');
     }
 
     public function updateAdmin(Request $request, User $user)
     {
+        $adminUser = Auth::user();
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
             'password' => 'nullable|string|min:8',
+            'kmp_id' => 'nullable|exists:kmps,id',
         ]);
 
         $user->name = $validated['name'];
@@ -143,6 +163,19 @@ class AdminKecamatanController extends Controller
             $user->password = Hash::make($validated['password']);
         }
         $user->save();
+
+        if (!empty($validated['kmp_id'])) {
+            // Reset previous KMP connection if any
+            Kmp::where('user_id', $user->id)->update(['user_id' => null]);
+
+            $kmp = Kmp::where('id', $validated['kmp_id'])
+                ->where('kecamatan', $adminUser->kdmp_kecamatan)
+                ->first();
+            if ($kmp) {
+                $kmp->user_id = $user->id;
+                $kmp->save();
+            }
+        }
 
         return redirect()->back()->with('success', 'Admin KMP berhasil diperbarui.');
     }

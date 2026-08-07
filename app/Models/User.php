@@ -123,4 +123,9 @@ class User extends Authenticatable
     {
         return $this->role === 'admin_kependudukan' || ($this->role === 'admin' && $this->service_slug === 'kependudukan');
     }
+
+    public function kmp()
+    {
+        return $this->hasOne(Kmp::class);
+    }
 }

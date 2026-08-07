@@ -42,51 +42,6 @@ class AdminKmpController extends Controller
         ]);
     }
 
-    public function storeKmp(Request $request)
-    {
-        $user = Auth::user();
-
-        if (Kmp::where('user_id', $user->id)->exists()) {
-            return redirect()->back()->withErrors(['message' => 'Anda sudah memiliki KMP.']);
-        }
-
-        $validated = $request->validate([
-            'desa_kelurahan' => 'required|string|max:255',
-            'jenis' => 'required|in:Desa,Kelurahan',
-            'nama_koperasi' => 'required|string|max:255',
-            'nomor_induk' => 'nullable|string|max:255',
-            'no_ahu' => 'nullable|string|max:255',
-            'tanggal_ahu' => 'nullable|date',
-            'alamat' => 'nullable|string',
-            'telp' => 'nullable|string|max:50',
-            'status_operasional' => 'nullable|boolean',
-        ]);
-
-        $kmp = Kmp::create([
-            'user_id' => $user->id,
-            'kecamatan' => $user->kdmp_kecamatan, // Inherit from user
-            'desa_kelurahan' => $validated['desa_kelurahan'],
-            'jenis' => $validated['jenis'],
-            'nama_koperasi' => $validated['nama_koperasi'],
-            'nomor_induk' => $validated['nomor_induk'],
-            'no_ahu' => $validated['no_ahu'],
-            'tanggal_ahu' => $validated['tanggal_ahu'],
-            'alamat' => $validated['alamat'],
-            'telp' => $validated['telp'],
-            'status_operasional' => $validated['status_operasional'] ?? false,
-            'status_pembentukan' => 'pending_verification',
-        ]);
-
-        KmpHistoryLog::create([
-            'kmp_id' => $kmp->id,
-            'user_id' => $user->id,
-            'action' => 'create_kmp',
-            'description' => 'Admin KMP membuat KMP baru.',
-        ]);
-
-        return redirect()->back()->with('success', 'KMP berhasil didaftarkan dan menunggu verifikasi Admin Kecamatan.');
-    }
-
     public function requestEdit(Request $request)
     {
         $user = Auth::user();

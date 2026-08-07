@@ -51,17 +51,9 @@ const formatRupiah = (value) => {
 }
 
 const submitKmp = () => {
-    if (props.kmp) {
-        // Edit request
-        kmpForm.post(route('admin.kdmp.kmp.request_edit'), {
-            preserveScroll: true,
-        })
-    } else {
-        // Create new
-        kmpForm.post(route('admin.kdmp.kmp.store'), {
-            preserveScroll: true,
-        })
-    }
+    kmpForm.post(route('admin.kdmp.kmp.request_edit'), {
+        preserveScroll: true,
+    })
 }
 
 const submitCert = () => {
@@ -154,12 +146,25 @@ const submitManagement = () => {
                     </Link>
                 </div>
                 
+                <!-- Info No KMP Assigned -->
+                <div v-if="!kmp" class="p-6 bg-white dark:bg-gray-800 shadow sm:rounded-lg text-center py-12">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-100 dark:bg-amber-900 text-amber-600 dark:text-amber-300 mb-4">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Belum Ada KMP Terhubung</h3>
+                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400 max-w-md mx-auto">
+                        Akun Anda belum terhubung dengan Koperasi Merah Putih (KMP). Silakan hubungi Admin Kecamatan untuk menghubungkan akun Anda ke KMP yang telah terdaftar.
+                    </p>
+                </div>
+
                 <!-- Form Data KMP -->
-                <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+                <div v-if="kmp" class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
                     <header>
-                        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ kmp ? 'Detail Koperasi Merah Putih' : 'Daftarkan Koperasi Merah Putih Baru' }}</h2>
+                        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Detail Koperasi Merah Putih</h2>
                         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                            {{ kmp ? 'Anda dapat mengajukan perubahan data KMP di bawah ini.' : 'Isi formulir ini untuk mendaftarkan KMP baru.' }}
+                            Anda dapat mengajukan perubahan data KMP di bawah ini.
                         </p>
                     </header>
 
@@ -223,7 +228,7 @@ const submitManagement = () => {
                         </div>
                         
                         <div class="flex items-center gap-4">
-                            <PrimaryButton :disabled="kmpForm.processing || pendingEdits">{{ kmp ? 'Ajukan Perubahan' : 'Daftarkan KMP' }}</PrimaryButton>
+                            <PrimaryButton :disabled="kmpForm.processing || pendingEdits">Ajukan Perubahan</PrimaryButton>
                             <Transition enter-active-class="transition ease-in-out" enter-from-class="opacity-0" leave-active-class="transition ease-in-out" leave-to-class="opacity-0">
                                 <p v-if="kmpForm.recentlySuccessful" class="text-sm text-gray-600 dark:text-gray-400">Berhasil dikirim.</p>
                             </Transition>
