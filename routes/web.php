@@ -16,13 +16,19 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\KubernetesController;
 use App\Http\Controllers\DataSektoralController;
+use App\Http\Controllers\AppLaunchController;
+
 /*
 |--------------------------------------------------------------------------
-| Kubernetes
+| Kubernetes & App Health Check Launch
 |--------------------------------------------------------------------------
 */
 Route::get('/healthz', [KubernetesController::class, 'sehat']);
 Route::get('/readiness', [KubernetesController::class, 'siap']);
+
+Route::get('/app/launch', [AppLaunchController::class, 'launch'])->name('app.launch');
+Route::get('/app/maintenance', [AppLaunchController::class, 'showMaintenance'])->name('app.maintenance');
+Route::get('/api/check-app-status', [AppLaunchController::class, 'checkStatus'])->name('api.check-app-status');
 
 /*
 |--------------------------------------------------------------------------

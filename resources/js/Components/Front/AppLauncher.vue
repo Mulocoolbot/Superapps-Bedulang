@@ -3,7 +3,7 @@ const services = [
     {
         name: 'SIPELAWAN',
         logo: '/services/sipelawan.png',
-        url: 'https://dashboard-sipelawan.bangkatengahkab.go.id/dashboard/'
+        url: 'https://dashboard-sipelawan.bangkatengahkab.go.id'
     },
     {
         name: 'SEPERADIK',
@@ -28,7 +28,7 @@ const services = [
     {
         name: 'SIMENTARI',
         logo: '',
-        url: 'https://inspektorat.bangkatengahkab.go.id'
+        url: 'https://inspektorat.bangkatengahkab.go.id/'
     },
 ]
 </script>
@@ -59,7 +59,7 @@ const services = [
             <a
                 v-for="(service,index) in services"
                 :key="service.name"
-                :href="service.url"
+                :href="'/app/launch?name=' + encodeURIComponent(service.name) + '&url=' + encodeURIComponent(service.url)"
                 target="_blank"
                 data-aos="fade-up"
                 :data-aos-delay="index*50"
