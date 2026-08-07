@@ -49,6 +49,16 @@ Route::post('/complaints', [ComplaintController::class, 'store'])
     ->middleware(['auth', 'throttle:10,1'])
     ->name('complaints.store');
 
+Route::get('/download-app', function () {
+    $path = public_path('downloads/Bedulang.apk');
+    if (file_exists($path)) {
+        return response()->download($path, 'Bedulang.apk', [
+            'Content-Type' => 'application/vnd.android.package-archive',
+        ]);
+    }
+    return redirect()->back()->with('warning', 'File Bedulang.apk tidak ditemukan.');
+})->name('download.app');
+
 /*
 |--------------------------------------------------------------------------
 | Dashboard
