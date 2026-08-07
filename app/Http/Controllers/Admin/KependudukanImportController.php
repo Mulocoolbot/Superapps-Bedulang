@@ -43,27 +43,6 @@ class KependudukanImportController extends Controller
     }
 
     /**
-     * Sync data directly from 8 Google Spreadsheets
-     */
-    public function syncSpreadsheets(Request $request)
-    {
-        $tahun = (int) ($request->input('tahun') ?? date('Y'));
-        $semester = (int) ($request->input('semester') ?? 1);
-
-        try {
-            \Illuminate\Support\Facades\Artisan::call('kependudukan:sync-spreadsheets', [
-                '--tahun' => $tahun,
-                '--semester' => $semester,
-            ]);
-
-            return redirect()->route('admin.kependudukan.index')
-                ->with('success', "Berhasil menyinkronkan data dari 8 Google Spreadsheets untuk Tahun {$tahun} Semester {$semester}!");
-        } catch (\Throwable $e) {
-            return back()->withErrors(['file' => 'Gagal menyinkronkan Google Spreadsheets: ' . $e->getMessage()]);
-        }
-    }
-
-    /**
      * Import CSV file for a specific Category, Semester, and Year
      */
     public function import(Request $request)

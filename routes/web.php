@@ -194,8 +194,6 @@ Route::middleware('auth')->group(function () {
         ->name('admin.kependudukan.index');
     Route::post('/admin/kependudukan/import', [KependudukanImportController::class, 'import'])
         ->name('admin.kependudukan.import');
-    Route::post('/admin/kependudukan/sync-spreadsheets', [KependudukanImportController::class, 'syncSpreadsheets'])
-        ->name('admin.kependudukan.sync_spreadsheets');
     Route::get('/admin/kependudukan/template/{category}', [KependudukanImportController::class, 'downloadTemplate'])
         ->name('admin.kependudukan.template');
     Route::delete('/admin/kependudukan/log/{log}', [KependudukanImportController::class, 'destroyLog'])
