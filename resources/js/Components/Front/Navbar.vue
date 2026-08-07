@@ -140,6 +140,35 @@ const mobileLayananOpen = ref(false)
 const mobileAplikasiOpen = ref(false)
 const mobileLayananInfoOpen = ref(false)
 const mobileLayananPublikOpen = ref(false)
+const isNotFromWeb = ref(false)
+
+const checkIfAppOrWebview = () => {
+    if (typeof window === 'undefined') return false
+
+    const ua = navigator.userAgent || navigator.vendor || window.opera || ''
+
+    // 1. Check for standard Android WebView indicators
+    const isAndroidWebView = /wv|WebView|Android.*Version\/[0-9]\.[0-9]/i.test(ua)
+
+    // 2. Check for iOS WKWebView (standalone navigator or missing safari token with mobile token)
+    const isIOSWebView = /(iPhone|iPod|iPad).*AppleWebKit(?!.*Safari)/i.test(ua)
+
+    // 3. Check for standalone display mode (PWA / Installed App)
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true
+
+    // 4. Check for in-app browsers or custom WebView bridge flags
+    const isInAppBrowser = /FBAN|FBAV|Instagram|Line|Twitter|MicroMessenger|ByteLocale|Bedulang/i.test(ua) || window.isNativeApp === true || window.Android !== undefined
+
+    // 5. Query params check (?app=true or ?webview=1)
+    const urlParams = new URLSearchParams(window.location.search)
+    const isAppParam = urlParams.get('app') === 'true' || urlParams.get('webview') === '1' || urlParams.get('source') === 'app'
+
+    return isAndroidWebView || isIOSWebView || isStandalone || isInAppBrowser || isAppParam
+}
+
+const handleDisabledDownloadClick = () => {
+    alert('Fitur download aplikasi di-disable karena Anda sedang mengakses dari dalam Aplikasi Bedulang.')
+}
 
 const triggerBellRing = () => {
     isBellRinging.value = true
@@ -154,6 +183,8 @@ onMounted(() => {
     if (darkMode.value) {
         document.documentElement.classList.add('dark')
     }
+
+    isNotFromWeb.value = checkIfAppOrWebview()
 
     // Attach scroll listener
     window.addEventListener('scroll', handleScroll)
@@ -265,22 +296,22 @@ const toggleDarkMode = () => {
                 <!-- LOGO -->
                 <div 
                     @click="handleLogoClick"
-                    class="flex items-center gap-3 cursor-pointer select-none"
+                    class="flex items-center gap-1.5 md:gap-2 lg:gap-3 cursor-pointer select-none shrink-0"
                 >
                     <img
                         src="/services/logobateng3.png"
                         alt="logo bangka tengah"
                         class="transition-all duration-500 ease-in-out object-contain"
-                        :class="isScrolled ? 'w-9 h-9' : 'w-11 h-11'"
+                        :class="isScrolled ? 'w-7 h-7 lg:w-9 lg:h-9' : 'w-8 h-8 md:w-7 md:h-7 lg:w-11 lg:h-11'"
                     >
                     <div 
                         class="flex flex-col transition-all duration-500 ease-in-out overflow-hidden"
-                        :class="isScrolled ? 'max-w-0 opacity-0 pointer-events-none' : 'max-w-[200px] opacity-100'"
+                        :class="isScrolled ? 'max-w-0 opacity-0 pointer-events-none' : 'max-w-[120px] md:max-w-[110px] lg:max-w-[200px] opacity-100'"
                     >
-                        <h1 class="text-xl font-bold text-gray-800 dark:text-white whitespace-nowrap leading-none">
+                        <h1 class="text-xs md:text-[11px] lg:text-xl font-black text-gray-800 dark:text-white whitespace-nowrap leading-none tracking-tight md:tracking-normal">
                             BEDULANG
                         </h1>
-                        <p class="text-[10px] text-gray-500 dark:text-gray-300 whitespace-nowrap leading-none mt-1">
+                        <p class="text-[7.5px] md:text-[7px] lg:text-[10px] text-gray-500 dark:text-gray-300 whitespace-nowrap leading-none mt-0.5 block">
                             Beragam Layanan Dalam Satu Wadah
                         </p>
                     </div>
@@ -288,7 +319,7 @@ const toggleDarkMode = () => {
 
                 <!-- MENU -->
                 <div
-                    class="hidden md:flex items-center space-x-8 text-blue-900/90 dark:text-blue-100 font-bold"
+                    class="hidden md:flex items-center space-x-2 md:space-x-3 lg:space-x-8 text-blue-900/90 dark:text-blue-100 font-bold text-[11px] md:text-xs lg:text-base shrink-0"
                 >
                     <a href="/#beranda" @click="navigateMenu($event, '#beranda')" class="hover:text-blue-600 transition">
                         Beranda
@@ -438,7 +469,7 @@ const toggleDarkMode = () => {
             </div>
 
             <!-- ACTION -->
-            <div class="hidden md:flex items-center gap-5">
+            <div class="hidden md:flex items-center gap-1.5 md:gap-2.5 lg:gap-5 shrink-0">
 
                 <!-- Dark Mode Switch -->
                 <div class="flex items-center">
@@ -691,10 +722,33 @@ const toggleDarkMode = () => {
                 <Link
                     v-else
                     href="/login"
-                    class="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium shadow hover:shadow-lg transition"
+                    class="px-4 lg:px-6 py-2 lg:py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs lg:text-sm shadow hover:shadow-lg transition shrink-0"
                 >
                     Login
                 </Link>
+
+                <!-- Download APK Feature Icon Only (Tablet & Desktop View) -->
+                <button
+                    v-if="isNotFromWeb"
+                    @click="handleDisabledDownloadClick"
+                    class="p-2.5 rounded-xl bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-500 border border-gray-300 dark:border-gray-700 opacity-60 cursor-not-allowed transition flex items-center justify-center shrink-0"
+                    title="Fitur download di-disable (Sedang membuka via Aplikasi)"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                    </svg>
+                </button>
+                <a
+                    v-else
+                    href="/download-app"
+                    download="Bedulang.apk"
+                    class="p-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white shadow hover:shadow-lg transition flex items-center justify-center shrink-0"
+                    title="Download Aplikasi Bedulang APK"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                    </svg>
+                </a>
 
             </div>
 
@@ -918,15 +972,68 @@ const toggleDarkMode = () => {
                             {{ authUser.role === 'pimpinan' ? 'Dashboard Pimpinan' : 'Admin Panel' }}
                         </Link>
                     </template>
+
+                    <!-- Mobile App Download for Logged-In User (Icon Only) -->
+                    <div class="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                        <button
+                            v-if="isNotFromWeb"
+                            @click="handleDisabledDownloadClick"
+                            class="w-full text-center py-2.5 px-4 bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 rounded-xl cursor-not-allowed transition flex items-center justify-center opacity-60 border border-gray-300 dark:border-gray-600"
+                            title="Fitur download di-disable (Sedang membuka via Aplikasi)"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                            </svg>
+                        </button>
+                        <a
+                            v-else
+                            href="/download-app"
+                            download="Bedulang.apk"
+                            class="w-full text-center py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl shadow transition flex items-center justify-center"
+                            title="Download Aplikasi Bedulang APK"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                            </svg>
+                        </a>
+                    </div>
                 </template>
 
-                <Link
-                    v-else
-                    href="/login"
-                    class="block text-center mt-2 px-4 py-2 bg-blue-600 text-white rounded-lg"
-                >
-                    Login
-                </Link>
+                <div v-else class="space-y-2 mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                    <!-- Tombol Login -->
+                    <Link
+                        href="/login"
+                        class="w-full text-center py-2.5 px-4 bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-semibold text-sm rounded-xl shadow transition-all flex items-center justify-center gap-2"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+                        </svg>
+                        <span>Login</span>
+                    </Link>
+
+                    <!-- Tombol Download APK (Icon Saja memanjang ke samping di bawah tombol Login) -->
+                    <button
+                        v-if="isNotFromWeb"
+                        @click="handleDisabledDownloadClick"
+                        class="w-full text-center py-2.5 px-4 bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500 font-semibold rounded-xl cursor-not-allowed transition flex items-center justify-center opacity-60 border border-gray-300 dark:border-gray-600"
+                        title="Fitur download di-disable (Sedang membuka via Aplikasi)"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                        </svg>
+                    </button>
+                    <a
+                        v-else
+                        href="/download-app"
+                        download="Bedulang.apk"
+                        class="w-full text-center py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-semibold rounded-xl shadow transition-all flex items-center justify-center"
+                        title="Download Aplikasi Bedulang APK"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                        </svg>
+                    </a>
+                </div>
             </div>
         </Transition>
 
