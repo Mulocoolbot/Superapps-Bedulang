@@ -16,6 +16,9 @@ const handleScroll = () => {
 }
 
 const page = usePage()
+const isMaintenancePage = computed(() => {
+    return page.component === 'Front/Maintenance' || (typeof window !== 'undefined' && window.location.pathname.startsWith('/app/maintenance'))
+})
 const authUser = computed(() => page.props.auth?.user)
 const isAdmin = computed(() => authUser.value && (['admin', 'super_admin', 'pimpinan', 'admin_koperasi', 'admin_kependudukan'].includes(authUser.value.role) || ['koperasi', 'kependudukan'].includes(authUser.value.service_slug)))
 const adminPanelHref = computed(() => {
@@ -291,8 +294,12 @@ const toggleDarkMode = () => {
         <div
             class="mx-auto transition-all duration-500 ease-in-out"
             :class="isScrolled 
-                ? 'max-w-6xl rounded-full bg-blue-50/75 dark:bg-slate-900/80 backdrop-blur-lg shadow-lg border border-blue-200/40 dark:border-slate-800/60 px-5 md:px-6 py-2 mt-4 mx-4 md:mx-auto' 
-                : 'max-w-full rounded-none bg-blue-50/20 dark:bg-slate-950/20 backdrop-blur-sm border-b border-t-transparent border-x-transparent border-blue-200/10 dark:border-slate-800/10 shadow-sm px-5 md:px-6 py-3 mt-0 mx-0'"
+                ? (isMaintenancePage 
+                    ? 'max-w-6xl rounded-full bg-slate-900/85 backdrop-blur-lg shadow-xl border border-slate-800 px-5 md:px-6 py-2 mt-4 mx-4 md:mx-auto' 
+                    : 'max-w-6xl rounded-full bg-blue-50/75 dark:bg-slate-900/80 backdrop-blur-lg shadow-lg border border-blue-200/40 dark:border-slate-800/60 px-5 md:px-6 py-2 mt-4 mx-4 md:mx-auto') 
+                : (isMaintenancePage 
+                    ? 'max-w-full rounded-none bg-slate-950/40 backdrop-blur-sm border-b border-t-transparent border-x-transparent border-slate-800/40 shadow-sm px-5 md:px-6 py-3 mt-0 mx-0' 
+                    : 'max-w-full rounded-none bg-blue-50/20 dark:bg-slate-950/20 backdrop-blur-sm border-b border-t-transparent border-x-transparent border-blue-200/10 dark:border-slate-800/10 shadow-sm px-5 md:px-6 py-3 mt-0 mx-0')"
         >
             <div 
                 class="container mx-auto flex justify-between items-center transition-all duration-500 ease-in-out"
@@ -313,10 +320,16 @@ const toggleDarkMode = () => {
                         class="flex flex-col transition-all duration-500 ease-in-out overflow-hidden"
                         :class="isScrolled ? 'max-w-0 opacity-0 pointer-events-none' : 'max-w-[120px] md:max-w-[110px] lg:max-w-[200px] opacity-100'"
                     >
-                        <h1 class="text-xs md:text-[11px] lg:text-xl font-black text-gray-800 dark:text-white whitespace-nowrap leading-none tracking-tight md:tracking-normal">
+                        <h1 
+                            class="text-xs md:text-[11px] lg:text-xl font-black whitespace-nowrap leading-none tracking-tight md:tracking-normal"
+                            :class="isMaintenancePage ? 'text-white' : 'text-gray-800 dark:text-white'"
+                        >
                             BEDULANG
                         </h1>
-                        <p class="text-[7.5px] md:text-[7px] lg:text-[10px] text-gray-500 dark:text-gray-300 whitespace-nowrap leading-none mt-0.5 block">
+                        <p 
+                            class="text-[7.5px] md:text-[7px] lg:text-[10px] whitespace-nowrap leading-none mt-0.5 block"
+                            :class="isMaintenancePage ? 'text-slate-300' : 'text-gray-500 dark:text-gray-300'"
+                        >
                             Beragam Layanan Dalam Satu Wadah
                         </p>
                     </div>
@@ -324,15 +337,26 @@ const toggleDarkMode = () => {
 
                 <!-- MENU -->
                 <div
-                    class="hidden md:flex items-center space-x-1.5 md:space-x-2.5 lg:space-x-4 xl:space-x-6 text-blue-900/90 dark:text-blue-100 font-bold text-[11px] md:text-xs lg:text-[13px] xl:text-[14px] shrink-0"
+                    class="hidden md:flex items-center space-x-1.5 md:space-x-2.5 lg:space-x-4 xl:space-x-6 font-bold text-[11px] md:text-xs lg:text-[13px] xl:text-[14px] shrink-0"
+                    :class="isMaintenancePage ? 'text-white' : 'text-blue-900/90 dark:text-blue-100'"
                 >
-                    <a href="/#beranda" @click="navigateMenu($event, '#beranda')" class="hover:text-blue-600 transition whitespace-nowrap">
+                    <a 
+                        href="/#beranda" 
+                        @click="navigateMenu($event, '#beranda')" 
+                        class="transition whitespace-nowrap"
+                        :class="isMaintenancePage ? 'hover:text-amber-400' : 'hover:text-blue-600'"
+                    >
                         Beranda
                     </a>
                     
                     <!-- TENTANG DROPDOWN -->
                     <div class="relative group py-2">
-                        <a href="/#tentang" @click="navigateMenu($event, '#tentang')" class="hover:text-blue-600 transition flex items-center gap-1 whitespace-nowrap">
+                        <a 
+                            href="/#tentang" 
+                            @click="navigateMenu($event, '#tentang')" 
+                            class="transition flex items-center gap-1 whitespace-nowrap"
+                            :class="isMaintenancePage ? 'hover:text-amber-400' : 'hover:text-blue-600'"
+                        >
                             Tentang
                             <svg class="w-3.5 h-3.5 md:w-4 md:h-4 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -340,25 +364,33 @@ const toggleDarkMode = () => {
                         </a>
                         
                         <!-- Dropdown Menu -->
-                        <div class="absolute left-0 top-full hidden group-hover:block w-48 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl py-2 z-50">
+                        <div 
+                            class="absolute left-0 top-full hidden group-hover:block w-48 rounded-2xl backdrop-blur-md shadow-xl py-2 z-50"
+                            :class="isMaintenancePage 
+                                ? 'border border-slate-800 bg-slate-900/95 text-slate-200' 
+                                : 'border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 text-gray-700 dark:text-gray-300'"
+                        >
                             <a 
                                 href="javascript:void(0)"
                                 @click="selectAboutSlide(1)"
-                                class="block px-5 py-2.5 hover:bg-blue-50 dark:hover:bg-gray-700 text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
+                                class="block px-5 py-2.5 text-sm font-medium transition"
+                                :class="isMaintenancePage ? 'hover:bg-slate-800 text-slate-200 hover:text-amber-400' : 'hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400'"
                             >
                                 Filosofi
                             </a>
                             <a 
                                 href="javascript:void(0)"
                                 @click="selectAboutSlide(2)"
-                                class="block px-5 py-2.5 hover:bg-blue-50 dark:hover:bg-gray-700 text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
+                                class="block px-5 py-2.5 text-sm font-medium transition"
+                                :class="isMaintenancePage ? 'hover:bg-slate-800 text-slate-200 hover:text-amber-400' : 'hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400'"
                             >
                                 Visi
                             </a>
                             <a 
                                 href="javascript:void(0)"
                                 @click="selectAboutSlide(3)"
-                                class="block px-5 py-2.5 hover:bg-blue-50 dark:hover:bg-gray-700 text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
+                                class="block px-5 py-2.5 text-sm font-medium transition"
+                                :class="isMaintenancePage ? 'hover:bg-slate-800 text-slate-200 hover:text-amber-400' : 'hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400'"
                             >
                                 Misi
                             </a>
@@ -367,7 +399,12 @@ const toggleDarkMode = () => {
 
                     <!-- LAYANAN DROPDOWN -->
                     <div class="relative group py-2">
-                        <a href="/#layanan" @click="navigateMenu($event, '#layanan')" class="hover:text-blue-600 transition flex items-center gap-1 whitespace-nowrap">
+                        <a 
+                            href="/#layanan" 
+                            @click="navigateMenu($event, '#layanan')" 
+                            class="transition flex items-center gap-1 whitespace-nowrap"
+                            :class="isMaintenancePage ? 'hover:text-amber-400' : 'hover:text-blue-600'"
+                        >
                             Layanan
                             <svg class="w-3.5 h-3.5 md:w-4 md:h-4 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -375,12 +412,18 @@ const toggleDarkMode = () => {
                         </a>
                         
                         <!-- Level 1 Dropdown -->
-                        <div class="absolute left-0 top-full hidden group-hover:block w-72 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl py-3 z-50">
+                        <div 
+                            class="absolute left-0 top-full hidden group-hover:block w-72 rounded-2xl backdrop-blur-md shadow-xl py-3 z-50"
+                            :class="isMaintenancePage 
+                                ? 'border border-slate-800 bg-slate-900/95 text-slate-200' 
+                                : 'border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 text-gray-700 dark:text-gray-300'"
+                        >
                             <!-- Layanan Informasi dan Data (Nested Dropdown) -->
                             <div class="relative group/nested">
                                 <button 
                                     @click="selectServicesTab('info')"
-                                    class="w-full text-left px-5 py-3 hover:bg-blue-50 dark:hover:bg-gray-700 flex justify-between items-center transition cursor-pointer"
+                                    class="w-full text-left px-5 py-3 flex justify-between items-center transition cursor-pointer"
+                                    :class="isMaintenancePage ? 'hover:bg-slate-800 text-slate-200 hover:text-amber-400' : 'hover:bg-blue-50 dark:hover:bg-gray-700'"
                                 >   
                                     <span>Layanan Informasi & Data</span>
                                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
@@ -389,12 +432,18 @@ const toggleDarkMode = () => {
                                 </button>
                                 
                                 <!-- Level 2 Flyout -->
-                                <div class="absolute left-full top-0 hidden group-hover/nested:block w-64 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl py-2 z-50 ml-1 h-[320px] overflow-y-auto custom-scrollbar">
+                                <div 
+                                    class="absolute left-full top-0 hidden group-hover/nested:block w-64 rounded-2xl backdrop-blur-md shadow-xl py-2 z-50 ml-1 h-[320px] overflow-y-auto custom-scrollbar"
+                                    :class="isMaintenancePage 
+                                        ? 'border border-slate-800 bg-slate-900/95 text-slate-200' 
+                                        : 'border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 text-gray-700 dark:text-gray-300'"
+                                >
                                     <Link 
                                         v-for="app in infoServices" 
                                         :key="app.name" 
                                         :href="authUser || app.allowGuest ? (app.url || '/layanan/' + app.id) : '/login'"
-                                        class="px-5 py-2.5 hover:bg-blue-50 dark:hover:bg-gray-700 text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center justify-between"
+                                        class="px-5 py-2.5 text-sm font-medium transition flex items-center justify-between"
+                                        :class="isMaintenancePage ? 'hover:bg-slate-800 text-slate-200 hover:text-amber-400' : 'hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400'"
                                     >
                                         <span>{{ app.name }}</span>
                                         <svg v-if="!authUser && !app.allowGuest" class="w-4 h-4 text-amber-500 ml-2 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -408,7 +457,8 @@ const toggleDarkMode = () => {
                             <div class="relative group/nested2">
                                 <button 
                                     @click="selectServicesTab('publik')"
-                                    class="w-full text-left px-5 py-3 hover:bg-blue-50 dark:hover:bg-gray-700 flex justify-between items-center transition cursor-pointer"
+                                    class="w-full text-left px-5 py-3 flex justify-between items-center transition cursor-pointer"
+                                    :class="isMaintenancePage ? 'hover:bg-slate-800 text-slate-200 hover:text-amber-400' : 'hover:bg-blue-50 dark:hover:bg-gray-700'"
                                 >
                                     <span>Layanan Publik</span>
                                     <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
@@ -417,12 +467,18 @@ const toggleDarkMode = () => {
                                 </button>
                                 
                                 <!-- Level 2 Flyout -->
-                                <div class="absolute left-full top-0 hidden group-hover/nested2:block w-64 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl py-2 z-50 ml-1 h-[240px] overflow-y-auto custom-scrollbar">
+                                <div 
+                                    class="absolute left-full top-0 hidden group-hover/nested2:block w-64 rounded-2xl backdrop-blur-md shadow-xl py-2 z-50 ml-1 h-[240px] overflow-y-auto custom-scrollbar"
+                                    :class="isMaintenancePage 
+                                        ? 'border border-slate-800 bg-slate-900/95 text-slate-200' 
+                                        : 'border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 text-gray-700 dark:text-gray-300'"
+                                >
                                     <Link 
                                         v-for="app in publicServices" 
                                         :key="app.name" 
                                         :href="authUser || app.allowGuest ? (app.url ? app.url : '/layanan/' + app.id) : '/login'"
-                                        class="px-5 py-2.5 hover:bg-blue-50 dark:hover:bg-gray-700 text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center justify-between"
+                                        class="px-5 py-2.5 text-sm font-medium transition flex items-center justify-between"
+                                        :class="isMaintenancePage ? 'hover:bg-slate-800 text-slate-200 hover:text-amber-400' : 'hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400'"
                                     >
                                         <span>{{ app.name }}</span>
                                         <svg v-if="!authUser && !app.allowGuest" class="w-4 h-4 text-amber-500 ml-2 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -436,7 +492,11 @@ const toggleDarkMode = () => {
 
                     <!-- INFORMASI PUBLIK DROPDOWN -->
                     <div class="relative group py-2">
-                        <Link href="/layanan/informasi-publik" class="hover:text-blue-600 transition flex items-center gap-1 whitespace-nowrap">
+                        <Link 
+                            href="/layanan/informasi-publik" 
+                            class="transition flex items-center gap-1 whitespace-nowrap"
+                            :class="isMaintenancePage ? 'hover:text-amber-400' : 'hover:text-blue-600'"
+                        >
                             Informasi Publik
                             <svg class="w-3.5 h-3.5 md:w-4 md:h-4 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -444,12 +504,18 @@ const toggleDarkMode = () => {
                         </Link>
                         
                         <!-- Dropdown Menu -->
-                        <div class="absolute left-0 top-full hidden group-hover:block w-52 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl py-2 z-50">
+                        <div 
+                            class="absolute left-0 top-full hidden group-hover:block w-52 rounded-2xl backdrop-blur-md shadow-xl py-2 z-50"
+                            :class="isMaintenancePage 
+                                ? 'border border-slate-800 bg-slate-900/95 text-slate-200' 
+                                : 'border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 text-gray-700 dark:text-gray-300'"
+                        >
                             <Link 
                                 v-for="item in publicInfoItems"
                                 :key="item.name"
                                 :href="item.url"
-                                class="block px-5 py-2.5 hover:bg-blue-50 dark:hover:bg-gray-700 text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
+                                class="block px-5 py-2.5 text-sm font-medium transition"
+                                :class="isMaintenancePage ? 'hover:bg-slate-800 text-slate-200 hover:text-amber-400' : 'hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400'"
                             >
                                 {{ item.name }}
                             </Link>
@@ -458,7 +524,12 @@ const toggleDarkMode = () => {
 
                     <!-- APLIKASI DROPDOWN -->
                     <div class="relative group py-2">
-                        <a href="/#aplikasi" @click="navigateMenu($event, '#aplikasi')" class="hover:text-blue-600 transition flex items-center gap-1 whitespace-nowrap">
+                        <a 
+                            href="/#aplikasi" 
+                            @click="navigateMenu($event, '#aplikasi')" 
+                            class="transition flex items-center gap-1 whitespace-nowrap"
+                            :class="isMaintenancePage ? 'hover:text-amber-400' : 'hover:text-blue-600'"
+                        >
                             Aplikasi
                             <svg class="w-3.5 h-3.5 md:w-4 md:h-4 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
@@ -466,20 +537,27 @@ const toggleDarkMode = () => {
                         </a>
                         
                         <!-- App Dropdown -->
-                        <div class="absolute left-0 top-full hidden group-hover:block w-64 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl py-2 z-50">
+                        <div 
+                            class="absolute left-0 top-full hidden group-hover:block w-64 rounded-2xl backdrop-blur-md shadow-xl py-2 z-50"
+                            :class="isMaintenancePage 
+                                ? 'border border-slate-800 bg-slate-900/95 text-slate-200' 
+                                : 'border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 text-gray-700 dark:text-gray-300'"
+                        >
                             <template v-for="app in regionalApps" :key="app.name">
                                 <a 
                                     v-if="app.url"
                                     :href="'/app/launch?name=' + encodeURIComponent(app.name) + '&url=' + encodeURIComponent(app.url)"
                                     target="_blank"
-                                    class="block px-5 py-3 hover:bg-blue-50 dark:hover:bg-gray-700 font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
+                                    class="block px-5 py-3 font-medium transition"
+                                    :class="isMaintenancePage ? 'hover:bg-slate-800 text-slate-200 hover:text-amber-400' : 'hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400'"
                                 >
                                     {{ app.name }}
                                 </a>
                                 <Link 
                                     v-else
                                     href="/login"
-                                    class="block px-5 py-3 hover:bg-blue-50 dark:hover:bg-gray-700 font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
+                                    class="block px-5 py-3 font-medium transition"
+                                    :class="isMaintenancePage ? 'hover:bg-slate-800 text-slate-200 hover:text-amber-400' : 'hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400'"
                                 >
                                     {{ app.name }}
                                 </Link>
@@ -487,7 +565,12 @@ const toggleDarkMode = () => {
                         </div>
                     </div>
 
-                    <a href="/#kontak" @click="navigateMenu($event, '#kontak')" class="hover:text-blue-600 transition whitespace-nowrap">
+                    <a 
+                        href="/#kontak" 
+                        @click="navigateMenu($event, '#kontak')" 
+                        class="transition whitespace-nowrap"
+                        :class="isMaintenancePage ? 'hover:text-amber-400' : 'hover:text-blue-600'"
+                    >
                         Kontak
                     </a>
 
@@ -502,7 +585,7 @@ const toggleDarkMode = () => {
                     <button
                         @click="toggleDarkMode"
                         class="relative inline-flex h-7 w-14 items-center rounded-full transition-all duration-300"
-                        :class="darkMode ? 'bg-blue-600' : 'bg-gray-300'"
+                        :class="darkMode ? 'bg-blue-600' : (isMaintenancePage ? 'bg-slate-800 border border-slate-700' : 'bg-gray-300')"
                     >
 
                         <span
@@ -520,8 +603,10 @@ const toggleDarkMode = () => {
                 <div v-if="authUser" class="relative">
                     <button
                         @click="notificationsOpen = !notificationsOpen; profileOpen = false"
-                        class="relative inline-flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-slate-600 dark:text-slate-300 p-2.5 shadow transition-all duration-200 cursor-pointer"
-                        :class="{ 'animate-bell-ring text-rose-500 dark:text-rose-400': isBellRinging }"
+                        class="relative inline-flex items-center justify-center rounded-full p-2.5 shadow transition-all duration-200 cursor-pointer"
+                        :class="isMaintenancePage 
+                            ? 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700' 
+                            : 'bg-slate-100 hover:bg-slate-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-slate-600 dark:text-slate-300'"
                         aria-label="Notifikasi"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
@@ -779,7 +864,8 @@ const toggleDarkMode = () => {
 
             <!-- MOBILE -->
             <button
-                class="md:hidden text-3xl text-gray-700 dark:text-white"
+                class="md:hidden text-3xl"
+                :class="isMaintenancePage ? 'text-white' : 'text-gray-700 dark:text-white'"
                 @click="open = !open"
             >
                 ☰
@@ -799,33 +885,49 @@ const toggleDarkMode = () => {
         >
             <div
                 v-show="open"
-                class="md:hidden border-t border-gray-200 dark:border-gray-700 px-6 py-4 space-y-3 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200"
+                class="md:hidden border-t px-6 py-4 space-y-3"
+                :class="isMaintenancePage 
+                    ? 'border-slate-800 bg-slate-900 text-slate-100' 
+                    : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200'"
             >
 
-                <a href="/#beranda" @click="open = false; navigateMenu($event, '#beranda')" class="block hover:text-blue-600">
+                <a 
+                    href="/#beranda" 
+                    @click="open = false; navigateMenu($event, '#beranda')" 
+                    class="block transition"
+                    :class="isMaintenancePage ? 'text-white hover:text-amber-400' : 'hover:text-blue-600'"
+                >
                     Beranda
                 </a>
 
                 <div class="space-y-1">
-                    <span class="block text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-400 mt-2 px-1">Tentang</span>
+                    <span 
+                        class="block text-xs font-semibold uppercase tracking-wider mt-2 px-1"
+                        :class="isMaintenancePage ? 'text-slate-400' : 'text-gray-400 dark:text-gray-400'"
+                    >
+                        Tentang
+                    </span>
                     <a 
                         href="javascript:void(0)" 
                         @click="open = false; selectAboutSlide(1)" 
-                        class="block pl-3 py-1 hover:text-blue-600 transition text-sm text-gray-700 dark:text-gray-300"
+                        class="block pl-3 py-1 transition text-sm"
+                        :class="isMaintenancePage ? 'text-slate-200 hover:text-amber-400' : 'text-gray-700 dark:text-gray-300 hover:text-blue-600'"
                     >
                         • Filosofi
                     </a>
                     <a 
                         href="javascript:void(0)" 
                         @click="open = false; selectAboutSlide(2)" 
-                        class="block pl-3 py-1 hover:text-blue-600 transition text-sm text-gray-700 dark:text-gray-300"
+                        class="block pl-3 py-1 transition text-sm"
+                        :class="isMaintenancePage ? 'text-slate-200 hover:text-amber-400' : 'text-gray-700 dark:text-gray-300 hover:text-blue-600'"
                     >
                         • Visi
                     </a>
                     <a 
                         href="javascript:void(0)" 
                         @click="open = false; selectAboutSlide(3)" 
-                        class="block pl-3 py-1 hover:text-blue-600 transition text-sm text-gray-700 dark:text-gray-300"
+                        class="block pl-3 py-1 transition text-sm"
+                        :class="isMaintenancePage ? 'text-slate-200 hover:text-amber-400' : 'text-gray-700 dark:text-gray-300 hover:text-blue-600'"
                     >
                         • Misi
                     </a>
@@ -835,7 +937,8 @@ const toggleDarkMode = () => {
                 <div class="space-y-1">
                     <button 
                         @click="mobileLayananOpen = !mobileLayananOpen" 
-                        class="w-full text-left flex justify-between items-center hover:text-blue-600 transition font-medium"
+                        class="w-full text-left flex justify-between items-center transition font-medium"
+                        :class="isMaintenancePage ? 'text-white hover:text-amber-400' : 'hover:text-blue-600'"
                     >
                         <span>Layanan</span>
                         <svg 
@@ -851,7 +954,8 @@ const toggleDarkMode = () => {
                         <div>
                             <button 
                                 @click="mobileLayananInfoOpen = !mobileLayananInfoOpen"
-                                class="w-full text-left flex justify-between items-center text-sm font-semibold text-gray-600 dark:text-gray-400 py-1"
+                                class="w-full text-left flex justify-between items-center text-sm font-semibold py-1"
+                                :class="isMaintenancePage ? 'text-slate-300' : 'text-gray-600 dark:text-gray-400'"
                             >
                                 <span>Layanan Informasi & Data</span>
                                 <svg 
@@ -868,7 +972,8 @@ const toggleDarkMode = () => {
                                     :key="app.name" 
                                     :href="authUser || app.allowGuest ? (app.url || '/layanan/' + app.id) : '/login'"
                                     @click="open = false"
-                                    class="py-1.5 text-xs text-gray-700 dark:text-gray-300 hover:text-blue-600 transition flex items-center justify-between"
+                                    class="py-1.5 text-xs transition flex items-center justify-between"
+                                    :class="isMaintenancePage ? 'text-slate-200 hover:text-amber-400' : 'text-gray-700 dark:text-gray-300 hover:text-blue-600'"
                                 >
                                     <span>• {{ app.name }}</span>
                                     <svg v-if="!authUser && !app.allowGuest" class="w-3.5 h-3.5 text-amber-500 ml-2 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -882,7 +987,8 @@ const toggleDarkMode = () => {
                         <div>
                             <button 
                                 @click="mobileLayananPublikOpen = !mobileLayananPublikOpen"
-                                class="w-full text-left flex justify-between items-center text-sm font-semibold text-gray-600 dark:text-gray-400 py-1"
+                                class="w-full text-left flex justify-between items-center text-sm font-semibold py-1"
+                                :class="isMaintenancePage ? 'text-slate-300' : 'text-gray-600 dark:text-gray-400'"
                             >
                                 <span>Layanan Publik</span>
                                 <svg 
@@ -899,7 +1005,8 @@ const toggleDarkMode = () => {
                                     :key="app.name" 
                                     :href="authUser || app.allowGuest ? (app.url ? app.url : '/layanan/' + app.id) : '/login'"
                                     @click="open = false"
-                                    class="py-1.5 text-xs text-gray-700 dark:text-gray-300 hover:text-blue-600 transition flex items-center justify-between"
+                                    class="py-1.5 text-xs transition flex items-center justify-between"
+                                    :class="isMaintenancePage ? 'text-slate-200 hover:text-amber-400' : 'text-gray-700 dark:text-gray-300 hover:text-blue-600'"
                                 >
                                     <span>• {{ app.name }}</span>
                                     <svg v-if="!authUser && !app.allowGuest" class="w-3.5 h-3.5 text-amber-500 ml-2 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -915,7 +1022,8 @@ const toggleDarkMode = () => {
                 <div class="space-y-1">
                     <button 
                         @click="mobileInformasiPublikOpen = !mobileInformasiPublikOpen" 
-                        class="w-full text-left flex justify-between items-center hover:text-blue-600 transition font-medium"
+                        class="w-full text-left flex justify-between items-center transition font-medium"
+                        :class="isMaintenancePage ? 'text-white hover:text-amber-400' : 'hover:text-blue-600'"
                     >
                         <span>Informasi Publik</span>
                         <svg 
@@ -932,7 +1040,8 @@ const toggleDarkMode = () => {
                             :key="item.name" 
                             :href="item.url" 
                             @click="open = false" 
-                            class="block py-1.5 text-xs text-gray-700 dark:text-gray-300 hover:text-blue-600 transition"
+                            class="block py-1.5 text-xs transition"
+                            :class="isMaintenancePage ? 'text-slate-200 hover:text-amber-400' : 'text-gray-700 dark:text-gray-300 hover:text-blue-600'"
                         >
                             • {{ item.name }}
                         </Link>
@@ -943,7 +1052,8 @@ const toggleDarkMode = () => {
                 <div class="space-y-1">
                     <button 
                         @click="mobileAplikasiOpen = !mobileAplikasiOpen" 
-                        class="w-full text-left flex justify-between items-center hover:text-blue-600 transition font-medium"
+                        class="w-full text-left flex justify-between items-center transition font-medium"
+                        :class="isMaintenancePage ? 'text-white hover:text-amber-400' : 'hover:text-blue-600'"
                     >
                         <span>Aplikasi</span>
                         <svg 
@@ -961,7 +1071,8 @@ const toggleDarkMode = () => {
                                 :href="'/app/launch?name=' + encodeURIComponent(app.name) + '&url=' + encodeURIComponent(app.url)"
                                 target="_blank"
                                 @click="open = false"
-                                class="block py-1.5 text-xs text-gray-700 dark:text-gray-300 hover:text-blue-600 transition"
+                                class="block py-1.5 text-xs transition"
+                                :class="isMaintenancePage ? 'text-slate-200 hover:text-amber-400' : 'text-gray-700 dark:text-gray-300 hover:text-blue-600'"
                             >
                                 • {{ app.name }}
                             </a>
@@ -969,7 +1080,8 @@ const toggleDarkMode = () => {
                                 v-else
                                 href="/login"
                                 @click="open = false"
-                                class="block py-1.5 text-xs text-gray-700 dark:text-gray-300 hover:text-blue-600 transition"
+                                class="block py-1.5 text-xs transition"
+                                :class="isMaintenancePage ? 'text-slate-200 hover:text-amber-400' : 'text-gray-700 dark:text-gray-300 hover:text-blue-600'"
                             >
                                 • {{ app.name }}
                             </Link>
@@ -977,7 +1089,12 @@ const toggleDarkMode = () => {
                     </div>
                 </div>
 
-                <a href="/#kontak" @click="open = false; navigateMenu($event, '#kontak')" class="block hover:text-blue-600">
+                <a 
+                    href="/#kontak" 
+                    @click="open = false; navigateMenu($event, '#kontak')" 
+                    class="block transition"
+                    :class="isMaintenancePage ? 'text-white hover:text-amber-400' : 'hover:text-blue-600'"
+                >
                     Kontak
                 </a>
 
