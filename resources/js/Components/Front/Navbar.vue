@@ -95,22 +95,24 @@ const publicInfoItems = [
 ]
 
 const publicServices = [
+    { name: 'Monitoring CCTV', url: '/cctv', allowGuest: true },
     { name: 'Perizinan Terpadu', id: 'perizinan-terpadu' },
     { name: 'Pelayanan Kesehatan', id: 'pelayanan-kesehatan' },
     { name: 'Pengaduan PPID', id: 'pengaduan-ppid' },
     { name: 'Administrasi Warga', id: 'administrasi-warga' },
     { name: 'Pengaduan Bedulang', id: 'pengaduan-bedulang' },
-    { name: 'Monitoring CCTV', url: '/cctv', allowGuest: true },
 ]
 
 const scrollToAndHighlight = (targetId) => {
     // If it's a layanan ID, toggle the correct tab first
     if (targetId.startsWith('layanan-')) {
         const publicIds = [
+            'layanan-monitoring-cctv',
             'layanan-perizinan-terpadu',
             'layanan-pelayanan-kesehatan',
             'layanan-pengaduan-ppid',
-            'layanan-administrasi-warga'
+            'layanan-administrasi-warga',
+            'layanan-pengaduan-bedulang',
         ]
         const isPublic = publicIds.includes(targetId)
         

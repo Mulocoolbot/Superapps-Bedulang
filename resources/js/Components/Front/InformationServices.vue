@@ -82,6 +82,13 @@ const apps = [
 
 const publicServices = [
     {
+        name: 'MONITORING CCTV',
+        slug: 'monitoring-cctv',
+        logo: '/services/cctv.svg',
+        url: '/cctv',
+        allowGuest: true
+    },
+    {
         name: 'PERIZINAN TERPADU',
         slug: 'perizinan-terpadu',
         logo: '/services/govern.svg',
@@ -100,23 +107,16 @@ const publicServices = [
         url: '/layanan/pengaduan-ppid'
     },
     {
-        name: 'PENGADUAN BEDULANG',
-        slug: 'layanan-pengaduan-bedulang',
-        logo: '/services/report.svg',
-        url: '/layanan/pengaduan-bedulang'
-    },
-    {
-        name: 'MONITORING CCTV',
-        slug: 'monitoring-cctv',
-        logo: '/services/cctv.svg',
-        url: '/cctv',
-        allowGuest: true
-    },
-    {
         name: 'ADMINISTRASI WARGA',
         slug: 'administrasi-warga',
         logo: '/services/society.svg',
         url: '/layanan/administrasi-warga'
+    },
+    {
+        name: 'PENGADUAN BEDULANG',
+        slug: 'pengaduan-bedulang',
+        logo: '/services/report.svg',
+        url: '/layanan/pengaduan-bedulang'
     },
 ]
 const setTab = (tab) => {
