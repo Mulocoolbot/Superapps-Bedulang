@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, defineAsyncComponent } from 'vue'
+import { ref, computed, watch, defineAsyncComponent } from 'vue'
 import { usePage, router, Link } from '@inertiajs/vue3'
 const PerindagkopDashboard = defineAsyncComponent(() => import('./PerindagkopDashboard.vue'))
 
@@ -19,6 +19,14 @@ const page = usePage()
 // Active Sidebar Tab State ('bapok', 'sawit', 'umkm', 'utd')
 const activeSidebarTab = ref(new URLSearchParams(window.location.search).get('tab') || 'bapok')
 const isSidebarOpen = ref(false)
+
+watch(() => page.url, (newUrl) => {
+    const query = newUrl.includes('?') ? newUrl.split('?')[1] : ''
+    const tabParam = new URLSearchParams(query).get('tab')
+    if (tabParam) {
+        activeSidebarTab.value = tabParam
+    }
+})
 
 const toggleSidebar = () => {
     isSidebarOpen.value = !isSidebarOpen.value

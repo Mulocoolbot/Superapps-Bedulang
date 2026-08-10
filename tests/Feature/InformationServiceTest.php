@@ -11,10 +11,20 @@ use Tests\TestCase;
 class InformationServiceTest extends TestCase
 {
     use RefreshDatabase;
-    public function test_unauthenticated_user_redirected_to_login_when_accessing_service_pages(): void
+    public function test_unauthenticated_user_redirected_to_login_when_accessing_private_service_pages(): void
     {
         $this->get('/layanan/pemerintahan')
             ->assertRedirect('/login');
+    }
+
+    public function test_unauthenticated_user_can_access_public_services_without_login(): void
+    {
+        $publicSlugs = ['pendidikan', 'perindagkop-ukm', 'informasi-publik', 'desa', 'pariwisata', 'kependudukan'];
+
+        foreach ($publicSlugs as $slug) {
+            $this->get('/layanan/' . $slug)
+                ->assertOk();
+        }
     }
 
     public function test_service_pages_are_available_for_authenticated_users(): void

@@ -9,25 +9,38 @@ const activeTab = ref('info')
 
 const apps = [
     {
-        name: 'PEMERINTAHAN',
-        slug: 'pemerintahan',
-        logo: '/services/pemerintahan.svg',
-    },
-    {
         name: 'PENDIDIKAN',
         slug: 'pendidikan',
         logo: '/services/pendidikan.svg',
-    },
-    {
-        name: 'KESEHATAN',
-        slug: 'kesehatan',
-        logo: '/services/kesehatan.svg',
+        allowGuest: true,
     },
     {
         name: 'PERINDAGKOP-UKM',
         slug: 'perindagkop-ukm',
         logo: '/services/perindagkop.svg',
         allowGuest: true
+    },
+    {
+        name: 'DESA.Id',
+        slug: 'desa',
+        logo: '/services/desa.id.svg',
+        allowGuest: true
+    },
+    {
+        name: 'Informasi Publik',
+        slug: 'informasi-publik',
+        logo: '/services/informasi publik.svg',
+        allowGuest: true
+    },
+    {
+        name: 'PEMERINTAHAN',
+        slug: 'pemerintahan',
+        logo: '/services/pemerintahan.svg',
+    },
+    {
+        name: 'KESEHATAN',
+        slug: 'kesehatan',
+        logo: '/services/kesehatan.svg',
     },
     {
         name: 'SOSIAL',
@@ -43,18 +56,6 @@ const apps = [
         name: 'KEPEGAWAIAN',
         slug: 'kepegawaian',
         logo: '/services/kepegawaian.svg',
-    },
-    {
-        name: 'DESA.Id',
-        slug: 'desa',
-        logo: '/services/desa.id.svg',
-        allowGuest: true
-    },
-    {
-        name: 'Informasi Publik',
-        slug: 'informasi-publik',
-        logo: '/services/informasi publik.svg',
-        allowGuest: true
     },
     {
         name: 'PARIWISATA',

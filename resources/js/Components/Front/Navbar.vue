@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { Link, usePage, router } from '@inertiajs/vue3'
+import { NotificationService } from '@/Services/NotificationService'
 
 const open = ref(false)
 const profileOpen = ref(false)
@@ -61,16 +62,16 @@ const navigateMenu = (e, targetHash) => {
 }
 
 const infoServices = [
+    { name: 'Pendidikan', id: 'pendidikan', allowGuest: true },
+    { name: 'Perindagkop-UKM', id: 'perindagkop-ukm', allowGuest: true },
+    { name: 'Desa', id: 'desa', allowGuest: true },
+    { name: 'Informasi Publik', id: 'informasi-publik', allowGuest: true },
     { name: 'Pemerintahan', id: 'pemerintahan' },
-    { name: 'Pendidikan', id: 'pendidikan' },
     { name: 'Kesehatan', id: 'kesehatan' },
-    { name: 'Perindagkop-UKM', id: 'perindagkop-ukm' },
     { name: 'KDMP', id: 'kdmp' },
     { name: 'Sosial', id: 'sosial' },
     { name: 'Kependudukan', id: 'kependudukan' },
     { name: 'Kepegawaian', id: 'kepegawaian' },
-    { name: 'Desa', id: 'desa', allowGuest: true },
-    { name: 'Informasi Publik', id: 'informasi-publik' },
     { name: 'Pariwisata', id: 'pariwisata' },
     { name: 'Data Sektoral', id: 'data-sektoral', url: '/data-sektoral' },
     { name: 'Makanan Bergizi Gratis', id: 'makanan-bergizi-gratis' },
@@ -83,6 +84,12 @@ const regionalApps = [
     { name: 'SIKOK DATA', id: 'sikok-data', url: 'https://sikokdata.bangkatengahkab.go.id/' },
     { name: 'LAPOR PPID', id: 'lapor-ppid', url: 'https://www.lapor.go.id/instansi/pemerintah-kabupaten-bangka-tengah' },
     { name: 'SIMENTARI', id: 'simentari', url: 'https://inspektorat.bangkatengahkab.go.id' },
+]
+
+const publicInfoItems = [
+    { name: 'Bahan Pokok', url: '/layanan/informasi-publik?tab=bapok' },
+    { name: 'Harga Sawit', url: '/layanan/informasi-publik?tab=sawit' },
+    { name: 'Stok Darah', url: '/layanan/informasi-publik?tab=utd' },
 ]
 
 const publicServices = [
@@ -130,13 +137,12 @@ const scrollToAndHighlight = (targetId) => {
     }, 150)
 }
 
-import { NotificationService } from '@/Services/NotificationService'
-
 let pollTimer = null
 const seenIdsSet = new Set()
 
 const isBellRinging = ref(false)
 const mobileLayananOpen = ref(false)
+const mobileInformasiPublikOpen = ref(false)
 const mobileAplikasiOpen = ref(false)
 const mobileLayananInfoOpen = ref(false)
 const mobileLayananPublikOpen = ref(false)
@@ -286,8 +292,8 @@ const toggleDarkMode = () => {
         <div
             class="mx-auto transition-all duration-500 ease-in-out"
             :class="isScrolled 
-                ? 'max-w-5xl rounded-full bg-blue-50/75 dark:bg-slate-900/80 backdrop-blur-lg shadow-lg border border-blue-200/40 dark:border-slate-800/60 px-6 py-2 mt-4 mx-4 md:mx-auto' 
-                : 'max-w-full rounded-none bg-blue-50/20 dark:bg-slate-950/20 backdrop-blur-sm border-b border-t-transparent border-x-transparent border-blue-200/10 dark:border-slate-800/10 shadow-sm px-6 py-3 mt-0 mx-0'"
+                ? 'max-w-6xl rounded-full bg-blue-50/75 dark:bg-slate-900/80 backdrop-blur-lg shadow-lg border border-blue-200/40 dark:border-slate-800/60 px-5 md:px-6 py-2 mt-4 mx-4 md:mx-auto' 
+                : 'max-w-full rounded-none bg-blue-50/20 dark:bg-slate-950/20 backdrop-blur-sm border-b border-t-transparent border-x-transparent border-blue-200/10 dark:border-slate-800/10 shadow-sm px-5 md:px-6 py-3 mt-0 mx-0'"
         >
             <div 
                 class="container mx-auto flex justify-between items-center transition-all duration-500 ease-in-out"
@@ -319,17 +325,17 @@ const toggleDarkMode = () => {
 
                 <!-- MENU -->
                 <div
-                    class="hidden md:flex items-center space-x-2 md:space-x-3 lg:space-x-8 text-blue-900/90 dark:text-blue-100 font-bold text-[11px] md:text-xs lg:text-base shrink-0"
+                    class="hidden md:flex items-center space-x-1.5 md:space-x-2.5 lg:space-x-4 xl:space-x-6 text-blue-900/90 dark:text-blue-100 font-bold text-[11px] md:text-xs lg:text-[13px] xl:text-[14px] shrink-0"
                 >
-                    <a href="/#beranda" @click="navigateMenu($event, '#beranda')" class="hover:text-blue-600 transition">
+                    <a href="/#beranda" @click="navigateMenu($event, '#beranda')" class="hover:text-blue-600 transition whitespace-nowrap">
                         Beranda
                     </a>
                     
                     <!-- TENTANG DROPDOWN -->
                     <div class="relative group py-2">
-                        <a href="/#tentang" @click="navigateMenu($event, '#tentang')" class="hover:text-blue-600 transition flex items-center gap-1">
+                        <a href="/#tentang" @click="navigateMenu($event, '#tentang')" class="hover:text-blue-600 transition flex items-center gap-1 whitespace-nowrap">
                             Tentang
-                            <svg class="w-4 h-4 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <svg class="w-3.5 h-3.5 md:w-4 md:h-4 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                             </svg>
                         </a>
@@ -360,113 +366,133 @@ const toggleDarkMode = () => {
                         </div>
                     </div>
 
-                <!-- LAYANAN DROPDOWN -->
-                <div class="relative group py-2">
-                    <a href="/#layanan" @click="navigateMenu($event, '#layanan')" class="hover:text-blue-600 transition flex items-center gap-1">
-                        Layanan
-                        <svg class="w-4 h-4 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                        </svg>
-                    </a>
-                    
-                    <!-- Level 1 Dropdown -->
-                    <div class="absolute left-0 top-full hidden group-hover:block w-72 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl py-3 z-50">
-                        <!-- Layanan Informasi dan Data (Nested Dropdown) -->
-                        <div class="relative group/nested">
-                            <button 
-                                @click="selectServicesTab('info')"
-                                class="w-full text-left px-5 py-3 hover:bg-blue-50 dark:hover:bg-gray-700 flex justify-between items-center transition cursor-pointer"
-                            >   
-                                <span>Layanan Informasi & Data</span>
-                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                                </svg>
-                            </button>
-                            
-                            <!-- Level 2 Flyout -->
-                            <div class="absolute left-full top-0 hidden group-hover/nested:block w-64 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl py-2 z-50 ml-1 h-[320px] overflow-y-auto custom-scrollbar">
-                                <Link 
-                                    v-for="app in infoServices" 
-                                    :key="app.name" 
-                                    :href="authUser || app.allowGuest ? (app.url || '/layanan/' + app.id) : '/login'"
-                                    class="px-5 py-2.5 hover:bg-blue-50 dark:hover:bg-gray-700 text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center justify-between"
-                                >
-                                    <span>{{ app.name }}</span>
-                                    <svg v-if="!authUser && !app.allowGuest" class="w-4 h-4 text-amber-500 ml-2 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                    <!-- LAYANAN DROPDOWN -->
+                    <div class="relative group py-2">
+                        <a href="/#layanan" @click="navigateMenu($event, '#layanan')" class="hover:text-blue-600 transition flex items-center gap-1 whitespace-nowrap">
+                            Layanan
+                            <svg class="w-3.5 h-3.5 md:w-4 md:h-4 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                            </svg>
+                        </a>
+                        
+                        <!-- Level 1 Dropdown -->
+                        <div class="absolute left-0 top-full hidden group-hover:block w-72 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl py-3 z-50">
+                            <!-- Layanan Informasi dan Data (Nested Dropdown) -->
+                            <div class="relative group/nested">
+                                <button 
+                                    @click="selectServicesTab('info')"
+                                    class="w-full text-left px-5 py-3 hover:bg-blue-50 dark:hover:bg-gray-700 flex justify-between items-center transition cursor-pointer"
+                                >   
+                                    <span>Layanan Informasi & Data</span>
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                                     </svg>
-                                </Link>
+                                </button>
+                                
+                                <!-- Level 2 Flyout -->
+                                <div class="absolute left-full top-0 hidden group-hover/nested:block w-64 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl py-2 z-50 ml-1 h-[320px] overflow-y-auto custom-scrollbar">
+                                    <Link 
+                                        v-for="app in infoServices" 
+                                        :key="app.name" 
+                                        :href="authUser || app.allowGuest ? (app.url || '/layanan/' + app.id) : '/login'"
+                                        class="px-5 py-2.5 hover:bg-blue-50 dark:hover:bg-gray-700 text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center justify-between"
+                                    >
+                                        <span>{{ app.name }}</span>
+                                        <svg v-if="!authUser && !app.allowGuest" class="w-4 h-4 text-amber-500 ml-2 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                                        </svg>
+                                    </Link>
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- Layanan Publik (Nested Dropdown) -->
-                        <div class="relative group/nested2">
-                            <button 
-                                @click="selectServicesTab('publik')"
-                                class="w-full text-left px-5 py-3 hover:bg-blue-50 dark:hover:bg-gray-700 flex justify-between items-center transition cursor-pointer"
-                            >
-                                <span>Layanan Publik</span>
-                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                                </svg>
-                            </button>
-                            
-                            <!-- Level 2 Flyout -->
-                            <div class="absolute left-full top-0 hidden group-hover/nested2:block w-64 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl py-2 z-50 ml-1 h-[240px] overflow-y-auto custom-scrollbar">
-                                <Link 
-                                    v-for="app in publicServices" 
-                                    :key="app.name" 
-                                    :href="authUser || app.allowGuest ? (app.url ? app.url : '/layanan/' + app.id) : '/login'"
-                                    class="px-5 py-2.5 hover:bg-blue-50 dark:hover:bg-gray-700 text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center justify-between"
+                            <!-- Layanan Publik (Nested Dropdown) -->
+                            <div class="relative group/nested2">
+                                <button 
+                                    @click="selectServicesTab('publik')"
+                                    class="w-full text-left px-5 py-3 hover:bg-blue-50 dark:hover:bg-gray-700 flex justify-between items-center transition cursor-pointer"
                                 >
-                                    <span>{{ app.name }}</span>
-                                    <svg v-if="!authUser && !app.allowGuest" class="w-4 h-4 text-amber-500 ml-2 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                                    <span>Layanan Publik</span>
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                                     </svg>
-                                </Link>
+                                </button>
+                                
+                                <!-- Level 2 Flyout -->
+                                <div class="absolute left-full top-0 hidden group-hover/nested2:block w-64 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl py-2 z-50 ml-1 h-[240px] overflow-y-auto custom-scrollbar">
+                                    <Link 
+                                        v-for="app in publicServices" 
+                                        :key="app.name" 
+                                        :href="authUser || app.allowGuest ? (app.url ? app.url : '/layanan/' + app.id) : '/login'"
+                                        class="px-5 py-2.5 hover:bg-blue-50 dark:hover:bg-gray-700 text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center justify-between"
+                                    >
+                                        <span>{{ app.name }}</span>
+                                        <svg v-if="!authUser && !app.allowGuest" class="w-4 h-4 text-amber-500 ml-2 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                                        </svg>
+                                    </Link>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- APLIKASI DROPDOWN -->
-                <div class="relative group py-2">
-                    <a href="/#aplikasi" @click="navigateMenu($event, '#aplikasi')" class="hover:text-blue-600 transition flex items-center gap-1">
-                        Aplikasi
-                        <svg class="w-4 h-4 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                        </svg>
-                    </a>
-                    
-                    <!-- App Dropdown -->
-                    <div class="absolute left-0 top-full hidden group-hover:block w-64 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl py-2 z-50">
-                        <template v-for="app in regionalApps" :key="app.name">
-                            <a 
-                                v-if="app.url"
-                                :href="app.url"
-                                target="_blank"
-                                class="block px-5 py-3 hover:bg-blue-50 dark:hover:bg-gray-700 font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
-                            >
-                                {{ app.name }}
-                            </a>
+                    <!-- INFORMASI PUBLIK DROPDOWN -->
+                    <div class="relative group py-2">
+                        <Link href="/layanan/informasi-publik" class="hover:text-blue-600 transition flex items-center gap-1 whitespace-nowrap">
+                            Informasi Publik
+                            <svg class="w-3.5 h-3.5 md:w-4 md:h-4 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                            </svg>
+                        </Link>
+                        
+                        <!-- Dropdown Menu -->
+                        <div class="absolute left-0 top-full hidden group-hover:block w-52 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl py-2 z-50">
                             <Link 
-                                v-else
-                                href="/login"
-                                class="block px-5 py-3 hover:bg-blue-50 dark:hover:bg-gray-700 font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
+                                v-for="item in publicInfoItems"
+                                :key="item.name"
+                                :href="item.url"
+                                class="block px-5 py-2.5 hover:bg-blue-50 dark:hover:bg-gray-700 text-sm font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
                             >
-                                {{ app.name }}
+                                {{ item.name }}
                             </Link>
-                        </template>
+                        </div>
                     </div>
+
+                    <!-- APLIKASI DROPDOWN -->
+                    <div class="relative group py-2">
+                        <a href="/#aplikasi" @click="navigateMenu($event, '#aplikasi')" class="hover:text-blue-600 transition flex items-center gap-1 whitespace-nowrap">
+                            Aplikasi
+                            <svg class="w-3.5 h-3.5 md:w-4 md:h-4 transition-transform duration-200 group-hover:rotate-180" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                            </svg>
+                        </a>
+                        
+                        <!-- App Dropdown -->
+                        <div class="absolute left-0 top-full hidden group-hover:block w-64 rounded-2xl border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-xl py-2 z-50">
+                            <template v-for="app in regionalApps" :key="app.name">
+                                <a 
+                                    v-if="app.url"
+                                    :href="app.url"
+                                    target="_blank"
+                                    class="block px-5 py-3 hover:bg-blue-50 dark:hover:bg-gray-700 font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
+                                >
+                                    {{ app.name }}
+                                </a>
+                                <Link 
+                                    v-else
+                                    href="/login"
+                                    class="block px-5 py-3 hover:bg-blue-50 dark:hover:bg-gray-700 font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
+                                >
+                                    {{ app.name }}
+                                </Link>
+                            </template>
+                        </div>
+                    </div>
+
+                    <a href="/#kontak" @click="navigateMenu($event, '#kontak')" class="hover:text-blue-600 transition whitespace-nowrap">
+                        Kontak
+                    </a>
+
                 </div>
-
-                <a href="/#kontak" @click="navigateMenu($event, '#kontak')" class="hover:text-blue-600 transition">
-                    Kontak
-                </a>
-
-
-
-            </div>
 
             <!-- ACTION -->
             <div class="hidden md:flex items-center gap-1.5 md:gap-2.5 lg:gap-5 shrink-0">
@@ -841,11 +867,14 @@ const toggleDarkMode = () => {
                                 <Link 
                                     v-for="app in infoServices" 
                                     :key="app.name" 
-                                    :href="authUser || app.allowGuest ? '/layanan/' + app.id : '/login'"
+                                    :href="authUser || app.allowGuest ? (app.url || '/layanan/' + app.id) : '/login'"
                                     @click="open = false"
-                                    class="block py-1.5 text-xs text-gray-700 dark:text-gray-300 hover:text-blue-600 transition"
+                                    class="py-1.5 text-xs text-gray-700 dark:text-gray-300 hover:text-blue-600 transition flex items-center justify-between"
                                 >
-                                    • {{ app.name }}
+                                    <span>• {{ app.name }}</span>
+                                    <svg v-if="!authUser && !app.allowGuest" class="w-3.5 h-3.5 text-amber-500 ml-2 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                                    </svg>
                                 </Link>
                             </div>
                         </div>
@@ -871,12 +900,43 @@ const toggleDarkMode = () => {
                                     :key="app.name" 
                                     :href="authUser || app.allowGuest ? (app.url ? app.url : '/layanan/' + app.id) : '/login'"
                                     @click="open = false"
-                                    class="block py-1.5 text-xs text-gray-700 dark:text-gray-300 hover:text-blue-600 transition"
+                                    class="py-1.5 text-xs text-gray-700 dark:text-gray-300 hover:text-blue-600 transition flex items-center justify-between"
                                 >
-                                    • {{ app.name }}
+                                    <span>• {{ app.name }}</span>
+                                    <svg v-if="!authUser && !app.allowGuest" class="w-3.5 h-3.5 text-amber-500 ml-2 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                                    </svg>
                                 </Link>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Informasi Publik Collapsible -->
+                <div class="space-y-1">
+                    <button 
+                        @click="mobileInformasiPublikOpen = !mobileInformasiPublikOpen" 
+                        class="w-full text-left flex justify-between items-center hover:text-blue-600 transition font-medium"
+                    >
+                        <span>Informasi Publik</span>
+                        <svg 
+                            class="w-4 h-4 transform transition-transform duration-200" 
+                            :class="{ 'rotate-180': mobileInformasiPublikOpen }"
+                            fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"
+                        >
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <div v-show="mobileInformasiPublikOpen" class="pl-4 space-y-1.5 py-1">
+                        <Link 
+                            v-for="item in publicInfoItems" 
+                            :key="item.name" 
+                            :href="item.url" 
+                            @click="open = false" 
+                            class="block py-1.5 text-xs text-gray-700 dark:text-gray-300 hover:text-blue-600 transition"
+                        >
+                            • {{ item.name }}
+                        </Link>
                     </div>
                 </div>
 

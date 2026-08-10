@@ -274,8 +274,29 @@ const resetFilters = () => {
     applyFilters()
 }
 
-const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null
-const activeTab = ref(urlParams ? (urlParams.get('tab') || 'harga') : 'harga')
+const validTabs = ['harga', 'stok', 'pasar']
+const getInitialTab = () => {
+    if (typeof window === 'undefined') return 'harga'
+    const tab = new URLSearchParams(window.location.search).get('tab')
+    if (tab && validTabs.includes(tab)) {
+        return tab
+    }
+    return 'harga'
+}
+const activeTab = ref(getInitialTab())
+
+watch(() => {
+    try {
+        const url = typeof window !== 'undefined' ? window.location.search : ''
+        const tab = new URLSearchParams(url).get('tab')
+        if (tab && validTabs.includes(tab)) {
+            return tab
+        }
+    } catch (e) {}
+    return 'harga'
+}, (newTab) => {
+    activeTab.value = newTab
+})
 
 const todayStr = '2026-07-20'
 

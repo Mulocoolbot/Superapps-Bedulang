@@ -2,10 +2,6 @@
 
 namespace App\Services;
 
-use App\Services\KependudukanService;
-use App\Services\KdmpService;
-use App\Services\KesehatanService;
-use App\Services\PendidikanService;
 use InvalidArgumentException;
 
 class InformationServiceRegistry

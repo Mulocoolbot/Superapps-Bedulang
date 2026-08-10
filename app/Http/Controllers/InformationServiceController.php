@@ -31,7 +31,8 @@ class InformationServiceController extends Controller
             abort(404);
         }
 
-        if ($slug !== 'pertanian' && $slug !== 'desa' && $slug !== 'pariwisata' && $slug !== 'informasi-publik' && $slug !== 'perindagkop-ukm' && $slug !== 'kependudukan' && !auth()->check()) {
+        $publicServices = ['pertanian', 'desa', 'pariwisata', 'informasi-publik', 'perindagkop-ukm', 'kependudukan', 'pendidikan'];
+        if (!in_array($slug, $publicServices) && !auth()->check()) {
             return redirect()->guest(route('login'));
         }
 
