@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\KependudukanImportController;
 use App\Http\Controllers\Admin\KoperasiImportController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\AppLaunchController;
 use App\Http\Controllers\CctvProxyController;
 use App\Http\Controllers\DataSektoralController;
 use App\Http\Controllers\InformationServiceController;
@@ -30,6 +31,15 @@ use Inertia\Inertia;
 */
 Route::get('/healthz', [KubernetesController::class, 'sehat']);
 Route::get('/readiness', [KubernetesController::class, 'siap']);
+
+/*
+|--------------------------------------------------------------------------
+| App Launch & Health Check
+|--------------------------------------------------------------------------
+*/
+Route::get('/app/launch', [AppLaunchController::class, 'launch'])->name('app.launch');
+Route::get('/app/maintenance', [AppLaunchController::class, 'showMaintenance'])->name('app.maintenance');
+Route::get('/api/check-app-status', [AppLaunchController::class, 'checkStatus'])->name('api.check-app-status');
 
 /*
 |--------------------------------------------------------------------------

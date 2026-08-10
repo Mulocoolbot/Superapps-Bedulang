@@ -59,7 +59,7 @@ const services = [
             <a
                 v-for="(service,index) in services"
                 :key="service.name"
-                :href="service.url"
+                :href="'/app/launch?name=' + encodeURIComponent(service.name) + '&url=' + encodeURIComponent(service.url)"
                 target="_blank"
                 data-aos="fade-up"
                 :data-aos-delay="index*50"

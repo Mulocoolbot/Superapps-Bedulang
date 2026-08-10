@@ -269,7 +269,7 @@ const updateMapMarkers = () => {
                     <a href="${desa.gmaps}" target="_blank" class="flex items-center justify-center gap-1 py-1.5 rounded-lg text-[11px] font-bold bg-blue-600 hover:bg-blue-700 !text-white transition-all shadow-xs">
                         🗺️ Petunjuk Google Maps
                     </a>
-                    <a href="https://${desa.domain}" target="_blank" class="flex items-center justify-center gap-1 py-1.5 rounded-lg text-[11px] font-bold border border-slate-200 hover:bg-slate-50 text-slate-750 transition-all dark:border-slate-700 dark:text-slate-205 dark:hover:bg-slate-800">
+                    <a href="/app/launch?name=${encodeURIComponent('Website Desa ' + desa.name)}&url=${encodeURIComponent('https://' + desa.domain)}" target="_blank" class="flex items-center justify-center gap-1 py-1.5 rounded-lg text-[11px] font-bold border border-slate-200 hover:bg-slate-50 text-slate-750 transition-all dark:border-slate-700 dark:text-slate-205 dark:hover:bg-slate-800">
                         🌐 Kunjungi Website Desa
                     </a>
                 </div>
@@ -545,7 +545,7 @@ onMounted(() => {
                         </a>
 
                         <a
-                            :href="'https://' + selectedDesa.domain"
+                            :href="'/app/launch?name=' + encodeURIComponent('Website Desa ' + selectedDesa.name) + '&url=' + encodeURIComponent('https://' + selectedDesa.domain)"
                             target="_blank"
                             class="flex items-center justify-center gap-2 w-full py-3 rounded-2xl text-sm font-bold bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 text-slate-750 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300 cursor-pointer shadow-xs"
                         >
@@ -610,7 +610,7 @@ onMounted(() => {
                                         📍 Lihat Peta
                                     </button>
                                     <a
-                                        :href="'https://' + desa.domain"
+                                        :href="'/app/launch?name=' + encodeURIComponent('Website Desa ' + desa.name) + '&url=' + encodeURIComponent('https://' + desa.domain)"
                                         target="_blank"
                                         class="inline-flex items-center gap-1 font-bold text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300"
                                     >

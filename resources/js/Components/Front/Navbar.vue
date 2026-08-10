@@ -470,7 +470,7 @@ const toggleDarkMode = () => {
                             <template v-for="app in regionalApps" :key="app.name">
                                 <a 
                                     v-if="app.url"
-                                    :href="app.url"
+                                    :href="'/app/launch?name=' + encodeURIComponent(app.name) + '&url=' + encodeURIComponent(app.url)"
                                     target="_blank"
                                     class="block px-5 py-3 hover:bg-blue-50 dark:hover:bg-gray-700 font-medium hover:text-blue-600 dark:hover:text-blue-400 transition"
                                 >
@@ -958,7 +958,7 @@ const toggleDarkMode = () => {
                         <template v-for="app in regionalApps" :key="app.name">
                             <a 
                                 v-if="app.url"
-                                :href="app.url"
+                                :href="'/app/launch?name=' + encodeURIComponent(app.name) + '&url=' + encodeURIComponent(app.url)"
                                 target="_blank"
                                 @click="open = false"
                                 class="block py-1.5 text-xs text-gray-700 dark:text-gray-300 hover:text-blue-600 transition"
