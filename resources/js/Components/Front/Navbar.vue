@@ -65,7 +65,6 @@ const infoServices = [
     { name: 'Pendidikan', id: 'pendidikan', allowGuest: true },
     { name: 'Perindagkop-UKM', id: 'perindagkop-ukm', allowGuest: true },
     { name: 'Desa', id: 'desa', allowGuest: true },
-    { name: 'Informasi Publik', id: 'informasi-publik', allowGuest: true },
     { name: 'Pemerintahan', id: 'pemerintahan' },
     { name: 'Kesehatan', id: 'kesehatan' },
     { name: 'KDMP', id: 'kdmp' },
