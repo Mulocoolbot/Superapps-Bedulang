@@ -3,7 +3,7 @@ const services = [
     {
         name: 'SIPELAWAN',
         logo: '/services/sipelawan.png',
-        url: 'https://dashboard-sipelawan.bangkatengahkab.go.id/dashboard/'
+        url: 'https://dashboard-sipelawan.bangkatengahkab.go.id'
     },
     {
         name: 'SEPERADIK',
@@ -28,7 +28,7 @@ const services = [
     {
         name: 'SIMENTARI',
         logo: '',
-        url: 'https://inspektorat.bangkatengahkab.go.id'
+        url: 'https://inspektorat.bangkatengahkab.go.id/'
     },
 ]
 </script>

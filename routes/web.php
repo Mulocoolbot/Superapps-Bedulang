@@ -23,20 +23,14 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserComplaintController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-
 /*
 |--------------------------------------------------------------------------
-| Kubernetes Health & Readiness
+| Kubernetes & App Health Check Launch
 |--------------------------------------------------------------------------
 */
 Route::get('/healthz', [KubernetesController::class, 'sehat']);
 Route::get('/readiness', [KubernetesController::class, 'siap']);
 
-/*
-|--------------------------------------------------------------------------
-| App Launch & Health Check
-|--------------------------------------------------------------------------
-*/
 Route::get('/app/launch', [AppLaunchController::class, 'launch'])->name('app.launch');
 Route::get('/app/maintenance', [AppLaunchController::class, 'showMaintenance'])->name('app.maintenance');
 Route::get('/api/check-app-status', [AppLaunchController::class, 'checkStatus'])->name('api.check-app-status');
