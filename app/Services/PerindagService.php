@@ -40,21 +40,24 @@ class PerindagService implements InformationServiceInterface
         $endDate = $request->input('end_date');
         $pasarId = $request->input('pasar_id');
 
-        // Always fetch the absolute latest date available from the API
-        $latestDate = '2026-07-17'; // default fallback
-        try {
-            $latestResponse = Http::withOptions(['verify' => false])
-                ->timeout(10)
-                ->get('https://disperindagkop-ukm.bangkatengahkab.go.id/api/updateharga');
-            if ($latestResponse->successful()) {
-                $latestData = $latestResponse->json();
-                if (!empty($latestData['data']) && is_array($latestData['data'])) {
-                    $latestDate = $latestData['data'][0]['tanggal'];
+        // Always fetch the absolute latest date available from the API (cached briefly for performance)
+        $latestDate = Cache::remember('perindag_latest_date', 300, function () {
+            $defaultDate = '2026-07-17';
+            try {
+                $latestResponse = Http::withOptions(['verify' => false])
+                    ->timeout(10)
+                    ->get('https://disperindagkop-ukm.bangkatengahkab.go.id/api/updateharga');
+                if ($latestResponse->successful()) {
+                    $latestData = $latestResponse->json();
+                    if (!empty($latestData['data']) && is_array($latestData['data'])) {
+                        return $latestData['data'][0]['tanggal'] ?? $defaultDate;
+                    }
                 }
+            } catch (\Throwable) {
+                // Keep default
             }
-        } catch (\Throwable) {
-            // Keep default
-        }
+            return $defaultDate;
+        });
 
         // Find D_latest and D_prev if not specified
         if (!$startDate || !$endDate) {
@@ -296,12 +299,15 @@ class PerindagService implements InformationServiceInterface
                     foreach ($marketData as $item) {
                         // Collect unique commodities
                         if (!empty($item['nama_barang'])) {
-                            $pasarCommoditiesList[] = $item['nama_barang'];
+                            $pasarCommoditiesList[] = trim($item['nama_barang']);
                         }
 
                         // Check if it's the requested commodity
-                        if (!empty($item['nama_barang']) && strcasecmp($item['nama_barang'], $pasarCommodity) === 0) {
-                            $price = $item['price_ii'] ?? $item['nominal'] ?? 0;
+                        if (!empty($item['nama_barang']) && strcasecmp(trim($item['nama_barang']), trim($pasarCommodity)) === 0) {
+                            $val = $item['price_ii'] ?? $item['price_i'] ?? $item['nominal'] ?? 0;
+                            if (is_numeric($val) && $val > 0) {
+                                $price = (int) $val;
+                            }
                         }
                     }
                 }
@@ -314,12 +320,12 @@ class PerindagService implements InformationServiceInterface
             }
 
             // Clean up and sort commodities list
-            $pasarCommoditiesList = array_values(array_unique($pasarCommoditiesList));
+            $pasarCommoditiesList = array_values(array_unique(array_filter(array_map('trim', $pasarCommoditiesList))));
             if (empty($pasarCommoditiesList)) {
                 $pasarCommoditiesList = [
-                    'Daging Sapi', 'Cabe Merah Besar', 'Cabe Rawit Merah', 'Bawang Merah', 'Bawang Putih', 
-                    'Daging Ayam Ras', 'Telur Ayam Ras', 'Minyak Goreng Kemasan Premium', 'Gula Pasir', 
-                    'Beras Premium', 'Beras Medium', 'Tepung Terigu'
+                    'Bawang Merah', 'Bawang Putih', 'Beras Medium', 'Beras Premium', 
+                    'Cabe Merah Besar', 'Cabe Rawit Merah', 'Daging Ayam Ras', 'Daging Sapi', 
+                    'Gula Pasir', 'Minyak Goreng Kemasan Premium', 'Telur Ayam Ras', 'Tepung Terigu'
                 ];
             } else {
                 sort($pasarCommoditiesList);

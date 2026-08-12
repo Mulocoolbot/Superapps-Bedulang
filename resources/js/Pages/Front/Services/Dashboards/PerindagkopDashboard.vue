@@ -107,6 +107,16 @@ const selectedStartDate = ref(props.dashboard?.metadata?.start_date ?? '')
 const selectedEndDate = ref(props.dashboard?.metadata?.end_date ?? '')
 const selectedPasar = ref(props.dashboard?.metadata?.pasar_id ?? '')
 
+watch(() => props.dashboard?.metadata?.start_date, (newVal) => {
+    if (newVal) selectedStartDate.value = newVal
+})
+watch(() => props.dashboard?.metadata?.end_date, (newVal) => {
+    if (newVal) selectedEndDate.value = newVal
+})
+watch(() => props.dashboard?.metadata?.pasar_id, (newVal) => {
+    if (newVal !== undefined) selectedPasar.value = newVal
+})
+
 const pasarMap = {
     1: 'Pasar Modern Koba',
     2: 'Pasar Namang',
@@ -257,10 +267,18 @@ const applyFilters = () => {
             return
         }
     }
+    const isInformasiPublik = props.service?.slug === 'informasi-publik'
     router.get(`/layanan/${props.service.slug}`, {
         start_date: selectedStartDate.value || undefined,
         end_date: selectedEndDate.value || undefined,
         pasar_id: selectedPasar.value || undefined,
+        pasar_date: pasarSelectedDate.value || undefined,
+        pasar_commodity: pasarSelectedCommodity.value || undefined,
+        stok_start_date: stokCompDate.value || undefined,
+        stok_end_date: stokDate.value || undefined,
+        penyedia: selectedPenyedia.value || undefined,
+        tab: isInformasiPublik ? 'bapok' : 'harga',
+        subtab: isInformasiPublik ? 'harga' : undefined,
     }, {
         preserveState: true,
         preserveScroll: true,
@@ -277,7 +295,12 @@ const resetFilters = () => {
 const validTabs = ['harga', 'stok', 'pasar']
 const getInitialTab = () => {
     if (typeof window === 'undefined') return 'harga'
-    const tab = new URLSearchParams(window.location.search).get('tab')
+    const params = new URLSearchParams(window.location.search)
+    const subtab = params.get('subtab')
+    if (subtab && validTabs.includes(subtab)) {
+        return subtab
+    }
+    const tab = params.get('tab')
     if (tab && validTabs.includes(tab)) {
         return tab
     }
@@ -285,17 +308,39 @@ const getInitialTab = () => {
 }
 const activeTab = ref(getInitialTab())
 
+const setInnerTab = (tabName) => {
+    if (!validTabs.includes(tabName)) return
+    activeTab.value = tabName
+    if (typeof window !== 'undefined') {
+        const url = new URL(window.location.href)
+        if (props.service?.slug === 'informasi-publik') {
+            url.searchParams.set('tab', 'bapok')
+            url.searchParams.set('subtab', tabName)
+        } else {
+            url.searchParams.set('tab', tabName)
+        }
+        window.history.replaceState({}, '', url.toString())
+    }
+}
+
 watch(() => {
     try {
         const url = typeof window !== 'undefined' ? window.location.search : ''
-        const tab = new URLSearchParams(url).get('tab')
+        const params = new URLSearchParams(url)
+        const subtab = params.get('subtab')
+        if (subtab && validTabs.includes(subtab)) {
+            return subtab
+        }
+        const tab = params.get('tab')
         if (tab && validTabs.includes(tab)) {
             return tab
         }
     } catch (e) {}
-    return 'harga'
+    return activeTab.value || 'harga'
 }, (newTab) => {
-    activeTab.value = newTab
+    if (newTab && validTabs.includes(newTab)) {
+        activeTab.value = newTab
+    }
 })
 
 const todayStr = '2026-07-20'
@@ -352,6 +397,7 @@ const initStokCompDate = () => {
 initStokCompDate()
 
 const applyStokFilters = () => {
+    const isInformasiPublik = props.service?.slug === 'informasi-publik'
     router.get(`/layanan/${props.service.slug}`, {
         start_date: selectedStartDate.value || undefined,
         end_date: selectedEndDate.value || undefined,
@@ -361,7 +407,8 @@ const applyStokFilters = () => {
         stok_start_date: stokCompDate.value || undefined,
         stok_end_date: stokDate.value || undefined,
         penyedia: selectedPenyedia.value || undefined,
-        tab: 'stok'
+        tab: isInformasiPublik ? 'bapok' : 'stok',
+        subtab: isInformasiPublik ? 'stok' : undefined,
     }, {
         preserveState: true,
         preserveScroll: true,
@@ -425,13 +472,18 @@ watch(() => props.dashboard?.pasar_date, (newVal) => {
 })
 
 const applyPasarFilters = () => {
+    const isInformasiPublik = props.service?.slug === 'informasi-publik'
     router.get(`/layanan/${props.service.slug}`, {
         start_date: selectedStartDate.value || undefined,
         end_date: selectedEndDate.value || undefined,
         pasar_id: selectedPasar.value || undefined,
         pasar_date: pasarSelectedDate.value || undefined,
         pasar_commodity: pasarSelectedCommodity.value || undefined,
-        tab: 'pasar'
+        stok_start_date: stokCompDate.value || undefined,
+        stok_end_date: stokDate.value || undefined,
+        penyedia: selectedPenyedia.value || undefined,
+        tab: isInformasiPublik ? 'bapok' : 'pasar',
+        subtab: isInformasiPublik ? 'pasar' : undefined,
     }, {
         preserveState: true,
         preserveScroll: true,
@@ -575,7 +627,7 @@ const getPasarBarPercent = (val) => {
         <!-- Menu Bar Section (only for Perindagkop) -->
     <div class="mt-6 flex flex-wrap gap-2 rounded-xl bg-slate-100 p-1.5 dark:bg-slate-800/60 w-full animate-fade-in-up [animation-delay:100ms]">
         <button
-            @click="activeTab = 'harga'"
+            @click="setInnerTab('harga')"
             type="button"
             class="flex-1 rounded-lg px-4 py-2 text-center text-sm font-semibold transition-all duration-200 select-none cursor-pointer"
             :class="activeTab === 'harga' 
@@ -585,7 +637,7 @@ const getPasarBarPercent = (val) => {
             Perbandingan Harga Barang
         </button>
         <button
-            @click="activeTab = 'stok'"
+            @click="setInnerTab('stok')"
             type="button"
             class="flex-1 rounded-lg px-4 py-2 text-center text-sm font-semibold transition-all duration-200 select-none cursor-pointer"
             :class="activeTab === 'stok' 
@@ -595,7 +647,7 @@ const getPasarBarPercent = (val) => {
             Stok Bapok
         </button>
         <button
-            @click="activeTab = 'pasar'"
+            @click="setInnerTab('pasar')"
             type="button"
             class="flex-1 rounded-lg px-4 py-2 text-center text-sm font-semibold transition-all duration-200 select-none cursor-pointer"
             :class="activeTab === 'pasar' 

@@ -109,7 +109,7 @@ const mockProducts = [
     {
         brand: 'Bahek Ewaki',
         owner: 'Andreas Maulana',
-        sector: 'Perikanan & Olahan Laut',
+        sector: 'Olahan Perikanan',
         district: 'Koba',
         village: 'Kurau Barat',
         phone: '6281273880001',
@@ -135,7 +135,7 @@ const mockProducts = [
     {
         brand: 'Mama Nyongs',
         owner: 'Matthew',
-        sector: 'Kuliner (Makanan & Minuman)',
+        sector: 'Olahan Perikanan',
         district: 'Koba',
         village: 'Simpang Perlang',
         phone: '6281367273219',
@@ -150,7 +150,7 @@ const mockProducts = [
     {
         brand: 'Aliana',
         owner: 'Hj. Elis Nurbaini',
-        sector: 'Kuliner (Makanan & Minuman)',
+        sector: 'Olahan Pertanian',
         district: 'Koba',
         village: 'Simpang Perlang',
         phone: '6281278095282',
@@ -167,7 +167,7 @@ const mockProducts = [
     {
         brand: 'Haita',
         owner: 'Tuti Herawati',
-        sector: 'Pertanian & Agribisnis',
+        sector: 'Olahan Pertanian',
         district: 'Koba',
         village: 'Arung Dalam',
         phone: '628117171897',
@@ -182,7 +182,7 @@ const mockProducts = [
     {
         brand: 'Gurih DD',
         owner: 'Daddi',
-        sector: 'Perikanan & Olahan Laut',
+        sector: 'Olahan Perikanan',
         district: 'Koba',
         village: 'Kurau Barat',
         phone: '6285769206830',
@@ -199,7 +199,7 @@ const mockProducts = [
     {
         brand: 'Coffee Pading',
         owner: 'Basori',
-        sector: 'Kuliner (Makanan & Minuman)',
+        sector: 'Olahan Pertanian',
         district: 'Lubuk Pabrik',
         village: 'Lubuk Besar',
         phone: '6282279316256',
@@ -213,7 +213,7 @@ const mockProducts = [
     {
         brand: 'Madu Pelawan',
         owner: 'Madu Pelawan',
-        sector: 'Pertanian & Agribisnis',
+        sector: 'Olahan Pertanian',
         district: 'Namang',
         village: 'Namang',
         phone: '6281373257160',
@@ -227,7 +227,7 @@ const mockProducts = [
     {
         brand: 'Rusip Subiarti',
         owner: 'Subiarti',
-        sector: 'Kuliner (Makanan & Minuman)',
+        sector: 'Olahan Perikanan',
         district: 'Pangkalan Baru',
         village: 'Batu Belubang',
         phone: '6285373756651',
@@ -645,9 +645,8 @@ const filteredProducts = computed(() => {
                         class="custom-select w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-2.5 text-xs font-medium text-slate-700 dark:text-slate-350 focus:outline-hidden focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition cursor-pointer"
                     >
                         <option value="">Semua Kategori</option>
-                        <option value="Kuliner (Makanan & Minuman)">Kuliner</option>
-                        <option value="Pertanian & Agribisnis">Pertanian & Agribisnis</option>
-                        <option value="Perikanan & Olahan Laut">Perikanan & Olahan Laut</option>
+                        <option value="Olahan Pertanian">Olahan Pertanian</option>
+                        <option value="Olahan Perikanan">Olahan Perikanan</option>
                         <option value="Fashion & Tekstil">Fashion & Tekstil</option>
                         <option value="Kerajinan (Kriya)">Kerajinan (Kriya)</option>
                     </select>
@@ -700,7 +699,7 @@ const filteredProducts = computed(() => {
                             </div>
                         </template>
                         <span class="absolute top-4 left-4 bg-blue-600/90 backdrop-blur-md text-white text-[10px] uppercase font-bold tracking-wider px-3 py-1 rounded-full shadow-sm">
-                            {{ product.sector.split(' ')[0] }}
+                            {{ product.sector }}
                         </span>
                     </div>
 
