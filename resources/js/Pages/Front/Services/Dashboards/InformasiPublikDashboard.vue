@@ -16,16 +16,30 @@ const props = defineProps({
 
 const page = usePage()
 
+// Valid Sidebar Tabs
+const validSidebarTabs = ['bapok', 'sawit', 'utd', 'umkm']
+const perindagSubTabs = ['harga', 'stok', 'pasar']
+
+const resolveSidebarTab = (urlOrQuery) => {
+    try {
+        const query = urlOrQuery.includes('?') ? urlOrQuery.split('?')[1] : urlOrQuery
+        const tabParam = new URLSearchParams(query).get('tab')
+        if (tabParam && validSidebarTabs.includes(tabParam)) {
+            return tabParam
+        }
+        if (tabParam && perindagSubTabs.includes(tabParam)) {
+            return 'bapok'
+        }
+    } catch (e) {}
+    return 'bapok'
+}
+
 // Active Sidebar Tab State ('bapok', 'sawit', 'umkm', 'utd')
-const activeSidebarTab = ref(new URLSearchParams(window.location.search).get('tab') || 'bapok')
+const activeSidebarTab = ref(typeof window !== 'undefined' ? resolveSidebarTab(window.location.search) : 'bapok')
 const isSidebarOpen = ref(false)
 
 watch(() => page.url, (newUrl) => {
-    const query = newUrl.includes('?') ? newUrl.split('?')[1] : ''
-    const tabParam = new URLSearchParams(query).get('tab')
-    if (tabParam) {
-        activeSidebarTab.value = tabParam
-    }
+    activeSidebarTab.value = resolveSidebarTab(newUrl)
 })
 
 const toggleSidebar = () => {
@@ -33,7 +47,17 @@ const toggleSidebar = () => {
 }
 
 const selectTab = (tab) => {
+    if (!validSidebarTabs.includes(tab)) return
     activeSidebarTab.value = tab
+    if (typeof window !== 'undefined') {
+        const url = new URL(window.location.href)
+        url.searchParams.set('tab', tab)
+        // If navigating away from bapok, remove subtab
+        if (tab !== 'bapok') {
+            url.searchParams.delete('subtab')
+        }
+        window.history.replaceState({}, '', url.toString())
+    }
 }
 
 // -------------------------------------------------------------
