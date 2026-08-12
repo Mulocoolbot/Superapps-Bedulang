@@ -13,13 +13,27 @@ class InformationServiceTest extends TestCase
     use RefreshDatabase;
     public function test_unauthenticated_user_redirected_to_login_when_accessing_private_service_pages(): void
     {
-        $this->get('/layanan/pemerintahan')
+        $this->get('/layanan/kesehatan')
+            ->assertRedirect('/login');
+
+        $this->get('/layanan/sosial')
             ->assertRedirect('/login');
     }
 
     public function test_unauthenticated_user_can_access_public_services_without_login(): void
     {
-        $publicSlugs = ['pendidikan', 'perindagkop-ukm', 'informasi-publik', 'desa', 'pariwisata', 'kependudukan'];
+        $publicSlugs = [
+            'pendidikan',
+            'perindagkop-ukm',
+            'informasi-publik',
+            'desa',
+            'pariwisata',
+            'kependudukan',
+            'pemerintahan',
+            'kepegawaian',
+            'makanan-bergizi-gratis',
+            'agenda',
+        ];
 
         foreach ($publicSlugs as $slug) {
             $this->get('/layanan/' . $slug)
@@ -49,6 +63,7 @@ class InformationServiceTest extends TestCase
             'pelayanan-kesehatan',
             'pengaduan-ppid',
             'administrasi-warga',
+            'agenda',
         ];
 
         foreach ($slugs as $slug) {

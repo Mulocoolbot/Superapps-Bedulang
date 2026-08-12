@@ -36,6 +36,25 @@ const apps = [
         name: 'PEMERINTAHAN',
         slug: 'pemerintahan',
         logo: '/services/pemerintahan.svg',
+        allowGuest: true
+    },
+    {
+        name: 'KEPENDUDUKAN',
+        slug: 'kependudukan',
+        logo: '/services/kependudukan.svg',
+        allowGuest: true
+    },
+    {
+        name: 'KEPEGAWAIAN',
+        slug: 'kepegawaian',
+        logo: '/services/kepegawaian.svg',
+        allowGuest: true
+    },
+    {
+        name: 'Makanan Bergizi Gratis',
+        slug: 'makanan-bergizi-gratis',
+        logo: '/services/bgn.png',
+        allowGuest: true
     },
     {
         name: 'KESEHATAN',
@@ -48,16 +67,6 @@ const apps = [
         logo: '/services/sosial.svg',
     },
     {
-        name: 'KEPENDUDUKAN',
-        slug: 'kependudukan',
-        logo: '/services/kependudukan.svg',
-    },
-    {
-        name: 'KEPEGAWAIAN',
-        slug: 'kepegawaian',
-        logo: '/services/kepegawaian.svg',
-    },
-    {
         name: 'PARIWISATA',
         slug: 'pariwisata',
         logo: '/services/pariwisata.svg',
@@ -67,11 +76,6 @@ const apps = [
         slug: 'data-sektoral',
         logo: '/services/sektoral.svg',
         url: '/data-sektoral',
-    },
-    {
-        name: 'Makanan Bergizi Gratis',
-        slug: 'makanan-bergizi-gratis',
-        logo: '/services/bgn.png',
     },
     {
         name: 'KDMP',
@@ -89,6 +93,20 @@ const publicServices = [
         allowGuest: true
     },
     {
+        name: 'PENGADUAN PPID',
+        slug: 'pengaduan-ppid',
+        logo: '/services/lapor.png',
+        url: 'https://www.lapor.go.id/instansi/pemerintah-kabupaten-bangka-tengah',
+        allowGuest: true
+    },
+    {
+        name: 'AGENDA',
+        slug: 'agenda',
+        logo: '/services/agenda.svg',
+        url: '/layanan/agenda',
+        allowGuest: true
+    },
+    {
         name: 'PERIZINAN TERPADU',
         slug: 'perizinan-terpadu',
         logo: '/services/govern.svg',
@@ -99,12 +117,6 @@ const publicServices = [
         slug: 'pelayanan-kesehatan',
         logo: '/services/health.svg',
         url: '/layanan/pelayanan-kesehatan'
-    },
-    {
-        name: 'PENGADUAN PPID',
-        slug: 'pengaduan-ppid',
-        logo: '/services/lapor.png',
-        url: '/layanan/pengaduan-ppid'
     },
     {
         name: 'ADMINISTRASI WARGA',
@@ -226,10 +238,12 @@ onUnmounted(() => {
                     <div class="grid grid-cols-2 gap-4 md:flex md:flex-wrap md:justify-center md:gap-5 max-h-[385px] md:max-h-none overflow-y-auto md:overflow-visible pr-1">
                         <!-- TAB: INFORMASI & DATA -->
                         <template v-if="activeTab === 'info'">
-                            <Link
+                            <component
+                                :is="app.url && app.url.startsWith('http') ? 'a' : Link"
                                 v-for="(app, index) in apps"
                                 :key="app.name"
                                 :href="isAuthenticated || app.allowGuest ? (app.url || '/layanan/' + app.slug) : '/login'"
+                                :target="app.url && app.url.startsWith('http') ? '_blank' : undefined"
                                 class="group w-full md:w-[180px] flex-shrink-0 transition-all duration-300"
                             >
                                 <div 
@@ -261,15 +275,17 @@ onUnmounted(() => {
                                         </svg>
                                     </div>
                                 </div>
-                            </Link>
+                            </component>
                         </template>
 
                         <!-- TAB: LAYANAN PUBLIK -->
                         <template v-else>
-                            <Link
+                            <component
+                                :is="app.url && app.url.startsWith('http') ? 'a' : Link"
                                 v-for="(app, index) in publicServices"
                                 :key="app.name"
-                                :href="isAuthenticated || app.allowGuest ? app.url : '/login'"
+                                :href="isAuthenticated || app.allowGuest ? (app.url || '/layanan/' + app.slug) : '/login'"
+                                :target="app.url && app.url.startsWith('http') ? '_blank' : undefined"
                                 class="group w-full md:w-[180px] flex-shrink-0 transition-all duration-300"
                             >
                                 <div 
@@ -301,7 +317,7 @@ onUnmounted(() => {
                                         </svg>
                                     </div>
                                 </div>
-                            </Link>
+                            </component>
                         </template>
                     </div>
                 </div>

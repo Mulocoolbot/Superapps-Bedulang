@@ -68,15 +68,15 @@ const infoServices = [
     { name: 'Pendidikan', id: 'pendidikan', allowGuest: true },
     { name: 'Perindagkop-UKM', id: 'perindagkop-ukm', allowGuest: true },
     { name: 'Desa', id: 'desa', allowGuest: true },
-    { name: 'Pemerintahan', id: 'pemerintahan' },
+    { name: 'Pemerintahan', id: 'pemerintahan', allowGuest: true },
+    { name: 'Kependudukan', id: 'kependudukan', allowGuest: true },
+    { name: 'Kepegawaian', id: 'kepegawaian', allowGuest: true },
+    { name: 'Makanan Bergizi Gratis', id: 'makanan-bergizi-gratis', allowGuest: true },
     { name: 'Kesehatan', id: 'kesehatan' },
     { name: 'KDMP', id: 'kdmp' },
     { name: 'Sosial', id: 'sosial' },
-    { name: 'Kependudukan', id: 'kependudukan' },
-    { name: 'Kepegawaian', id: 'kepegawaian' },
     { name: 'Pariwisata', id: 'pariwisata' },
     { name: 'Data Sektoral', id: 'data-sektoral', url: '/data-sektoral' },
-    { name: 'Makanan Bergizi Gratis', id: 'makanan-bergizi-gratis' },
 ]
 
 const regionalApps = [
@@ -96,9 +96,10 @@ const publicInfoItems = [
 
 const publicServices = [
     { name: 'Monitoring CCTV', url: '/cctv', allowGuest: true },
+    { name: 'Pengaduan PPID', id: 'pengaduan-ppid', url: 'https://www.lapor.go.id/instansi/pemerintah-kabupaten-bangka-tengah', allowGuest: true },
+    { name: 'Agenda', id: 'agenda', url: '/layanan/agenda', allowGuest: true },
     { name: 'Perizinan Terpadu', id: 'perizinan-terpadu' },
     { name: 'Pelayanan Kesehatan', id: 'pelayanan-kesehatan' },
-    { name: 'Pengaduan PPID', id: 'pengaduan-ppid' },
     { name: 'Administrasi Warga', id: 'administrasi-warga' },
     { name: 'Pengaduan Bedulang', id: 'pengaduan-bedulang' },
 ]
@@ -108,9 +109,10 @@ const scrollToAndHighlight = (targetId) => {
     if (targetId.startsWith('layanan-')) {
         const publicIds = [
             'layanan-monitoring-cctv',
+            'layanan-pengaduan-ppid',
+            'layanan-agenda',
             'layanan-perizinan-terpadu',
             'layanan-pelayanan-kesehatan',
-            'layanan-pengaduan-ppid',
             'layanan-administrasi-warga',
             'layanan-pengaduan-bedulang',
         ]
@@ -440,10 +442,12 @@ const toggleDarkMode = () => {
                                         ? 'border border-slate-800 bg-slate-900/95 text-slate-200' 
                                         : 'border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 text-gray-700 dark:text-gray-300'"
                                 >
-                                    <Link 
+                                    <component 
+                                        :is="app.url && app.url.startsWith('http') ? 'a' : Link"
                                         v-for="app in infoServices" 
                                         :key="app.name" 
                                         :href="authUser || app.allowGuest ? (app.url || '/layanan/' + app.id) : '/login'"
+                                        :target="app.url && app.url.startsWith('http') ? '_blank' : undefined"
                                         class="px-5 py-2.5 text-sm font-medium transition flex items-center justify-between"
                                         :class="isMaintenancePage ? 'hover:bg-slate-800 text-slate-200 hover:text-amber-400' : 'hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400'"
                                     >
@@ -451,7 +455,7 @@ const toggleDarkMode = () => {
                                         <svg v-if="!authUser && !app.allowGuest" class="w-4 h-4 text-amber-500 ml-2 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                                         </svg>
-                                    </Link>
+                                    </component>
                                 </div>
                             </div>
 
@@ -475,10 +479,12 @@ const toggleDarkMode = () => {
                                         ? 'border border-slate-800 bg-slate-900/95 text-slate-200' 
                                         : 'border border-gray-100 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 text-gray-700 dark:text-gray-300'"
                                 >
-                                    <Link 
+                                    <component 
+                                        :is="app.url && app.url.startsWith('http') ? 'a' : Link"
                                         v-for="app in publicServices" 
                                         :key="app.name" 
                                         :href="authUser || app.allowGuest ? (app.url ? app.url : '/layanan/' + app.id) : '/login'"
+                                        :target="app.url && app.url.startsWith('http') ? '_blank' : undefined"
                                         class="px-5 py-2.5 text-sm font-medium transition flex items-center justify-between"
                                         :class="isMaintenancePage ? 'hover:bg-slate-800 text-slate-200 hover:text-amber-400' : 'hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400'"
                                     >
@@ -486,7 +492,7 @@ const toggleDarkMode = () => {
                                         <svg v-if="!authUser && !app.allowGuest" class="w-4 h-4 text-amber-500 ml-2 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                                         </svg>
-                                    </Link>
+                                    </component>
                                 </div>
                             </div>
                         </div>
@@ -969,10 +975,12 @@ const toggleDarkMode = () => {
                                 </svg>
                             </button>
                             <div v-show="mobileLayananInfoOpen" class="pl-3 space-y-1 py-1">
-                                <Link 
+                                <component 
+                                    :is="app.url && app.url.startsWith('http') ? 'a' : Link"
                                     v-for="app in infoServices" 
                                     :key="app.name" 
                                     :href="authUser || app.allowGuest ? (app.url || '/layanan/' + app.id) : '/login'"
+                                    :target="app.url && app.url.startsWith('http') ? '_blank' : undefined"
                                     @click="open = false"
                                     class="py-1.5 text-xs transition flex items-center justify-between"
                                     :class="isMaintenancePage ? 'text-slate-200 hover:text-amber-400' : 'text-gray-700 dark:text-gray-300 hover:text-blue-600'"
@@ -981,7 +989,7 @@ const toggleDarkMode = () => {
                                     <svg v-if="!authUser && !app.allowGuest" class="w-3.5 h-3.5 text-amber-500 ml-2 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                                     </svg>
-                                </Link>
+                                </component>
                             </div>
                         </div>
 
@@ -1002,10 +1010,12 @@ const toggleDarkMode = () => {
                                 </svg>
                             </button>
                             <div v-show="mobileLayananPublikOpen" class="pl-3 space-y-1 py-1">
-                                <Link 
+                                <component 
+                                    :is="app.url && app.url.startsWith('http') ? 'a' : Link"
                                     v-for="app in publicServices" 
                                     :key="app.name" 
                                     :href="authUser || app.allowGuest ? (app.url ? app.url : '/layanan/' + app.id) : '/login'"
+                                    :target="app.url && app.url.startsWith('http') ? '_blank' : undefined"
                                     @click="open = false"
                                     class="py-1.5 text-xs transition flex items-center justify-between"
                                     :class="isMaintenancePage ? 'text-slate-200 hover:text-amber-400' : 'text-gray-700 dark:text-gray-300 hover:text-blue-600'"
@@ -1014,7 +1024,7 @@ const toggleDarkMode = () => {
                                     <svg v-if="!authUser && !app.allowGuest" class="w-3.5 h-3.5 text-amber-500 ml-2 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                                     </svg>
-                                </Link>
+                                </component>
                             </div>
                         </div>
                     </div>
