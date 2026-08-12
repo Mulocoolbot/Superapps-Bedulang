@@ -189,19 +189,32 @@ const importantPriceTrends = computed(() => {
 const hasBasicPriceTrends = computed(() => basicPriceTrends.value.length > 0)
 const hasImportantPriceTrends = computed(() => importantPriceTrends.value.length > 0)
 
-const latestDateLimit = computed(() => props.dashboard?.metadata?.latest_date ?? '')
+const padZero = (n) => String(n).padStart(2, '0')
+
+const getTodayString = () => {
+    const now = new Date()
+    return `${now.getFullYear()}-${padZero(now.getMonth() + 1)}-${padZero(now.getDate())}`
+}
+
+const latestDateLimit = computed(() => props.dashboard?.metadata?.latest_date || getTodayString())
 
 const maxStartDateLimit = computed(() => {
     const dates = []
     if (latestDateLimit.value) {
-        const latest = new Date(latestDateLimit.value)
-        latest.setDate(latest.getDate() - 1)
-        dates.push(latest.toISOString().split('T')[0])
+        const [y, m, d] = latestDateLimit.value.split('-').map(Number)
+        if (y && m && d) {
+            const dt = new Date(y, m - 1, d)
+            dt.setDate(dt.getDate() - 1)
+            dates.push(`${dt.getFullYear()}-${padZero(dt.getMonth() + 1)}-${padZero(dt.getDate())}`)
+        }
     }
     if (selectedEndDate.value) {
-        const end = new Date(selectedEndDate.value)
-        end.setDate(end.getDate() - 1)
-        dates.push(end.toISOString().split('T')[0])
+        const [y, m, d] = selectedEndDate.value.split('-').map(Number)
+        if (y && m && d) {
+            const dt = new Date(y, m - 1, d)
+            dt.setDate(dt.getDate() - 1)
+            dates.push(`${dt.getFullYear()}-${padZero(dt.getMonth() + 1)}-${padZero(dt.getDate())}`)
+        }
     }
     if (dates.length > 0) {
         return dates.reduce((a, b) => a < b ? a : b)
@@ -211,9 +224,12 @@ const maxStartDateLimit = computed(() => {
 
 const minEndDateLimit = computed(() => {
     if (selectedStartDate.value) {
-        const start = new Date(selectedStartDate.value)
-        start.setDate(start.getDate() + 1)
-        return start.toISOString().split('T')[0]
+        const [y, m, d] = selectedStartDate.value.split('-').map(Number)
+        if (y && m && d) {
+            const dt = new Date(y, m - 1, d)
+            dt.setDate(dt.getDate() + 1)
+            return `${dt.getFullYear()}-${padZero(dt.getMonth() + 1)}-${padZero(dt.getDate())}`
+        }
     }
     return ''
 })
@@ -244,10 +260,35 @@ const formatNumber = (val) => {
     return new Intl.NumberFormat('id-ID').format(val || 0)
 }
 
+const onStartDateChange = () => {
+    if (!selectedStartDate.value) return
+    if (!selectedEndDate.value || selectedStartDate.value >= selectedEndDate.value) {
+        const [y, m, d] = selectedStartDate.value.split('-').map(Number)
+        if (y && m && d) {
+            const nextDay = new Date(y, m - 1, d)
+            nextDay.setDate(nextDay.getDate() + 1)
+            selectedEndDate.value = `${nextDay.getFullYear()}-${padZero(nextDay.getMonth() + 1)}-${padZero(nextDay.getDate())}`
+        }
+    }
+}
+
+const onEndDateChange = () => {
+    if (!selectedEndDate.value) return
+    if (!selectedStartDate.value || selectedEndDate.value <= selectedStartDate.value) {
+        const [y, m, d] = selectedEndDate.value.split('-').map(Number)
+        if (y && m && d) {
+            const prevDay = new Date(y, m - 1, d)
+            prevDay.setDate(prevDay.getDate() - 1)
+            selectedStartDate.value = `${prevDay.getFullYear()}-${padZero(prevDay.getMonth() + 1)}-${padZero(prevDay.getDate())}`
+        }
+    }
+}
+
 const applyFilters = () => {
     if (selectedStartDate.value && latestDateLimit.value) {
         if (selectedStartDate.value >= latestDateLimit.value) {
             alert(`Tanggal Pembanding (Mulai) harus minimal H-1 sebelum Tanggal Terkini (${latestDateLimit.value})!`)
+            selectedStartDate.value = maxStartDateLimit.value
             return
         }
     }
@@ -264,6 +305,7 @@ const applyFilters = () => {
     if (selectedEndDate.value && latestDateLimit.value) {
         if (selectedEndDate.value > latestDateLimit.value) {
             alert(`Tanggal Acuan (Selesai) tidak boleh melebihi Tanggal Terkini (${latestDateLimit.value})!`)
+            selectedEndDate.value = latestDateLimit.value
             return
         }
     }
@@ -343,35 +385,31 @@ watch(() => {
     }
 })
 
-const todayStr = '2026-07-20'
-
 const isMonday = (dateStr) => {
     if (!dateStr) return false
-    const date = new Date(dateStr)
-    return date.getDay() === 1
+    const [y, m, d] = dateStr.split('-').map(Number)
+    if (!y || !m || !d) return false
+    return new Date(y, m - 1, d).getDay() === 1
 }
 
 const getNearestMonday = (dateStr) => {
     if (!dateStr) return ''
-    const date = new Date(dateStr)
-    const day = date.getDay()
+    const [y, m, d] = dateStr.split('-').map(Number)
+    if (!y || !m || !d) return ''
+    const date = new Date(y, m - 1, d)
+    const day = date.getDay() // 0 = Sun, 1 = Mon, ..., 6 = Sat
     if (day === 1) return dateStr
     
-    const diff = 1 - day
-    let adjustDays = diff
-    if (day === 0) adjustDays = -6
-    else if (day > 1) adjustDays = 1 - day
+    let adjustDays = 1 - day
+    if (day === 0) adjustDays = -6 // Sunday -> Monday of same week (-6 days)
     
     date.setDate(date.getDate() + adjustDays)
-    
-    if (date > new Date(todayStr)) {
-        date.setDate(date.getDate() - 7)
-    }
-    
-    return date.toISOString().split('T')[0]
+    return `${date.getFullYear()}-${padZero(date.getMonth() + 1)}-${padZero(date.getDate())}`
 }
 
-const stokDate = ref(props.dashboard?.metadata?.stok_end_date || getNearestMonday(todayStr))
+const maxAllowedStokDate = computed(() => getNearestMonday(getTodayString()))
+
+const stokDate = ref(props.dashboard?.metadata?.stok_end_date || maxAllowedStokDate.value)
 const stokCompDate = ref(props.dashboard?.metadata?.stok_start_date || '')
 const selectedPenyedia = ref(props.dashboard?.metadata?.penyedia || '1')
 
@@ -385,16 +423,24 @@ watch(() => props.dashboard?.metadata?.penyedia, (newVal) => {
     if (newVal) selectedPenyedia.value = String(newVal)
 })
 
+const getPrevMonday = (dateStr) => {
+    if (!dateStr) return ''
+    const [y, m, d] = dateStr.split('-').map(Number)
+    const dt = new Date(y, m - 1, d)
+    dt.setDate(dt.getDate() - 7)
+    return `${dt.getFullYear()}-${padZero(dt.getMonth() + 1)}-${padZero(dt.getDate())}`
+}
+
 const initStokCompDate = () => {
     if (props.dashboard?.metadata?.stok_start_date) {
         stokCompDate.value = props.dashboard.metadata.stok_start_date
     } else if (stokDate.value) {
-        const date = new Date(stokDate.value)
-        date.setDate(date.getDate() - 7)
-        stokCompDate.value = date.toISOString().split('T')[0]
+        stokCompDate.value = getPrevMonday(stokDate.value)
     }
 }
-initStokCompDate()
+if (!stokCompDate.value) {
+    initStokCompDate()
+}
 
 const applyStokFilters = () => {
     const isInformasiPublik = props.service?.slug === 'informasi-publik'
@@ -415,54 +461,48 @@ const applyStokFilters = () => {
     })
 }
 
-const handleStokDateChange = () => {
+const onStokDateChange = () => {
     if (!stokDate.value) return
+    const maxDate = maxAllowedStokDate.value
     
-    if (stokDate.value > todayStr) {
-        alert('Tanggal Stok tidak boleh melebihi tanggal hari ini!')
-        stokDate.value = getNearestMonday(todayStr)
-        return
+    if (stokDate.value > maxDate) {
+        alert(`Tanggal Stok tidak boleh melebihi hari Senin minggu ini (${formatDateDMY(maxDate)})!`)
+        stokDate.value = maxDate
     }
     
     if (!isMonday(stokDate.value)) {
         const adjusted = getNearestMonday(stokDate.value)
-        alert(`Tanggal Stok hanya boleh hari Senin. Tanggal disesuaikan ke hari Senin terdekat: ${formatDateDMY(adjusted)}.`);
         stokDate.value = adjusted
     }
     
-    if (stokDate.value === stokCompDate.value) {
-        alert('Tanggal Pembanding tidak boleh sama dengan Tanggal Stok!');
-        initStokCompDate()
+    if (!stokCompDate.value || stokCompDate.value >= stokDate.value) {
+        stokCompDate.value = getPrevMonday(stokDate.value)
     }
-
-    applyStokFilters()
 }
 
-const handleStokCompDateChange = () => {
+const onStokCompDateChange = () => {
     if (!stokCompDate.value) return
+    const maxDate = maxAllowedStokDate.value
     
-    if (stokCompDate.value > todayStr) {
+    if (stokCompDate.value > maxDate) {
         alert('Tanggal Pembanding tidak boleh melebihi tanggal hari ini!')
-        initStokCompDate()
+        stokCompDate.value = getPrevMonday(stokDate.value)
         return
     }
     
     if (!isMonday(stokCompDate.value)) {
         const adjusted = getNearestMonday(stokCompDate.value)
-        alert(`Tanggal Pembanding hanya boleh hari Senin. Tanggal disesuaikan ke hari Senin terdekat: ${formatDateDMY(adjusted)}.`);
         stokCompDate.value = adjusted
     }
     
-    if (stokCompDate.value === stokDate.value) {
-        alert('Tanggal Pembanding tidak boleh sama dengan Tanggal Stok!');
-        initStokCompDate()
+    if (stokCompDate.value >= stokDate.value) {
+        alert('Tanggal Pembanding (Mulai) harus sebelum Tanggal Stok (Selesai)!')
+        stokCompDate.value = getPrevMonday(stokDate.value)
     }
-
-    applyStokFilters()
 }
 
 const pasarSelectedCommodity = ref(props.dashboard?.pasar_commodity || 'Daging Sapi')
-const pasarSelectedDate = ref(props.dashboard?.pasar_date || todayStr)
+const pasarSelectedDate = ref(props.dashboard?.pasar_date || props.dashboard?.metadata?.latest_date || getTodayString())
 
 watch(() => props.dashboard?.pasar_commodity, (newVal) => {
     if (newVal) pasarSelectedCommodity.value = newVal
@@ -490,14 +530,13 @@ const applyPasarFilters = () => {
     })
 }
 
-const handlePasarDateChange = () => {
+const onPasarDateChange = () => {
     if (!pasarSelectedDate.value) return
-    if (pasarSelectedDate.value > latestDateLimit.value) {
-        alert(`Tanggal tidak boleh melebihi tanggal terkini (${latestDateLimit.value})!`)
-        pasarSelectedDate.value = latestDateLimit.value
-        return
+    const maxDate = latestDateLimit.value || getTodayString()
+    if (pasarSelectedDate.value > maxDate) {
+        alert(`Tanggal tidak boleh melebihi tanggal terkini (${maxDate})!`)
+        pasarSelectedDate.value = maxDate
     }
-    applyPasarFilters()
 }
 
 const handlePasarCommodityChange = () => {
@@ -678,7 +717,8 @@ const getPasarBarPercent = (val) => {
                             type="date"
                             v-model="selectedStartDate"
                             :max="maxStartDateLimit"
-                            @change="applyFilters"
+                            @change="onStartDateChange"
+                            @keyup.enter="applyFilters"
                             class="h-7 w-32 rounded-md border-0 bg-transparent px-2 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-cyan-100 dark:text-slate-300 dark:focus:ring-cyan-950/50"
                             placeholder="Mulai"
                         />
@@ -688,7 +728,8 @@ const getPasarBarPercent = (val) => {
                             v-model="selectedEndDate"
                             :min="minEndDateLimit"
                             :max="latestDateLimit"
-                            @change="applyFilters"
+                            @change="onEndDateChange"
+                            @keyup.enter="applyFilters"
                             class="h-7 w-32 rounded-md border-0 bg-transparent px-2 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-cyan-100 dark:text-slate-300 dark:focus:ring-cyan-950/50"
                             placeholder="Selesai"
                         />
@@ -698,7 +739,7 @@ const getPasarBarPercent = (val) => {
                     <div class="relative">
                         <select
                             v-model="selectedPasar"
-                            @change="applyFilters"
+                            @keyup.enter="applyFilters"
                             class="h-9 appearance-none rounded-lg border border-slate-200 bg-slate-50 px-3 pr-8 text-sm text-slate-700 outline-none transition hover:border-slate-300 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-slate-600 dark:focus:border-cyan-500 dark:focus:ring-cyan-950/50"
                         >
                             <option value="">Semua Pasar</option>
@@ -708,6 +749,19 @@ const getPasarBarPercent = (val) => {
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                         </svg>
                     </div>
+
+                    <!-- Apply Filter Button -->
+                    <button
+                        type="button"
+                        @click="applyFilters"
+                        class="h-9 px-3.5 inline-flex items-center gap-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-sm transition active:scale-95 cursor-pointer"
+                        title="Terapkan Filter"
+                    >
+                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                        </svg>
+                        <span>Terapkan</span>
+                    </button>
                 </div>
             </div>
 
@@ -974,7 +1028,9 @@ const getPasarBarPercent = (val) => {
                         <input
                             type="date"
                             v-model="stokCompDate"
-                            @change="handleStokCompDateChange"
+                            :max="stokDate ? getPrevMonday(stokDate) : maxAllowedStokDate"
+                            @change="onStokCompDateChange"
+                            @keyup.enter="applyStokFilters"
                             class="h-7 w-32 rounded-md border-0 bg-transparent px-2 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-cyan-100 dark:text-slate-300 dark:focus:ring-cyan-950/50"
                             placeholder="Mulai"
                         />
@@ -982,7 +1038,9 @@ const getPasarBarPercent = (val) => {
                         <input
                             type="date"
                             v-model="stokDate"
-                            @change="handleStokDateChange"
+                            :max="maxAllowedStokDate"
+                            @change="onStokDateChange"
+                            @keyup.enter="applyStokFilters"
                             class="h-7 w-32 rounded-md border-0 bg-transparent px-2 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-cyan-100 dark:text-slate-300 dark:focus:ring-cyan-950/50"
                             placeholder="Selesai"
                         />
@@ -990,7 +1048,7 @@ const getPasarBarPercent = (val) => {
                     <div class="relative">
                         <select
                             v-model="selectedPenyedia"
-                            @change="applyStokFilters"
+                            @keyup.enter="applyStokFilters"
                             class="h-9 appearance-none rounded-lg border border-slate-200 bg-slate-50 px-3 pr-8 text-sm text-slate-700 outline-none transition hover:border-slate-300 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-slate-600 dark:focus:border-cyan-500 dark:focus:ring-cyan-950/50"
                         >
                             <option value="1">Distributor</option>
@@ -1000,6 +1058,17 @@ const getPasarBarPercent = (val) => {
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                         </svg>
                     </div>
+                    <button
+                        type="button"
+                        @click="applyStokFilters"
+                        class="h-9 px-3.5 inline-flex items-center gap-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-semibold shadow-sm transition active:scale-95 cursor-pointer"
+                        title="Terapkan Filter"
+                    >
+                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                        </svg>
+                        <span>Terapkan</span>
+                    </button>
                 </div>
             </div>
 
@@ -1122,13 +1191,14 @@ const getPasarBarPercent = (val) => {
                         type="date"
                         v-model="pasarSelectedDate"
                         :max="latestDateLimit"
-                        @change="handlePasarDateChange"
+                        @change="onPasarDateChange"
+                        @keyup.enter="applyPasarFilters"
                         class="h-9 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-cyan-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:focus:ring-cyan-950/50"
                     />
                     <div class="relative">
                         <select
                             v-model="pasarSelectedCommodity"
-                            @change="handlePasarCommodityChange"
+                            @keyup.enter="applyPasarFilters"
                             class="h-9 appearance-none rounded-lg border border-slate-200 bg-slate-50 px-3 pr-8 text-sm text-slate-700 outline-none transition hover:border-slate-300 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-slate-600 dark:focus:border-cyan-500 dark:focus:ring-cyan-950/50"
                         >
                             <option v-for="c in pasarCommodities" :key="c" :value="c">{{ c }}</option>
@@ -1137,6 +1207,17 @@ const getPasarBarPercent = (val) => {
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
                         </svg>
                     </div>
+                    <button
+                        type="button"
+                        @click="applyPasarFilters"
+                        class="h-9 px-3.5 inline-flex items-center gap-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-700 text-white text-xs font-semibold shadow-sm transition active:scale-95 cursor-pointer"
+                        title="Terapkan Filter"
+                    >
+                        <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                        </svg>
+                        <span>Terapkan</span>
+                    </button>
                 </div>
             </div>
 

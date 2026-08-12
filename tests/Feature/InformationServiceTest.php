@@ -190,4 +190,56 @@ class InformationServiceTest extends TestCase
         $this->assertSame(-15.0, $dashboard['stok_data'][0]['diff']);
         $this->assertSame('turun', $dashboard['stok_data'][0]['status']);
     }
+
+    public function test_perindagkop_date_filters_normalize_correctly(): void
+    {
+        Http::fake([
+            'https://disperindagkop-ukm.bangkatengahkab.go.id/api/updateharga' => Http::response([
+                'data' => [
+                    [
+                        'tanggal' => '2026-08-12',
+                        'nama_barang' => 'Daging Sapi',
+                        'price_ii' => 130000,
+                    ]
+                ]
+            ], 200),
+            'https://disperindagkop-ukm.bangkatengahkab.go.id/api/updateharga/*' => Http::response([
+                'data' => []
+            ], 200),
+            'https://disperindagkop-ukm.bangkatengahkab.go.id/api/getstok/*' => Http::response([
+                'data' => []
+            ], 200),
+        ]);
+
+        $service = new \App\Services\PerindagService;
+
+        // 1. Default dates when empty
+        $dashboard1 = $service->getDashboardData(Request::create('/layanan/perindagkop-ukm', 'GET'));
+        $this->assertSame('2026-08-12', $dashboard1['metadata']['end_date']);
+        $this->assertSame('2026-08-11', $dashboard1['metadata']['start_date']);
+
+        // 2. Custom valid date range
+        $dashboard2 = $service->getDashboardData(Request::create('/layanan/perindagkop-ukm', 'GET', [
+            'start_date' => '2026-08-01',
+            'end_date' => '2026-08-10',
+        ]));
+        $this->assertSame('2026-08-01', $dashboard2['metadata']['start_date']);
+        $this->assertSame('2026-08-10', $dashboard2['metadata']['end_date']);
+
+        // 3. End date beyond latest date should clamp to latest date
+        $dashboard3 = $service->getDashboardData(Request::create('/layanan/perindagkop-ukm', 'GET', [
+            'start_date' => '2026-08-01',
+            'end_date' => '2026-09-01',
+        ]));
+        $this->assertSame('2026-08-12', $dashboard3['metadata']['end_date']);
+        $this->assertSame('2026-08-01', $dashboard3['metadata']['start_date']);
+
+        // 4. Start date >= end date should auto-adjust start date
+        $dashboard4 = $service->getDashboardData(Request::create('/layanan/perindagkop-ukm', 'GET', [
+            'start_date' => '2026-08-10',
+            'end_date' => '2026-08-10',
+        ]));
+        $this->assertSame('2026-08-10', $dashboard4['metadata']['end_date']);
+        $this->assertSame('2026-08-09', $dashboard4['metadata']['start_date']);
+    }
 }
