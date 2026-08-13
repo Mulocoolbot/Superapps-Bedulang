@@ -150,7 +150,7 @@ const mockProducts = [
     {
         brand: 'Aliana',
         owner: 'Hj. Elis Nurbaini',
-        sector: 'Olahan Pertanian',
+        sector: 'Olahan Pertanian & Perkebunan',
         district: 'Koba',
         village: 'Simpang Perlang',
         phone: '6281278095282',
@@ -167,7 +167,7 @@ const mockProducts = [
     {
         brand: 'Haita',
         owner: 'Tuti Herawati',
-        sector: 'Olahan Pertanian',
+        sector: 'Olahan Pertanian & Perkebunan',
         district: 'Koba',
         village: 'Arung Dalam',
         phone: '628117171897',
@@ -199,7 +199,7 @@ const mockProducts = [
     {
         brand: 'Coffee Pading',
         owner: 'Basori',
-        sector: 'Olahan Pertanian',
+        sector: 'Olahan Pertanian & Perkebunan',
         district: 'Lubuk Pabrik',
         village: 'Lubuk Besar',
         phone: '6282279316256',
@@ -213,7 +213,7 @@ const mockProducts = [
     {
         brand: 'Madu Pelawan',
         owner: 'Madu Pelawan',
-        sector: 'Olahan Pertanian',
+        sector: 'Olahan Pertanian & Perkebunan',
         district: 'Namang',
         village: 'Namang',
         phone: '6281373257160',
@@ -645,7 +645,7 @@ const filteredProducts = computed(() => {
                         class="custom-select w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-2.5 text-xs font-medium text-slate-700 dark:text-slate-350 focus:outline-hidden focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition cursor-pointer"
                     >
                         <option value="">Semua Kategori</option>
-                        <option value="Olahan Pertanian">Olahan Pertanian</option>
+                        <option value="Olahan Pertanian & Perkebunan">Olahan Pertanian & Perkebunan</option>
                         <option value="Olahan Perikanan">Olahan Perikanan</option>
                         <option value="Fashion & Tekstil">Fashion & Tekstil</option>
                         <option value="Kerajinan (Kriya)">Kerajinan (Kriya)</option>
