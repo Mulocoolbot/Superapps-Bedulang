@@ -42,7 +42,7 @@ class PerindagService implements InformationServiceInterface
 
         // Always fetch the absolute latest date available from the API (cached briefly for performance)
         $latestDate = Cache::remember('perindag_latest_date', 300, function () {
-            $defaultDate = '2026-07-17';
+            $defaultDate = date('Y-m-d');
             try {
                 $latestResponse = Http::withOptions(['verify' => false])
                     ->timeout(10)
@@ -59,24 +59,21 @@ class PerindagService implements InformationServiceInterface
             return $defaultDate;
         });
 
-        // Find D_latest and D_prev if not specified
-        if (!$startDate || !$endDate) {
+        // Normalize end_date and start_date
+        if (!$endDate) {
             $endDate = $latestDate;
-            $startDate = date('Y-m-d', strtotime($latestDate . ' -1 day'));
-        } else {
-            // Ensure startDate is at least -1 day from latestDate
-            $maxStartDate = date('Y-m-d', strtotime($latestDate . ' -1 day'));
-            if ($startDate > $maxStartDate) {
-                $startDate = $maxStartDate;
-            }
-            // Ensure endDate is strictly greater than startDate, up to latestDate
-            if ($endDate <= $startDate) {
-                $endDate = date('Y-m-d', strtotime($startDate . ' +1 day'));
-                if ($endDate > $latestDate) {
-                    $endDate = $latestDate;
-                    $startDate = date('Y-m-d', strtotime($latestDate . ' -1 day'));
-                }
-            }
+        }
+        if ($endDate > $latestDate) {
+            $endDate = $latestDate;
+        }
+
+        if (!$startDate) {
+            $startDate = date('Y-m-d', strtotime($endDate . ' -1 day'));
+        }
+
+        // Ensure start_date is strictly before end_date
+        if ($startDate >= $endDate) {
+            $startDate = date('Y-m-d', strtotime($endDate . ' -1 day'));
         }
 
         $pasarDate = $request->input('pasar_date');
@@ -116,19 +113,23 @@ class PerindagService implements InformationServiceInterface
         // Monday of last week
         $defaultStokStartDate = date('Y-m-d', strtotime($defaultStokEndDate . ' - 7 days'));
 
-        if (!$stokStartDate) {
-            $stokStartDate = $defaultStokStartDate;
-        } else {
-            $stokStartDate = $getNearestMonday($stokStartDate);
-        }
-
         if (!$stokEndDate) {
             $stokEndDate = $defaultStokEndDate;
         } else {
             $stokEndDate = $getNearestMonday($stokEndDate);
         }
 
-        // Ensure stok_start_date is before stok_end_date
+        if ($stokEndDate > $defaultStokEndDate) {
+            $stokEndDate = $defaultStokEndDate;
+        }
+
+        if (!$stokStartDate) {
+            $stokStartDate = date('Y-m-d', strtotime($stokEndDate . ' - 7 days'));
+        } else {
+            $stokStartDate = $getNearestMonday($stokStartDate);
+        }
+
+        // Ensure stok_start_date is strictly before stok_end_date
         if ($stokStartDate >= $stokEndDate) {
             $stokStartDate = date('Y-m-d', strtotime($stokEndDate . ' - 7 days'));
         }
@@ -278,7 +279,8 @@ class PerindagService implements InformationServiceInterface
 
             foreach ($activePasars as $id => $name) {
                 $marketCacheKey = "pasar_prices_{$pasarDate}_{$id}";
-                $marketData = Cache::remember($marketCacheKey, 86400, function () use ($pasarDate, $id) {
+                $marketTtl = ($pasarDate >= $latestDate) ? 300 : 86400;
+                $marketData = Cache::remember($marketCacheKey, $marketTtl, function () use ($pasarDate, $id) {
                     try {
                         $response = Http::withOptions(['verify' => false])
                             ->timeout(10)
