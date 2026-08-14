@@ -16,6 +16,8 @@ class KependudukanImportController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorizeAdmin($request);
+
         $logs = KependudukanImportLog::with('user:id,name,email')
             ->orderBy('tahun', 'desc')
             ->orderBy('semester', 'desc')
@@ -47,6 +49,8 @@ class KependudukanImportController extends Controller
      */
     public function import(Request $request)
     {
+        $this->authorizeAdmin($request);
+
         $request->validate([
             'tahun' => 'required|integer|min:2000|max:2099',
             'semester' => 'required|integer|in:1,2',
@@ -142,8 +146,10 @@ class KependudukanImportController extends Controller
     /**
      * Delete import log and snapshot records
      */
-    public function destroyLog(KependudukanImportLog $log)
+    public function destroyLog(Request $request, KependudukanImportLog $log)
     {
+        $this->authorizeAdmin($request);
+
         DB::beginTransaction();
         try {
             KependudukanRecord::where('import_log_id', $log->id)->delete();
@@ -154,6 +160,17 @@ class KependudukanImportController extends Controller
         } catch (\Throwable $e) {
             DB::rollBack();
             return redirect()->back()->withErrors(['file' => 'Gagal menghapus log import: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Authorize user for kependudukan admin
+     */
+    private function authorizeAdmin(Request $request): void
+    {
+        $user = $request->user();
+        if (!$user || (!$user->isSuperAdmin() && !$user->isAdminKependudukan())) {
+            abort(403, 'Anda tidak memiliki hak akses untuk mengelola data kependudukan.');
         }
     }
 
@@ -276,11 +293,80 @@ class KependudukanImportController extends Controller
     }
 
     /**
+     * Clean and parse numeric values correctly from Excel/CSV.
+     * Prevents decimal dots/commas from being concatenated into 10x larger numbers.
+     */
+    private function parseCleanNumeric($val): int|float|string
+    {
+        if (is_int($val)) {
+            return $val;
+        }
+        if (is_float($val)) {
+            return (round($val) == $val) ? (int)$val : $val;
+        }
+
+        $str = $this->cleanCellStr($val);
+        if ($str === '' || $str === '-' || $str === '–') {
+            return 0;
+        }
+
+        // Clean integer string e.g. "68752"
+        if (preg_match('/^-?\d+$/', $str)) {
+            return (int)$str;
+        }
+
+        // Indonesian format with thousand dots and decimal comma e.g. "2.430,50"
+        if (preg_match('/^-?\d{1,3}(\.\d{3})+,\d+$/', $str)) {
+            $str = str_replace('.', '', $str);
+            $str = str_replace(',', '.', $str);
+            $num = (float)$str;
+            return (round($num) == $num) ? (int)$num : $num;
+        }
+
+        // English format with thousand commas and decimal dot e.g. "2,430.50"
+        if (preg_match('/^-?\d{1,3}(,\d{3})+\.\d+$/', $str)) {
+            $str = str_replace(',', '', $str);
+            $num = (float)$str;
+            return (round($num) == $num) ? (int)$num : $num;
+        }
+
+        // Multiple thousand separators e.g. "1.234.567" or "1,234,567"
+        if (preg_match('/^-?\d{1,3}(\.\d{3})+$/', $str)) {
+            return (int)str_replace('.', '', $str);
+        }
+        if (preg_match('/^-?\d{1,3}(,\d{3})+$/', $str)) {
+            return (int)str_replace(',', '', $str);
+        }
+
+        // Single thousand separator with exactly 3 digits e.g. "68.752" or "2.430"
+        if (preg_match('/^-?\d{1,3}\.\d{3}$/', $str)) {
+            return (int)str_replace('.', '', $str);
+        }
+        if (preg_match('/^-?\d{1,3}\,\d{3}$/', $str)) {
+            return (int)str_replace(',', '', $str);
+        }
+
+        // Standard decimal float e.g. "2430.0", "2430.00", "2430,0", "2430,00"
+        if (preg_match('/^-?\d+[\.,]\d+$/', $str)) {
+            $normalized = str_replace(',', '.', $str);
+            $num = (float)$normalized;
+            return (round($num) == $num) ? (int)$num : $num;
+        }
+
+        if (is_numeric($str)) {
+            $num = (float)$str;
+            return (round($num) == $num) ? (int)$num : $num;
+        }
+
+        return $str;
+    }
+
+    /**
      * Helper to normalize village names and prevent duplicates caused by spacing or casing differences.
      */
     private function normalizeVillageName(string $name): string
     {
-        $clean = str_replace(["\xc2\xa0", "\xa0", "&nbsp;"], ' ', $name);
+        $clean = str_replace(["\xc2\xA0", "\xa0", "&nbsp;"], ' ', $name);
         $clean = preg_replace('/\s+/', ' ', trim($clean));
         $lower = strtolower($clean);
 
@@ -388,17 +474,23 @@ class KependudukanImportController extends Controller
                     if (isset($cell->is->t)) {
                         $cellVal = (string)$cell->is->t;
                     } elseif (isset($cell->is->r)) {
-                        $t = '';
+                        $text = '';
                         foreach ($cell->is->r as $r) {
-                            $t .= (string)($r->t ?? '');
+                            $text .= (string)($r->t ?? '');
                         }
-                        $cellVal = $t;
+                        $cellVal = $text;
                     }
                 } elseif (isset($cell->v)) {
-                    $cellVal = (string)$cell->v;
+                    $raw = (string)$cell->v;
+                    if (is_numeric($raw)) {
+                        $num = (float)$raw;
+                        $cellVal = (round($num) == $num) ? (int)$num : $num;
+                    } else {
+                        $cellVal = $raw;
+                    }
                 }
 
-                $rowData[$colIndex] = $this->cleanCellStr($cellVal);
+                $rowData[$colIndex] = is_numeric($cellVal) ? $cellVal : $this->cleanCellStr($cellVal);
             }
 
             if (!empty($rowData)) {
@@ -419,29 +511,37 @@ class KependudukanImportController extends Controller
      */
     private function processDemographicMatrix(array $matrix, string $categoryKey = ''): array
     {
-        // 1. Check if multi-header Dukcapil spreadsheet (contains "WILAYAH" or "KECAMATAN" or "DESA")
+        if (empty($matrix)) return [];
+
+        // 1. Check if single-header flat table vs multi-header Dukcapil spreadsheet
         $isMultiHeader = false;
         $topHeaderRow = null;
         $subHeaderRow = null;
         $startDataRowIndex = 0;
 
-        for ($i = 0; $i < min(15, count($matrix)); $i++) {
-            $rowStr = implode(" ", array_map('strval', $matrix[$i]));
-            $upper = strtoupper($rowStr);
-            if (str_contains($upper, "WILAYAH") || str_contains($upper, "KECAMATAN") || str_contains($upper, "DESA")) {
-                $isMultiHeader = true;
-                $topHeaderRow = $matrix[$i];
-                $subHeaderRow = $matrix[$i+1] ?? [];
-                
-                // Check if topHeaderRow itself contains column headers (like LAKI-LAKI, PEREMPUAN, etc.)
-                $topRowCombined = strtoupper(implode(" ", array_map('strval', $topHeaderRow)));
-                if (str_contains($topRowCombined, "LAKI") || str_contains($topRowCombined, "PEREMPUAN")) {
-                    $subHeaderRow = $topHeaderRow;
-                    $startDataRowIndex = $i + 1;
-                } else {
-                    $startDataRowIndex = $i + 2;
+        $firstRowCombined = strtoupper(implode(" ", array_map('strval', $matrix[0] ?? [])));
+        $isFlatHeader = (str_contains($firstRowCombined, "KECAMATAN") && (str_contains($firstRowCombined, "DESA") || str_contains($firstRowCombined, "KELURAHAN")));
+        
+        $secondRowCombined = strtoupper(implode(" ", array_map('strval', $matrix[1] ?? [])));
+        $secondRowIsSubHeader = (str_contains($secondRowCombined, "JUMLAH") || str_contains($secondRowCombined, "LAKI") || str_contains($secondRowCombined, "PEREMPUAN"));
+
+        if ($isFlatHeader && !$secondRowIsSubHeader) {
+            $isMultiHeader = false;
+        } else {
+            for ($i = 0; $i < min(15, count($matrix)); $i++) {
+                $rowStr = implode(" ", array_map('strval', $matrix[$i]));
+                $upper = strtoupper($rowStr);
+                if (str_contains($upper, "WILAYAH") || str_contains($upper, "KECAMATAN") || str_contains($upper, "DESA")) {
+                    $topHeaderRow = $matrix[$i];
+                    $subHeaderRow = $matrix[$i+1] ?? [];
+                    
+                    $subRowCombined = strtoupper(implode(" ", array_map('strval', $subHeaderRow)));
+                    if (str_contains($subRowCombined, "JUMLAH") || str_contains($subRowCombined, "LAKI") || str_contains($subRowCombined, "PEREMPUAN")) {
+                        $isMultiHeader = true;
+                        $startDataRowIndex = $i + 2;
+                        break;
+                    }
                 }
-                break;
             }
         }
 
@@ -524,8 +624,7 @@ class KependudukanImportController extends Controller
                     ];
 
                     foreach ($jumlahColumns as $cIdx => $categoryLabel) {
-                        $rawVal = str_replace([".", ","], "", $this->cleanCellStr($row[$cIdx] ?? "0"));
-                        $rowData[$categoryLabel] = is_numeric($rawVal) ? (int)$rawVal : $rawVal;
+                        $rowData[$categoryLabel] = $this->parseCleanNumeric($row[$cIdx] ?? 0);
                     }
                     $records[] = $rowData;
                 }
@@ -564,20 +663,20 @@ class KependudukanImportController extends Controller
 
                 $rowData = [];
                 foreach ($headers as $colIdx => $colName) {
-                    $val = $this->cleanCellStr($data[$colIdx] ?? '');
+                    $val = $data[$colIdx] ?? '';
                     if ($colIdx === $kecIdx) {
-                        $rowData['kecamatan'] = $val;
+                        $rowData['kecamatan'] = $this->cleanCellStr($val);
                     } elseif ($colIdx === $desaIdx) {
-                        $rowData['desa_kelurahan'] = $val;
+                        $rowData['desa_kelurahan'] = $this->cleanCellStr($val);
                     } else {
-                        $rawNum = str_replace([".", ","], "", $val);
-                        $rowData[$colName] = is_numeric($rawNum) ? (int)$rawNum : $val;
+                        $rowData[$colName] = $this->parseCleanNumeric($val);
                     }
                 }
                 if (!empty($rowData['kecamatan']) && !empty($rowData['desa_kelurahan'])) {
                     $rows[] = $rowData;
                 }
             }
+            return $rows;
         }
     }
 }
