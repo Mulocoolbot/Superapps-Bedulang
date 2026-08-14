@@ -36,8 +36,12 @@ class InformationServiceTest extends TestCase
         ];
 
         foreach ($publicSlugs as $slug) {
-            $this->get('/layanan/' . $slug)
-                ->assertOk();
+            $response = $this->get('/layanan/' . $slug);
+            if ($slug === 'inovasi-daerah') {
+                $response->assertRedirect();
+            } else {
+                $response->assertOk();
+            }
         }
     }
 
@@ -70,6 +74,8 @@ class InformationServiceTest extends TestCase
             $response = $this->actingAs($user)->get('/layanan/' . $slug);
             if ($slug === 'data-sektoral') {
                 $response->assertRedirect(route('data-sektoral.index'));
+            } elseif ($slug === 'inovasi-daerah') {
+                $response->assertRedirect();
             } else {
                 $response->assertOk();
             }
