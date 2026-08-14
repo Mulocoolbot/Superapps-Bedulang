@@ -30,10 +30,6 @@ class DashboardController extends Controller
             return redirect()->route('admin.koperasi.index');
         }
 
-        if ($user && !$user->isSuperAdmin() && $user->isAdminKependudukan()) {
-            return redirect()->route('admin.kependudukan.index');
-        }
-
         // Base scoped query matching admin domain logic
         $baseQuery = Complaint::query();
         if ($user && !$user->isSuperAdmin() && !empty($user->service_slug)) {

@@ -20,15 +20,11 @@ const isMaintenancePage = computed(() => {
     return page.component === 'Front/Maintenance' || (typeof window !== 'undefined' && window.location.pathname.startsWith('/app/maintenance'))
 })
 const authUser = computed(() => page.props.auth?.user)
-const isAdmin = computed(() => authUser.value && (['admin', 'super_admin', 'pimpinan', 'admin_koperasi', 'admin_kependudukan'].includes(authUser.value.role) || ['koperasi', 'kependudukan'].includes(authUser.value.service_slug) || !!authUser.value.service_slug || !!authUser.value.kdmp_role))
+const isAdmin = computed(() => authUser.value && (['admin', 'super_admin', 'pimpinan', 'admin_koperasi', 'admin_kependudukan'].includes(authUser.value.role) || ['koperasi', 'kependudukan'].includes(authUser.value.service_slug)))
 const adminPanelHref = computed(() => {
     if (!authUser.value) return '/admin'
     if (authUser.value.role === 'pimpinan') return '/pimpinan'
     if (authUser.value.role === 'admin_koperasi' || authUser.value.service_slug === 'koperasi') return '/admin/koperasi'
-    if (authUser.value.role === 'admin_kependudukan' || authUser.value.service_slug === 'kependudukan') return '/admin/kependudukan'
-    if (authUser.value.kdmp_role === 'admin_kdmp' || authUser.value.service_slug === 'kdmp') return '/admin/kdmp'
-    if (authUser.value.kdmp_role === 'admin_kecamatan') return '/admin/kdmp/kecamatan'
-    if (authUser.value.kdmp_role === 'admin_kmp') return '/admin/kdmp/kmp'
     return '/admin'
 })
 const userNotifications = computed(() => authUser.value?.notifications || [])
@@ -69,19 +65,18 @@ const navigateMenu = (e, targetHash) => {
 }
 
 const infoServices = [
-    { name: 'Pemerintahan', id: 'pemerintahan', allowGuest: true },
-    { name: 'Informasi Publik', id: 'informasi-publik', allowGuest: true },
     { name: 'Pendidikan', id: 'pendidikan', allowGuest: true },
-    { name: 'Kepegawaian', id: 'kepegawaian', allowGuest: true },
-    { name: 'Kependudukan', id: 'kependudukan', allowGuest: true },
     { name: 'Perindagkop-UKM', id: 'perindagkop-ukm', allowGuest: true },
     { name: 'Desa', id: 'desa', allowGuest: true },
+    { name: 'Pemerintahan', id: 'pemerintahan', allowGuest: true },
+    { name: 'Kependudukan', id: 'kependudukan', allowGuest: true },
+    { name: 'Kepegawaian', id: 'kepegawaian', allowGuest: true },
     { name: 'Makanan Bergizi Gratis', id: 'makanan-bergizi-gratis', allowGuest: true },
     { name: 'Kesehatan', id: 'kesehatan' },
+    { name: 'KDMP', id: 'kdmp' },
     { name: 'Sosial', id: 'sosial' },
     { name: 'Pariwisata', id: 'pariwisata' },
     { name: 'Data Sektoral', id: 'data-sektoral', url: '/data-sektoral' },
-    { name: 'KDMP', id: 'kdmp' },
 ]
 
 const regionalApps = [
@@ -103,7 +98,6 @@ const publicServices = [
     { name: 'Monitoring CCTV', url: '/cctv', allowGuest: true },
     { name: 'Pengaduan PPID', id: 'pengaduan-ppid', url: 'https://www.lapor.go.id/instansi/pemerintah-kabupaten-bangka-tengah', allowGuest: true },
     { name: 'Agenda', id: 'agenda', url: '/layanan/agenda', allowGuest: true },
-    { name: 'Event', id: 'event', url: '/layanan/event', allowGuest: true },
     { name: 'Perizinan Terpadu', id: 'perizinan-terpadu' },
     { name: 'Pelayanan Kesehatan', id: 'pelayanan-kesehatan' },
     { name: 'Administrasi Warga', id: 'administrasi-warga' },
@@ -117,7 +111,6 @@ const scrollToAndHighlight = (targetId) => {
             'layanan-monitoring-cctv',
             'layanan-pengaduan-ppid',
             'layanan-agenda',
-            'layanan-event',
             'layanan-perizinan-terpadu',
             'layanan-pelayanan-kesehatan',
             'layanan-administrasi-warga',
@@ -348,7 +341,7 @@ const toggleDarkMode = () => {
 
                 <!-- MENU -->
                 <div
-                    class="hidden md:flex items-center space-x-1.5 md:space-x-2 lg:space-x-3.5 xl:space-x-5 font-bold text-[10.5px] md:text-[11px] lg:text-[12.5px] xl:text-[13.5px] shrink-0"
+                    class="hidden md:flex items-center space-x-1.5 md:space-x-2.5 lg:space-x-4 xl:space-x-6 font-bold text-[11px] md:text-xs lg:text-[13px] xl:text-[14px] shrink-0"
                     :class="isMaintenancePage ? 'text-white' : 'text-blue-900/90 dark:text-blue-100'"
                 >
                     <a 
@@ -537,17 +530,6 @@ const toggleDarkMode = () => {
                         </div>
                     </div>
 
-                    <!-- INOVASI DAERAH -->
-                    <div class="relative py-2">
-                        <Link 
-                            href="/layanan/inovasi-daerah" 
-                            class="transition flex items-center gap-1 whitespace-nowrap"
-                            :class="isMaintenancePage ? 'hover:text-amber-400' : 'hover:text-blue-600'"
-                        >
-                            Inovasi Daerah
-                        </Link>
-                    </div>
-
                     <!-- APLIKASI DROPDOWN -->
                     <div class="relative group py-2">
                         <a 
@@ -603,7 +585,7 @@ const toggleDarkMode = () => {
                 </div>
 
             <!-- ACTION -->
-            <div class="hidden md:flex items-center gap-1 md:gap-1.5 lg:gap-3 xl:gap-4 shrink-0">
+            <div class="hidden md:flex items-center gap-1.5 md:gap-2.5 lg:gap-5 shrink-0">
 
                 <!-- Dark Mode Switch -->
                 <div class="flex items-center">
@@ -1077,16 +1059,6 @@ const toggleDarkMode = () => {
                         </Link>
                     </div>
                 </div>
-
-                <!-- Inovasi Daerah -->
-                <Link 
-                    href="/layanan/inovasi-daerah" 
-                    @click="open = false" 
-                    class="block transition font-medium py-1"
-                    :class="isMaintenancePage ? 'text-white hover:text-amber-400' : 'hover:text-blue-600'"
-                >
-                    Inovasi Daerah
-                </Link>
 
                 <!-- Aplikasi Collapsible -->
                 <div class="space-y-1">

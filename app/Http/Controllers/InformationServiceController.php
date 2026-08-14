@@ -44,8 +44,6 @@ class InformationServiceController extends Controller
             'makanan-bergizi-gratis',
             'pengaduan-ppid',
             'agenda',
-            'event',
-            'inovasi-daerah',
         ];
         if (!in_array($slug, $publicServices) && !auth()->check()) {
             return redirect()->guest(route('login'));

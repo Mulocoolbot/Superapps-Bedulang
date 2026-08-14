@@ -13,10 +13,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::where(function ($q) {
-                $q->whereIn('role', ['admin', 'super_admin', 'admin_koperasi', 'admin_kependudukan'])
-                  ->orWhere('role', 'like', 'admin%');
-            })
+        $users = User::whereIn('role', ['admin', 'super_admin', 'admin_koperasi'])
             ->whereNull('kdmp_role')
             ->where(function ($q) {
                 $q->whereNull('service_slug')
@@ -38,25 +35,12 @@ class UserController extends Controller
 
     public function store(StoreAdminRequest $request)
     {
-        $role = $request->role;
-        $serviceSlug = $request->service_slug ? trim($request->service_slug) : null;
-
-        if ($role === 'super_admin') {
-            $serviceSlug = null;
-        } elseif ($serviceSlug === 'kependudukan' || $role === 'admin_kependudukan') {
-            $role = 'admin_kependudukan';
-            $serviceSlug = 'kependudukan';
-        } elseif ($serviceSlug === 'koperasi' || $role === 'admin_koperasi') {
-            $role = 'admin_koperasi';
-            $serviceSlug = 'koperasi';
-        }
-
         User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $role,
-            'service_slug' => $serviceSlug,
+            'role' => $request->role,
+            'service_slug' => $request->service_slug ?? null,
         ]);
 
         return redirect()->route('admin.users')->with('success', 'Admin berhasil ditambahkan.');
@@ -71,24 +55,11 @@ class UserController extends Controller
 
     public function update(UpdateAdminRequest $request, User $user)
     {
-        $role = $request->role;
-        $serviceSlug = $request->service_slug ? trim($request->service_slug) : null;
-
-        if ($role === 'super_admin') {
-            $serviceSlug = null;
-        } elseif ($serviceSlug === 'kependudukan' || $role === 'admin_kependudukan') {
-            $role = 'admin_kependudukan';
-            $serviceSlug = 'kependudukan';
-        } elseif ($serviceSlug === 'koperasi' || $role === 'admin_koperasi') {
-            $role = 'admin_koperasi';
-            $serviceSlug = 'koperasi';
-        }
-
         $user->fill([
             'name' => $request->name,
             'email' => $request->email,
-            'role' => $role,
-            'service_slug' => $serviceSlug,
+            'role' => $request->role,
+            'service_slug' => $request->service_slug ?? null,
         ]);
 
         if ($request->filled('password')) {

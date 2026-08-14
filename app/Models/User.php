@@ -59,10 +59,7 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return $this->role === 'admin'
-            || str_starts_with($this->role ?? '', 'admin_')
-            || !empty($this->service_slug)
-            || !empty($this->kdmp_role);
+        return $this->role === 'admin';
     }
 
     public function isPimpinan(): bool
@@ -72,7 +69,7 @@ class User extends Authenticatable
 
     public function isPublik(): bool
     {
-        return $this->role === 'publik' || empty($this->role);
+        return $this->role === 'publik';
     }
 
     public function hasRole(string $role): bool
@@ -88,10 +85,6 @@ class User extends Authenticatable
 
         if ($this->isAdminKependudukan()) {
             return $serviceSlug === 'kependudukan' || empty($serviceSlug);
-        }
-
-        if ($this->isAdminKoperasi()) {
-            return $serviceSlug === 'koperasi' || empty($serviceSlug);
         }
 
         if (empty($this->service_slug)) {

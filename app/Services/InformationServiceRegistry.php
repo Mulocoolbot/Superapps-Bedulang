@@ -75,18 +75,6 @@ class InformationServiceRegistry
             'description' => 'Portal Layanan Agenda Kabupaten Bangka Tengah.',
             'filters' => [],
         ],
-        'event' => [
-            'name' => 'Event',
-            'icon' => '🎉',
-            'description' => 'Portal Layanan Informasi Event & Kegiatan Kabupaten Bangka Tengah.',
-            'filters' => [],
-        ],
-        'inovasi-daerah' => [
-            'name' => 'Inovasi Daerah',
-            'icon' => '💡',
-            'description' => 'Portal Inovasi Pelayanan Publik dan Daerah Pemerintah Kabupaten Bangka Tengah.',
-            'filters' => [],
-        ],
     ];
 
     public function has(string $slug): bool
