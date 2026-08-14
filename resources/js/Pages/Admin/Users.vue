@@ -49,28 +49,44 @@ const executeDelete = () => {
     })
 }
 
-const getRoleBadgeClass = (role) => {
-    switch (role) {
-        case 'super_admin':
-            return 'bg-purple-100 text-purple-700 border border-purple-200'
-        case 'admin_koperasi':
-            return 'bg-emerald-100 text-emerald-700 border border-emerald-200'
-        default:
-            return 'bg-blue-100 text-blue-700 border border-blue-200'
-    }
+const getRoleBadgeClass = (role, slug) => {
+    if (role === 'super_admin') return 'bg-purple-100 text-purple-700 border-purple-200'
+    if (role === 'admin_kependudukan' || slug === 'kependudukan') return 'bg-blue-100 text-blue-700 border-blue-200'
+    if (role === 'admin_koperasi' || slug === 'koperasi') return 'bg-emerald-100 text-emerald-700 border-emerald-200'
+    if (slug === 'kesehatan') return 'bg-rose-100 text-rose-700 border-rose-200'
+    if (slug === 'informasi-publik') return 'bg-cyan-100 text-cyan-700 border-cyan-200'
+    if (slug === 'pendidikan') return 'bg-amber-100 text-amber-700 border-amber-200'
+    if (slug === 'kdmp') return 'bg-teal-100 text-teal-700 border-teal-200'
+    return 'bg-slate-100 text-slate-700 border-slate-200'
 }
 
-const formatRoleLabel = (role) => {
-    switch (role) {
-        case 'super_admin':
-            return 'Super Admin'
-        case 'admin_koperasi':
-            return 'Admin Koperasi'
-        case 'admin':
-            return 'Admin Layanan'
-        default:
-            return role
-    }
+const formatRoleLabel = (role, slug) => {
+    if (role === 'super_admin') return 'Super Admin'
+    if (role === 'admin_kependudukan' || slug === 'kependudukan') return 'Admin Layanan Kependudukan'
+    if (role === 'admin_koperasi' || slug === 'koperasi') return 'Admin Layanan Koperasi'
+    if (slug === 'pendidikan') return 'Admin Layanan Pendidikan'
+    if (slug === 'perindagkop-ukm') return 'Admin Layanan Perindagkop-UKM'
+    if (slug === 'desa' || slug === 'pertanian') return 'Admin Layanan Pertanian & Desa'
+    if (slug === 'informasi-publik') return 'Admin Layanan Informasi Publik'
+    if (slug === 'pemerintahan') return 'Admin Layanan Pemerintahan'
+    if (slug === 'kepegawaian') return 'Admin Layanan Kepegawaian'
+    if (slug === 'makanan-bergizi-gratis') return 'Admin Layanan Makanan Bergizi Gratis'
+    if (slug === 'kesehatan') return 'Admin Layanan Kesehatan'
+    if (slug === 'sosial') return 'Admin Layanan Sosial'
+    if (slug === 'pariwisata') return 'Admin Layanan Pariwisata'
+    if (slug === 'data-sektoral') return 'Admin Layanan Data Sektoral'
+    if (slug === 'kdmp') return 'Admin Layanan KDMP'
+    if (slug === 'hukum') return 'Admin Layanan Hukum'
+    if (slug === 'cctv' || slug === 'monitoring-cctv') return 'Admin Layanan Monitoring CCTV'
+    if (slug === 'agenda') return 'Admin Layanan Agenda'
+    if (slug === 'event') return 'Admin Layanan Event'
+    if (slug === 'inovasi-daerah') return 'Admin Layanan Inovasi Daerah'
+    if (slug === 'perizinan-terpadu') return 'Admin Layanan Perizinan Terpadu'
+    if (slug === 'pelayanan-kesehatan') return 'Admin Layanan Pelayanan Kesehatan'
+    if (slug === 'pengaduan-ppid') return 'Admin Layanan Pengaduan PPID'
+    if (slug === 'administrasi-warga') return 'Admin Layanan Administrasi Warga'
+    if (role === 'admin') return slug ? `Admin Layanan ${slug}` : 'Admin Layanan'
+    return role
 }
 
 const formatDate = (dateStr) => {
@@ -157,8 +173,8 @@ const formatDate = (dateStr) => {
                                     <div class="text-xs text-gray-400 mt-0.5">{{ user.email }}</div>
                                 </td>
                                 <td class="p-4">
-                                    <span :class="['px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider', getRoleBadgeClass(user.role)]">
-                                        {{ formatRoleLabel(user.role) }}
+                                    <span :class="['px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider', getRoleBadgeClass(user.role, user.service_slug)]">
+                                        {{ formatRoleLabel(user.role, user.service_slug) }}
                                     </span>
                                 </td>
                                 <td class="p-4">
