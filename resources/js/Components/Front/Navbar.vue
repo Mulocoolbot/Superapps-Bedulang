@@ -539,13 +539,14 @@ const toggleDarkMode = () => {
 
                     <!-- INOVASI DAERAH -->
                     <div class="relative py-2">
-                        <Link 
-                            href="/layanan/inovasi-daerah" 
+                        <a 
+                            :href="'/app/launch?name=' + encodeURIComponent('Inovasi Daerah') + '&url=' + encodeURIComponent('https://bangkatengahkab.go.id/halaman/detail/inovasi-daerah')"
+                            target="_blank"
                             class="transition flex items-center gap-1 whitespace-nowrap"
                             :class="isMaintenancePage ? 'hover:text-amber-400' : 'hover:text-blue-600'"
                         >
                             Inovasi Daerah
-                        </Link>
+                        </a>
                     </div>
 
                     <!-- APLIKASI DROPDOWN -->
@@ -1079,14 +1080,15 @@ const toggleDarkMode = () => {
                 </div>
 
                 <!-- Inovasi Daerah -->
-                <Link 
-                    href="/layanan/inovasi-daerah" 
+                <a 
+                    :href="'/app/launch?name=' + encodeURIComponent('Inovasi Daerah') + '&url=' + encodeURIComponent('https://bangkatengahkab.go.id/halaman/detail/inovasi-daerah')"
+                    target="_blank"
                     @click="open = false" 
                     class="block transition font-medium py-1"
                     :class="isMaintenancePage ? 'text-white hover:text-amber-400' : 'hover:text-blue-600'"
                 >
                     Inovasi Daerah
-                </Link>
+                </a>
 
                 <!-- Aplikasi Collapsible -->
                 <div class="space-y-1">
