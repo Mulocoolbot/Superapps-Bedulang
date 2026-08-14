@@ -33,8 +33,6 @@ class InformationServiceTest extends TestCase
             'kepegawaian',
             'makanan-bergizi-gratis',
             'agenda',
-            'event',
-            'inovasi-daerah',
         ];
 
         foreach ($publicSlugs as $slug) {
@@ -70,8 +68,6 @@ class InformationServiceTest extends TestCase
             'pengaduan-ppid',
             'administrasi-warga',
             'agenda',
-            'event',
-            'inovasi-daerah',
         ];
 
         foreach ($slugs as $slug) {

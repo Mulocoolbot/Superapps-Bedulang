@@ -44,8 +44,6 @@ class InformationServiceController extends Controller
             'makanan-bergizi-gratis',
             'pengaduan-ppid',
             'agenda',
-            'event',
-            'inovasi-daerah',
         ];
 
         if ($slug === 'inovasi-daerah') {

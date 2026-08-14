@@ -37,10 +37,6 @@ const isAdminKoperasi = computed(() => {
     const user = authUser.value
     return user && (user.role === 'admin_koperasi' || user.service_slug === 'koperasi')
 })
-const isAdminKependudukan = computed(() => {
-    const user = authUser.value
-    return user && (user.role === 'admin_kependudukan' || user.service_slug === 'kependudukan')
-})
 const notifications = computed(() => authUser.value?.notifications || [])
 const unreadCount = computed(() => authUser.value?.unread_notifications_count || 0)
 
@@ -154,10 +150,10 @@ onUnmounted(() => {
 
                 <nav class="p-4 space-y-2">
                     <Link
-                        v-if="!isAdminKoperasi && !isAdminKependudukan && (!$page.props.auth?.user?.kdmp_role || !['admin_kecamatan', 'admin_kmp'].includes($page.props.auth.user.kdmp_role))"
-                        :href="$page.props.auth?.user?.role === 'pimpinan' ? '/pimpinan' : '/admin'"
+                        v-if="!isAdminKoperasi && (!$page.props.auth?.user?.kdmp_role || !['admin_kecamatan', 'admin_kmp'].includes($page.props.auth.user.kdmp_role))"
+                        :href="$page.props.auth?.user?.role === 'pimpinan' ? '/pimpinan' : (($page.props.auth?.user?.role === 'admin_koperasi' || $page.props.auth?.user?.service_slug === 'koperasi') ? '/admin/koperasi' : '/admin')"
                         class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition"
-                        :class="(page.url === '/admin' || page.url === '/pimpinan') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'"
+                        :class="(page.url === '/admin' || page.url === '/pimpinan' || page.url === '/admin/koperasi') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
@@ -166,7 +162,7 @@ onUnmounted(() => {
                     </Link>
 
                     <Link
-                        v-if="!$page.props.auth?.user?.kdmp_role || !['admin_kecamatan', 'admin_kmp'].includes($page.props.auth.user.kdmp_role)"
+                        v-if="!isAdminKoperasi && (!$page.props.auth?.user?.kdmp_role || !['admin_kecamatan', 'admin_kmp'].includes($page.props.auth.user.kdmp_role))"
                         href="/admin/cctv"
                         class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition"
                         :class="page.url.startsWith('/admin/cctv') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'"
@@ -178,7 +174,7 @@ onUnmounted(() => {
                     </Link>
 
                     <Link
-                        v-if="!$page.props.auth?.user?.kdmp_role || !['admin_kecamatan', 'admin_kmp'].includes($page.props.auth.user.kdmp_role)"
+                        v-if="!isAdminKoperasi && (!$page.props.auth?.user?.kdmp_role || !['admin_kecamatan', 'admin_kmp'].includes($page.props.auth.user.kdmp_role))"
                         href="/admin/complaints"
                         class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition"
                         :class="page.url.startsWith('/admin/complaints') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'"

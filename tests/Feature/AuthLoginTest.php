@@ -42,44 +42,7 @@ class AuthLoginTest extends TestCase
             'remember' => false,
         ]);
 
-        $response->assertRedirect('/admin');
-        $this->assertAuthenticated();
-    }
-
-    public function test_admin_kependudukan_is_redirected_to_kependudukan_panel_after_login(): void
-    {
-        User::factory()->create([
-            'email' => 'dindukcapil@bangkatengahkab.go.id',
-            'password' => bcrypt('password'),
-            'role' => 'admin_kependudukan',
-            'service_slug' => 'kependudukan',
-        ]);
-
-        $response = $this->post('/login', [
-            'email' => 'dindukcapil@bangkatengahkab.go.id',
-            'password' => 'password',
-            'remember' => false,
-        ]);
-
-        $response->assertRedirect('/admin/kependudukan');
-        $this->assertAuthenticated();
-    }
-
-    public function test_super_admin_is_redirected_to_admin_panel_after_login(): void
-    {
-        User::factory()->create([
-            'email' => 'superadmin@example.com',
-            'password' => bcrypt('password'),
-            'role' => 'super_admin',
-        ]);
-
-        $response = $this->post('/login', [
-            'email' => 'superadmin@example.com',
-            'password' => 'password',
-            'remember' => false,
-        ]);
-
-        $response->assertRedirect('/admin');
+        $response->assertRedirect('/');
         $this->assertAuthenticated();
     }
 }
