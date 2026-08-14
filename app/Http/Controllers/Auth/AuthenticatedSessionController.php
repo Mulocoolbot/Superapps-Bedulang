@@ -33,6 +33,34 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $user = Auth::user();
+        if ($user) {
+            if ($user->isSuperAdmin()) {
+                return redirect()->intended('/admin');
+            }
+            if ($user->isPimpinan()) {
+                return redirect()->intended('/pimpinan');
+            }
+            if ($user->isAdminKependudukan()) {
+                return redirect()->intended('/admin/kependudukan');
+            }
+            if ($user->isAdminKoperasi()) {
+                return redirect()->intended('/admin/koperasi');
+            }
+            if ($user->isKdmpKecamatanAdmin()) {
+                return redirect()->intended('/admin/kdmp/kecamatan');
+            }
+            if ($user->isKdmpKmpAdmin()) {
+                return redirect()->intended('/admin/kdmp/kmp');
+            }
+            if ($user->isKdmpAdmin()) {
+                return redirect()->intended('/admin/kdmp');
+            }
+            if ($user->isAdmin()) {
+                return redirect()->intended('/admin');
+            }
+        }
+
         return redirect()->intended('/');
     }
 

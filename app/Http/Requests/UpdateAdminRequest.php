@@ -25,7 +25,7 @@ class UpdateAdminRequest extends FormRequest
                 Rule::unique('users', 'email')->ignore($userId),
             ],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', Rule::in(['admin', 'super_admin', 'admin_koperasi'])],
+            'role' => ['required', Rule::in(['admin', 'super_admin', 'admin_koperasi', 'admin_kependudukan'])],
             'service_slug' => ['nullable', 'string', 'max:255'],
         ];
     }

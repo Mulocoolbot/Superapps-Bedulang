@@ -9,10 +9,34 @@ const activeTab = ref('info')
 
 const apps = [
     {
+        name: 'PEMERINTAHAN',
+        slug: 'pemerintahan',
+        logo: '/services/pemerintahan.svg',
+        allowGuest: true
+    },
+    {
+        name: 'Informasi Publik',
+        slug: 'informasi-publik',
+        logo: '/services/informasi publik.svg',
+        allowGuest: true
+    },
+    {
         name: 'PENDIDIKAN',
         slug: 'pendidikan',
         logo: '/services/pendidikan.svg',
         allowGuest: true,
+    },
+    {
+        name: 'KEPEGAWAIAN',
+        slug: 'kepegawaian',
+        logo: '/services/kepegawaian.svg',
+        allowGuest: true
+    },
+    {
+        name: 'KEPENDUDUKAN',
+        slug: 'kependudukan',
+        logo: '/services/kependudukan.svg',
+        allowGuest: true
     },
     {
         name: 'PERINDAGKOP-UKM',
@@ -24,30 +48,6 @@ const apps = [
         name: 'DESA.Id',
         slug: 'desa',
         logo: '/services/desa.id.svg',
-        allowGuest: true
-    },
-    {
-        name: 'Informasi Publik',
-        slug: 'informasi-publik',
-        logo: '/services/informasi publik.svg',
-        allowGuest: true
-    },
-    {
-        name: 'PEMERINTAHAN',
-        slug: 'pemerintahan',
-        logo: '/services/pemerintahan.svg',
-        allowGuest: true
-    },
-    {
-        name: 'KEPENDUDUKAN',
-        slug: 'kependudukan',
-        logo: '/services/kependudukan.svg',
-        allowGuest: true
-    },
-    {
-        name: 'KEPEGAWAIAN',
-        slug: 'kepegawaian',
-        logo: '/services/kepegawaian.svg',
         allowGuest: true
     },
     {
@@ -104,6 +104,13 @@ const publicServices = [
         slug: 'agenda',
         logo: '/services/agenda.svg',
         url: '/layanan/agenda',
+        allowGuest: true
+    },
+    {
+        name: 'EVENT',
+        slug: 'event',
+        logo: '/services/event.svg',
+        url: '/layanan/event',
         allowGuest: true
     },
     {
