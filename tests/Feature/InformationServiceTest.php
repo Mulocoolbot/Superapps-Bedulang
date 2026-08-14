@@ -33,11 +33,17 @@ class InformationServiceTest extends TestCase
             'kepegawaian',
             'makanan-bergizi-gratis',
             'agenda',
+            'event',
+            'inovasi-daerah',
         ];
 
         foreach ($publicSlugs as $slug) {
-            $this->get('/layanan/' . $slug)
-                ->assertOk();
+            $response = $this->get('/layanan/' . $slug);
+            if ($slug === 'inovasi-daerah') {
+                $response->assertRedirect();
+            } else {
+                $response->assertOk();
+            }
         }
     }
 
@@ -64,12 +70,16 @@ class InformationServiceTest extends TestCase
             'pengaduan-ppid',
             'administrasi-warga',
             'agenda',
+            'event',
+            'inovasi-daerah',
         ];
 
         foreach ($slugs as $slug) {
             $response = $this->actingAs($user)->get('/layanan/' . $slug);
             if ($slug === 'data-sektoral') {
                 $response->assertRedirect(route('data-sektoral.index'));
+            } elseif ($slug === 'inovasi-daerah') {
+                $response->assertRedirect();
             } else {
                 $response->assertOk();
             }

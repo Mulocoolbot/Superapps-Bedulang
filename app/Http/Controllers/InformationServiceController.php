@@ -44,7 +44,17 @@ class InformationServiceController extends Controller
             'makanan-bergizi-gratis',
             'pengaduan-ppid',
             'agenda',
+            'event',
+            'inovasi-daerah',
         ];
+
+        if ($slug === 'inovasi-daerah') {
+            return redirect()->route('app.launch', [
+                'name' => 'Inovasi Daerah',
+                'url' => 'https://bangkatengahkab.go.id/halaman/detail/inovasi-daerah',
+            ]);
+        }
+
         if (!in_array($slug, $publicServices) && !auth()->check()) {
             return redirect()->guest(route('login'));
         }
