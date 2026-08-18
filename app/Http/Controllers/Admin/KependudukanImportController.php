@@ -25,14 +25,14 @@ class KependudukanImportController extends Controller
             ->get();
 
         $categories = [
-            'kepala_keluarga' => '1. Kepala Keluarga',
-            'agama' => '2. Agama',
-            'golongan_darah' => '3. Golongan Darah',
-            'jenis_kelamin' => '4. Jenis Kelamin',
-            'kelompok_umur' => '5. Kelompok Umur',
-            'pekerjaan' => '6. Pekerjaan',
-            'pendidikan' => '7. Pendidikan',
-            'status_perkawinan' => '8. Status Perkawinan',
+            'status_perkawinan' => '1. Status Perkawinan',
+            'pendidikan' => '2. Pendidikan',
+            'pekerjaan' => '3. Pekerjaan',
+            'kelompok_umur' => '4. Kelompok Umur',
+            'jenis_kelamin' => '5. Jenis Kelamin',
+            'golongan_darah' => '6. Golongan Darah',
+            'agama' => '7. Agama',
+            'kepala_keluarga' => '8. Kepala Keluarga',
         ];
 
         $totalRecords = KependudukanRecord::count();
@@ -136,7 +136,7 @@ class KependudukanImportController extends Controller
 
             DB::commit();
 
-            return redirect()->route('admin.kependudukan.index')->with('success', "Berhasil mengimpor data {$categoryName} ({$tahun} Semester {$semester}) sebanyak " . count($parsedRows) . " data Desa/Kelurahan.");
+            return redirect()->back(fallback: route('admin.kependudukan.index'))->with('success', "Berhasil mengimpor data {$categoryName} ({$tahun} Semester {$semester}) sebanyak " . count($parsedRows) . " data Desa/Kelurahan.");
         } catch (\Throwable $e) {
             DB::rollBack();
             return back()->withErrors(['file' => 'Gagal mengimpor data: ' . $e->getMessage()]);
@@ -169,7 +169,22 @@ class KependudukanImportController extends Controller
     private function authorizeAdmin(Request $request): void
     {
         $user = $request->user();
-        if (!$user || (!$user->isSuperAdmin() && !$user->isAdminKependudukan())) {
+        if (!$user) {
+            abort(403, 'Anda tidak memiliki hak akses untuk mengelola data kependudukan.');
+        }
+
+        $allowedEmails = [
+            'adminbedulang@gmail.com',
+            'bedulangsuperadmin@gmail.com',
+            'dindukcapil@bangkatengahkab.go.id',
+            'adminkependudukan@gmail.com',
+        ];
+
+        $isAuthorized = $user->isSuperAdmin()
+            || $user->isAdminKependudukan()
+            || in_array(strtolower($user->email ?? ''), $allowedEmails, true);
+
+        if (!$isAuthorized) {
             abort(403, 'Anda tidak memiliki hak akses untuk mengelola data kependudukan.');
         }
     }
@@ -656,16 +671,29 @@ class KependudukanImportController extends Controller
 
             if ($kecIdx === false || $desaIdx === false) return [];
 
+            // Grand-total row aliases to skip (kabupaten-level rekapitulasi rows)
+            $kabupatenAliases = [
+                'bangka tengah', 'kabupaten bangka tengah',
+                'kab. bangka tengah', 'kab bangka tengah',
+                'total', 'jumlah', 'jumlah total',
+            ];
+
             $rows = [];
             for ($i = 1; $i < count($matrix); $i++) {
                 $data = $matrix[$i];
                 if (count($data) <= max($kecIdx, $desaIdx)) continue;
 
+                $rawKec = $this->cleanCellStr($data[$kecIdx] ?? '');
+
+                // Skip kabupaten-level total/rekapitulasi rows
+                if (in_array(strtolower($rawKec), $kabupatenAliases, true)) continue;
+                if (str_contains(strtoupper($rawKec), 'BANGKA TENGAH') || str_contains(strtoupper($rawKec), 'KABUPATEN')) continue;
+
                 $rowData = [];
                 foreach ($headers as $colIdx => $colName) {
                     $val = $data[$colIdx] ?? '';
                     if ($colIdx === $kecIdx) {
-                        $rowData['kecamatan'] = $this->cleanCellStr($val);
+                        $rowData['kecamatan'] = $rawKec;
                     } elseif ($colIdx === $desaIdx) {
                         $rowData['desa_kelurahan'] = $this->cleanCellStr($val);
                     } else {

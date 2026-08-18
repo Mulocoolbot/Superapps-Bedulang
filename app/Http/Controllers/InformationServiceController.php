@@ -37,7 +37,6 @@ class InformationServiceController extends Controller
             'pariwisata',
             'informasi-publik',
             'perindagkop-ukm',
-            'kependudukan',
             'pendidikan',
             'pemerintahan',
             'kepegawaian',

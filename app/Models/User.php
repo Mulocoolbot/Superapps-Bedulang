@@ -128,7 +128,9 @@ class User extends Authenticatable
 
     public function isAdminKependudukan(): bool
     {
-        return $this->role === 'admin_kependudukan' || ($this->role === 'admin' && $this->service_slug === 'kependudukan');
+        return $this->role === 'admin_kependudukan' 
+            || ($this->role === 'admin' && $this->service_slug === 'kependudukan')
+            || $this->email === 'dindukcapil@bangkatengahkab.go.id';
     }
 
     public function kmp()

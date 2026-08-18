@@ -97,9 +97,28 @@ class KependudukanService implements InformationServiceInterface
 
         $districtMap = [];
 
+        // Names that identify a kabupaten-level total/rekapitulasi row (not a real kecamatan).
+        // These rows exist in some Excel formats as a grand-total footer and must be skipped.
+        $kabupatenAliases = [
+            'bangka tengah',
+            'kabupaten bangka tengah',
+            'kab. bangka tengah',
+            'kab bangka tengah',
+            'bangka tengah (kab)',
+            'total',
+            'jumlah',
+            'jumlah total',
+        ];
+
         // Dynamically build Kecamatan and Desa/Kelurahan structure from DB records
         foreach ($records as $record) {
             $kecName = $this->normalizeDistrictName($record->kecamatan);
+
+            // Skip grand-total / kabupaten-level rows — they are not a real kecamatan
+            if (in_array(strtolower(trim($kecName)), $kabupatenAliases, true)) {
+                continue;
+            }
+
             $desaName = $this->normalizeVillageName($record->desa_kelurahan);
             $categoryKey = $record->category_key;
             $payload = is_array($record->payload) ? $record->payload : (json_decode($record->payload, true) ?? []);
@@ -173,15 +192,18 @@ class KependudukanService implements InformationServiceInterface
         if ($categoryKey === 'kepala_keluarga') {
             $kk = 0;
             $anggota = 0;
+            if (!isset($village['kepala_keluarga']) || !is_array($village['kepala_keluarga'])) {
+                $village['kepala_keluarga'] = [];
+            }
             foreach ($payload as $k => $v) {
                 $cleanK = strtolower(str_replace(['_', ' '], '', (string)$k));
-                // Match "anggota" or "jiwa" for anggota count
                 if (str_contains($cleanK, 'anggota') || str_contains($cleanK, 'jiwa')) {
                     $anggota += (int)$v;
                 } else {
-                    // Everything else (KEPALA KELUARGA, JUMLAH, KK, etc.) is the KK count
                     $kk += (int)$v;
                 }
+                $label = $this->formatDynamicLabel((string)$k, $categoryKey);
+                $village['kepala_keluarga'][$label] = ($village['kepala_keluarga'][$label] ?? 0) + (int)$v;
             }
             $village['kk_stat'] = ['kk' => $kk, 'anggota' => $anggota];
             return;

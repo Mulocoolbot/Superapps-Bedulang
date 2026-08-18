@@ -30,6 +30,26 @@ class DatabaseSeeder extends Seeder
         );
 
         User::updateOrCreate(
+            ['email' => 'adminbedulang@gmail.com'],
+            [
+                'name' => 'Admin Website Bedulang',
+                'password' => Hash::make('superadmin12345678'),
+                'role' => 'super_admin',
+                'service_slug' => null,
+            ]
+        );
+
+        User::updateOrCreate(
+            ['email' => 'dindukcapil@bangkatengahkab.go.id'],
+            [
+                'name' => 'Admin Dindukcapil',
+                'password' => Hash::make('Dindukcapil_2026'),
+                'role' => 'admin_kependudukan',
+                'service_slug' => 'kependudukan',
+            ]
+        );
+
+        User::updateOrCreate(
             ['email' => 'adminkependudukan@gmail.com'],
             [
                 'name' => 'Admin Kependudukan',

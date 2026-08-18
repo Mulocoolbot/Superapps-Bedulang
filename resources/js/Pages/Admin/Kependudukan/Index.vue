@@ -24,7 +24,7 @@ const currentYear = new Date().getFullYear()
 
 // Form Import per Semester & Category
 const form = useForm({
-    category_key: 'kepala_keluarga',
+    category_key: 'status_perkawinan',
     tahun: currentYear,
     semester: 1,
     file: null,
