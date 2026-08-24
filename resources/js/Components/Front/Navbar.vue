@@ -79,7 +79,7 @@ const infoServices = [
     { name: 'Makanan Bergizi Gratis', id: 'makanan-bergizi-gratis', allowGuest: true },
     { name: 'Kesehatan', id: 'kesehatan' },
     { name: 'Sosial', id: 'sosial' },
-    { name: 'Pariwisata', id: 'pariwisata' },
+    { name: 'Pariwisata', id: 'pariwisata', allowGuest: true },
     { name: 'Data Sektoral', id: 'data-sektoral', url: '/data-sektoral' },
     { name: 'KDMP', id: 'kdmp' },
 ]

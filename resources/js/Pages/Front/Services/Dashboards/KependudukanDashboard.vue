@@ -21,14 +21,14 @@ const isAuthorizedAdmin = computed(() => {
 })
 
 const tabs = [
-    { key: 'status_perkawinan', label: 'Status Perkawinan', icon: '💍', desc: 'Status perkawinan penduduk' },
-    { key: 'pendidikan',        label: 'Pendidikan',        icon: '🎓', desc: 'Tingkat pendidikan terakhir' },
-    { key: 'pekerjaan',         label: 'Pekerjaan',         icon: '💼', desc: 'Bidang pekerjaan / mata pencaharian' },
-    { key: 'kelompok_umur',     label: 'Kelompok Umur',     icon: '🎂', desc: 'Distribusi kelompok rentang usia' },
-    { key: 'jenis_kelamin',     label: 'Jenis Kelamin',     icon: '👥', desc: 'Rasio jenis kelamin' },
-    { key: 'golongan_darah',    label: 'Golongan Darah',    icon: '🩸', desc: 'Sebaran golongan darah' },
-    { key: 'agama',             label: 'Agama',             icon: '🕌', desc: 'Distribusi penganut agama & kepercayaan' },
-    { key: 'kepala_keluarga',   label: 'Kepala Keluarga',   icon: '🏠', desc: 'Statistik Kepala Keluarga & Anggota KK' },
+    { key: 'status_perkawinan', label: 'Status Perkawinan', desc: 'Status perkawinan penduduk' },
+    { key: 'pendidikan',        label: 'Pendidikan',        desc: 'Tingkat pendidikan terakhir' },
+    { key: 'pekerjaan',         label: 'Pekerjaan',         desc: 'Bidang pekerjaan / mata pencaharian' },
+    { key: 'kelompok_umur',     label: 'Kelompok Umur',     desc: 'Distribusi kelompok rentang usia' },
+    { key: 'jenis_kelamin',     label: 'Jenis Kelamin',     desc: 'Rasio jenis kelamin' },
+    { key: 'golongan_darah',    label: 'Golongan Darah',    desc: 'Sebaran golongan darah' },
+    { key: 'agama',             label: 'Agama',             desc: 'Distribusi penganut agama & kepercayaan' },
+    { key: 'kepala_keluarga',   label: 'Kepala Keluarga',   desc: 'Statistik Kepala Keluarga & Anggota KK' },
 ]
 
 const activeTab    = ref('status_perkawinan')

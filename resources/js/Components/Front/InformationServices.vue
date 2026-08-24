@@ -70,6 +70,7 @@ const apps = [
         name: 'PARIWISATA',
         slug: 'pariwisata',
         logo: '/services/pariwisata.svg',
+        allowGuest: true
     },
     {
         name: 'DATA SEKTORAL',
