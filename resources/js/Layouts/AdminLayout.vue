@@ -230,9 +230,9 @@ onUnmounted(() => {
                         <span>Kelola KDMP</span>
                     </Link>
 
-                    <!-- Panel Admin Koperasi (Hanya muncul jika admin koperasi / superadmin) -->
+                    <!-- Panel Admin Koperasi (Hanya muncul jika admin / admin koperasi / superadmin) -->
                     <Link
-                        v-if="$page.props.auth?.user && ($page.props.auth.user.role === 'admin_koperasi' || $page.props.auth.user.service_slug === 'koperasi' || $page.props.auth.user.role === 'super_admin')"
+                        v-if="$page.props.auth?.user && ($page.props.auth.user.role === 'admin' || $page.props.auth.user.role === 'admin_koperasi' || $page.props.auth.user.service_slug === 'koperasi' || $page.props.auth.user.role === 'super_admin')"
                         href="/admin/koperasi"
                         class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition"
                         :class="page.url.startsWith('/admin/koperasi') ? 'bg-blue-600 text-white font-semibold shadow-sm' : 'text-gray-700 hover:bg-blue-50 hover:text-blue-600'"

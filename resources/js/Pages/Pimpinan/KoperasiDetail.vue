@@ -50,23 +50,80 @@ watch(selectedKecamatanLine, () => {
     selectedDesaLine.value = 'Semua'
 })
 
-// Calculate Total Count of cooperatives PER SNAPSHOT YEAR for Line Graph
+// Helper to extract 4-digit year from tanggal_badan_hukum (e.g. "12 November 1996" -> 1996)
+const getKoperasiBHYear = (item) => {
+    if (item.tanggal_badan_hukum) {
+        const match = String(item.tanggal_badan_hukum).match(/\b(19\d{2}|20\d{2})\b/)
+        if (match) {
+            return Number(match[1])
+        }
+    }
+    return item.tahun ? Number(item.tahun) : null
+}
+
+// Compute 5-year step interval years list for clean, uncluttered growth chart (e.g. 1990, 1995, 2000, 2005, 2010, 2015, 2020, 2025)
+const bhYearsList = computed(() => {
+    const dataset = props.koperasis.filter(item => item.tahun === Number(props.latestYear))
+    const rawYears = []
+
+    dataset.forEach(item => {
+        const y = getKoperasiBHYear(item)
+        if (y) rawYears.push(y)
+    })
+
+    if (rawYears.length === 0) {
+        return props.yearsList
+    }
+
+    const minYr = Math.min(...rawYears)
+    const maxYr = Math.max(...rawYears)
+
+    // Start from 5-year mark (e.g. 1990)
+    const startYr = Math.floor(minYr / 5) * 5
+
+    const intervalYears = []
+    for (let y = startYr; y <= maxYr; y += 5) {
+        intervalYears.push(y)
+    }
+
+    if (intervalYears[intervalYears.length - 1] < maxYr) {
+        intervalYears.push(maxYr)
+    }
+
+    return intervalYears
+})
+
+// Calculate cumulative total count of cooperatives formed up to each 5-year interval point
 const lineGraphPoints = computed(() => {
-    if (props.yearsList.length === 0) return []
+    const years = bhYearsList.value
+    if (years.length === 0) return []
+
+    const dataset = props.koperasis.filter(item => item.tahun === Number(props.latestYear))
+
+    const filteredDataset = dataset.filter(item => {
+        const matchKec = selectedKecamatanLine.value === 'Semua' || item.kecamatan === selectedKecamatanLine.value
+        const matchDesa = selectedDesaLine.value === 'Semua' || item.desa_kelurahan === selectedDesaLine.value
+        return matchKec && matchDesa
+    })
 
     const points = []
-    props.yearsList.forEach(yr => {
-        const inYear = props.koperasis.filter(item => item.tahun === yr)
 
-        const filtered = inYear.filter(item => {
-            const matchKec = selectedKecamatanLine.value === 'Semua' || item.kecamatan === selectedKecamatanLine.value
-            const matchDesa = selectedDesaLine.value === 'Semua' || item.desa_kelurahan === selectedDesaLine.value
-            return matchKec && matchDesa
-        })
+    years.forEach((yr, index) => {
+        const countUpToYr = filteredDataset.filter(item => {
+            const bhYr = getKoperasiBHYear(item)
+            return bhYr !== null && bhYr <= yr
+        }).length
+
+        const prevYr = index > 0 ? years[index - 1] : 0
+        const countInInterval = filteredDataset.filter(item => {
+            const bhYr = getKoperasiBHYear(item)
+            return bhYr !== null && bhYr <= yr && bhYr > prevYr
+        }).length
 
         points.push({
             tahun: yr,
-            jumlah: filtered.length,
+            jumlah: countUpToYr,
+            terbentukPeriode: countInInterval,
         })
     })
 
@@ -679,20 +736,21 @@ watch([selectedKecamatanTable, selectedDesaTable, selectedYearTable], () => {
                     </div>
                 </div>
 
-                <!-- Table Content (3 Main Variables: Nama Koperasi, Desa/Kelurahan, Kecamatan) -->
+                <!-- Table Content (4 Main Variables: Nama Koperasi, Tanggal Badan Hukum, Desa/Kelurahan, Kecamatan) -->
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse text-xs">
                         <thead>
                             <tr class="border-b bg-gray-50 text-gray-500 font-bold uppercase tracking-wider">
                                 <th class="py-3.5 px-4 w-16">No</th>
                                 <th class="py-3.5 px-4">Nama Koperasi</th>
+                                <th class="py-3.5 px-4">Tanggal Badan Hukum</th>
                                 <th class="py-3.5 px-4">Desa / Kelurahan</th>
                                 <th class="py-3.5 px-4">Kecamatan</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">
                             <tr v-if="filteredKoperasisTable.length === 0">
-                                <td colspan="4" class="py-8 text-center text-gray-400">
+                                <td colspan="5" class="py-8 text-center text-gray-400">
                                     Tidak ada data koperasi sesuai kriteria filter.
                                 </td>
                             </tr>
@@ -703,6 +761,9 @@ watch([selectedKecamatanTable, selectedDesaTable, selectedYearTable], () => {
                                 </td>
                                 <td class="py-3.5 px-4 font-extrabold text-gray-900">
                                     {{ item.nama_koperasi }}
+                                </td>
+                                <td class="py-3.5 px-4 text-gray-600 font-medium whitespace-nowrap">
+                                    {{ item.tanggal_badan_hukum || '-' }}
                                 </td>
                                 <td class="py-3.5 px-4 text-gray-700 font-medium">
                                     {{ item.desa_kelurahan }}

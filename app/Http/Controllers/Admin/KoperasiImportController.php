@@ -88,6 +88,7 @@ class KoperasiImportController extends Controller
             foreach ($rows as $row) {
                 Koperasi::create([
                     'nama_koperasi' => trim($row['nama_koperasi']),
+                    'tanggal_badan_hukum' => !empty($row['tanggal_badan_hukum']) ? trim($row['tanggal_badan_hukum']) : null,
                     'kecamatan' => trim($row['kecamatan']),
                     'desa_kelurahan' => trim($row['desa_kelurahan']),
                     'tahun' => $tahun,
@@ -109,6 +110,7 @@ class KoperasiImportController extends Controller
     {
         $request->validate([
             'nama_koperasi' => 'required|string|max:255',
+            'tanggal_badan_hukum' => 'nullable|string|max:255',
             'kecamatan' => 'required|string|max:255',
             'desa_kelurahan' => 'required|string|max:255',
             'tahun' => 'required|integer|min:2000|max:2099',
@@ -121,6 +123,7 @@ class KoperasiImportController extends Controller
 
         $koperasi->update([
             'nama_koperasi' => trim($request->nama_koperasi),
+            'tanggal_badan_hukum' => $request->filled('tanggal_badan_hukum') ? trim($request->tanggal_badan_hukum) : null,
             'kecamatan' => trim($request->kecamatan),
             'desa_kelurahan' => trim($request->desa_kelurahan),
             'tahun' => (int) $request->tahun,
@@ -153,13 +156,13 @@ class KoperasiImportController extends Controller
 
     public function downloadTemplate(Request $request)
     {
-        $csvHeader = ["KOPERASI", "NO BADAN HUKUM", "TANGGAL BADAN HUKUM", "ALAMAT", "DESA/KELURAHAN", "KECAMATAN", "KABUPATEN"];
+        $csvHeader = ["KOPERASI", "TANGGAL BADAN HUKUM", "DESA/KELURAHAN", "KECAMATAN"];
         $sampleRows = [
-            ["Koperasi Unit Desa Koba", "00597/BH/PAD/KWK.6/XI/1996", "12 November 1996", "Jl. Raya Arung Dalam", "ARUNG DALAM", "KOBA", "KAB. BANGKA TENGAH"],
-            ["Koperasi Produsen Madani", "110/BH/VIII.5/2013", "26 November 2013", "Jl. Raya Koba", "ARUNG DALAM", "KOBA", "KAB. BANGKA TENGAH"],
-            ["Koperasi Simpan Pinjam Sehati", "111/BH/VIII.5/2013", "27 November 2013", "Jl. Raya Arung Dalam", "ARUNG DALAM", "KOBA", "KAB. BANGKA TENGAH"],
-            ["Koperasi Serba Usaha Putra Mulia", "001/KPTS/BH/518/II/2004", "05 February 2004", "Kampung Berok", "BEROK", "KOBA", "KAB. BANGKA TENGAH"],
-            ["Koperasi Nelayan Batu Belubang", "012/BH/VIII.5/2015", "14 March 2015", "Jl. Pantai Batu Belubang", "BATU BELUBANG", "PANGKALAN BARU", "KAB. BANGKA TENGAH"],
+            ["Koperasi Unit Desa Koba", "12 November 1996", "ARUNG DALAM", "KOBA"],
+            ["Koperasi Produsen Madani", "26 November 2013", "ARUNG DALAM", "KOBA"],
+            ["Koperasi Simpan Pinjam Sehati", "27 November 2013", "ARUNG DALAM", "KOBA"],
+            ["Koperasi Serba Usaha Putra Mulia", "05 February 2004", "BEROK", "KOBA"],
+            ["Koperasi Nelayan Batu Belubang", "14 March 2015", "BATU BELUBANG", "PANGKALAN BARU"],
         ];
 
         $output = implode(",", $csvHeader) . "\n";
@@ -171,6 +174,32 @@ class KoperasiImportController extends Controller
             'Content-Type' => 'text/csv',
             'Content-Disposition' => 'attachment; filename="DATA_KOPERASI_BANGKA_TENGAH_TEMPLATE.csv"',
         ]);
+    }
+
+    private function formatExcelDate($value): ?string
+    {
+        if (empty($value)) return null;
+
+        $str = trim((string)$value);
+
+        // If it's an Excel numeric serial number (e.g. 35381, 41604)
+        if (is_numeric($str) && (float)$str > 1000 && (float)$str < 100000) {
+            $timestamp = (int) round(((float)$str - 25569) * 86400);
+            if ($timestamp > 0) {
+                $months = [
+                    1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+                    5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+                    9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+                ];
+                $day = date('j', $timestamp);
+                $monthNum = (int) date('n', $timestamp);
+                $year = date('Y', $timestamp);
+
+                return "{$day} " . ($months[$monthNum] ?? date('M', $timestamp)) . " {$year}";
+            }
+        }
+
+        return $str;
     }
 
     private function findColumnIndex(array $headers, array $candidates)
@@ -203,6 +232,7 @@ class KoperasiImportController extends Controller
         }
 
         $namaIdx = $this->findColumnIndex($headers, ['koperasi', 'nama_koperasi', 'nama']);
+        $bhIdx = $this->findColumnIndex($headers, ['tanggal_badan_hukum', 'tgl_badan_hukum', 'badan_hukum', 'tanggal_bh', 'tgl_bh', 'no_badan_hukum']);
         $kecIdx = $this->findColumnIndex($headers, ['kecamatan', 'kec']);
         $desaIdx = $this->findColumnIndex($headers, ['desa_kelurahan', 'desa', 'kelurahan', 'desa_kel']);
 
@@ -215,12 +245,15 @@ class KoperasiImportController extends Controller
             if (count($data) <= max($namaIdx, $kecIdx, $desaIdx)) continue;
 
             $nama = trim($data[$namaIdx] ?? '');
+            $rawBh = $bhIdx !== false ? trim($data[$bhIdx] ?? '') : null;
+            $bh = $this->formatExcelDate($rawBh);
             $kec = trim($data[$kecIdx] ?? '');
             $desa = trim($data[$desaIdx] ?? '');
 
             if (!empty($nama) && !empty($kec) && !empty($desa)) {
                 $rows[] = [
                     'nama_koperasi' => $nama,
+                    'tanggal_badan_hukum' => $bh,
                     'kecamatan' => ucwords(strtolower($kec)),
                     'desa_kelurahan' => ucwords(strtolower($desa)),
                 ];
@@ -237,7 +270,8 @@ class KoperasiImportController extends Controller
             try {
                 $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($path);
                 $sheet = $spreadsheet->getActiveSheet();
-                $data = $sheet->toArray();
+                // Pass formatData = true so formatted dates like '12/11/1996' are read as formatted text
+                $data = $sheet->toArray(null, true, true, false);
                 if (empty($data)) return [];
 
                 $headerData = array_shift($data);
@@ -249,6 +283,7 @@ class KoperasiImportController extends Controller
                 }
 
                 $namaIdx = $this->findColumnIndex($headers, ['koperasi', 'nama_koperasi', 'nama']);
+                $bhIdx = $this->findColumnIndex($headers, ['tanggal_badan_hukum', 'tgl_badan_hukum', 'badan_hukum', 'tanggal_bh', 'tgl_bh', 'no_badan_hukum']);
                 $kecIdx = $this->findColumnIndex($headers, ['kecamatan', 'kec']);
                 $desaIdx = $this->findColumnIndex($headers, ['desa_kelurahan', 'desa', 'kelurahan', 'desa_kel']);
 
@@ -259,12 +294,15 @@ class KoperasiImportController extends Controller
                 $rows = [];
                 foreach ($data as $row) {
                     $nama = trim((string)($row[$namaIdx] ?? ''));
+                    $rawBh = $bhIdx !== false ? trim((string)($row[$bhIdx] ?? '')) : null;
+                    $bh = $this->formatExcelDate($rawBh);
                     $kec = trim((string)($row[$kecIdx] ?? ''));
                     $desa = trim((string)($row[$desaIdx] ?? ''));
 
                     if (!empty($nama) && !empty($kec) && !empty($desa)) {
                         $rows[] = [
                             'nama_koperasi' => $nama,
+                            'tanggal_badan_hukum' => $bh,
                             'kecamatan' => ucwords(strtolower($kec)),
                             'desa_kelurahan' => ucwords(strtolower($desa)),
                         ];
@@ -315,6 +353,7 @@ class KoperasiImportController extends Controller
                             }
 
                             $namaIdx = $this->findColumnIndex($headers, ['koperasi', 'nama_koperasi', 'nama']);
+                            $bhIdx = $this->findColumnIndex($headers, ['tanggal_badan_hukum', 'tgl_badan_hukum', 'badan_hukum', 'tanggal_bh', 'tgl_bh', 'no_badan_hukum']);
                             $kecIdx = $this->findColumnIndex($headers, ['kecamatan', 'kec']);
                             $desaIdx = $this->findColumnIndex($headers, ['desa_kelurahan', 'desa', 'kelurahan', 'desa_kel']);
 
@@ -322,12 +361,15 @@ class KoperasiImportController extends Controller
                                 $rows = [];
                                 foreach ($parsedSheetRows as $dataRow) {
                                     $nama = trim((string)($dataRow[$namaIdx] ?? ''));
+                                    $rawBh = $bhIdx !== false ? trim((string)($dataRow[$bhIdx] ?? '')) : null;
+                                    $bh = $this->formatExcelDate($rawBh);
                                     $kec = trim((string)($dataRow[$kecIdx] ?? ''));
                                     $desa = trim((string)($dataRow[$desaIdx] ?? ''));
 
                                     if (!empty($nama) && !empty($kec) && !empty($desa)) {
                                         $rows[] = [
                                             'nama_koperasi' => $nama,
+                                            'tanggal_badan_hukum' => $bh,
                                             'kecamatan' => ucwords(strtolower($kec)),
                                             'desa_kelurahan' => ucwords(strtolower($desa)),
                                         ];

@@ -46,6 +46,7 @@ const selectedItemForDelete = ref(null)
 const editForm = useForm({
     id: null,
     nama_koperasi: '',
+    tanggal_badan_hukum: '',
     kecamatan: '',
     desa_kelurahan: '',
     tahun: currentYear,
@@ -84,6 +85,7 @@ const submitImport = () => {
 const openEditModal = (item) => {
     editForm.id = item.id
     editForm.nama_koperasi = item.nama_koperasi
+    editForm.tanggal_badan_hukum = item.tanggal_badan_hukum || ''
     editForm.kecamatan = item.kecamatan
     editForm.desa_kelurahan = item.desa_kelurahan
     editForm.tahun = item.tahun
@@ -302,6 +304,7 @@ const deleteLogBatch = (log) => {
                             <p class="font-bold text-gray-700">Format Kolom Excel yang Dibaca:</p>
                             <ul class="list-disc list-inside text-gray-600 space-y-1 font-mono">
                                 <li>KOPERASI</li>
+                                <li>TANGGAL BADAN HUKUM</li>
                                 <li>DESA/KELURAHAN</li>
                                 <li>KECAMATAN</li>
                             </ul>
@@ -401,6 +404,7 @@ const deleteLogBatch = (log) => {
                             <tr class="border-b bg-gray-50 text-gray-500 font-bold uppercase tracking-wider">
                                 <th class="py-3 px-4 w-12">No</th>
                                 <th class="py-3 px-4">Nama Koperasi</th>
+                                <th class="py-3 px-4">Tanggal Badan Hukum</th>
                                 <th class="py-3 px-4">Kecamatan</th>
                                 <th class="py-3 px-4">Desa / Kelurahan</th>
                                 <th class="py-3 px-4 text-center">Tahun Snapshot</th>
@@ -409,7 +413,7 @@ const deleteLogBatch = (log) => {
                         </thead>
                         <tbody class="divide-y divide-gray-100">
                             <tr v-if="!koperasis.data || koperasis.data.length === 0">
-                                <td colspan="6" class="py-8 text-center text-gray-400">
+                                <td colspan="7" class="py-8 text-center text-gray-400">
                                     Belum ada data koperasi. Silakan unggah file Excel.
                                 </td>
                             </tr>
@@ -420,6 +424,9 @@ const deleteLogBatch = (log) => {
                                 </td>
                                 <td class="py-3.5 px-4 font-extrabold text-gray-900">
                                     {{ item.nama_koperasi }}
+                                </td>
+                                <td class="py-3.5 px-4 text-gray-600 font-medium whitespace-nowrap">
+                                    {{ item.tanggal_badan_hukum || '-' }}
                                 </td>
                                 <td class="py-3.5 px-4 text-gray-700">
                                     <span class="px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-semibold">
@@ -542,6 +549,16 @@ const deleteLogBatch = (log) => {
                             type="text"
                             v-model="editForm.nama_koperasi"
                             required
+                            class="w-full px-3.5 py-2.5 rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500 font-semibold"
+                        />
+                    </div>
+
+                    <div>
+                        <label class="block font-bold text-gray-700 mb-1">Tanggal Badan Hukum</label>
+                        <input
+                            type="text"
+                            v-model="editForm.tanggal_badan_hukum"
+                            placeholder="Contoh: 12 November 1996"
                             class="w-full px-3.5 py-2.5 rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500 font-semibold"
                         />
                     </div>

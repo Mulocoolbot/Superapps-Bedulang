@@ -20,7 +20,7 @@ class KoperasiPimpinanController extends Controller
             'Lubuk Besar' => ['Lubuk Besar', 'Lubuk Lingkuk', 'Lubuk Pabrik', 'Perlang', 'Trubus', 'Kulur', 'Kulur Ilir', 'Batu Beriga'],
         ];
 
-        $koperasis = Koperasi::select('id', 'nama_koperasi', 'kecamatan', 'desa_kelurahan', 'tahun')
+        $koperasis = Koperasi::select('id', 'nama_koperasi', 'tanggal_badan_hukum', 'kecamatan', 'desa_kelurahan', 'tahun')
             ->orderBy('tahun', 'asc')
             ->orderBy('kecamatan', 'asc')
             ->orderBy('nama_koperasi', 'asc')

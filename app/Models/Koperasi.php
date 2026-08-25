@@ -12,6 +12,7 @@ class Koperasi extends Model
 
     protected $fillable = [
         'nama_koperasi',
+        'tanggal_badan_hukum',
         'kecamatan',
         'desa_kelurahan',
         'tahun',

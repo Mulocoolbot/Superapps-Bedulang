@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Complaint;
+use App\Models\Koperasi;
+use App\Models\KoperasiImportLog;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Services\CctvService;
@@ -48,9 +50,17 @@ class DashboardController extends Controller
 
         $cctvs = CctvService::getLiveCctvs();
 
+        $latestKoperasiYear = Koperasi::max('tahun');
+        $koperasiStats = [
+            'total' => $latestKoperasiYear ? Koperasi::where('tahun', $latestKoperasiYear)->count() : 0,
+            'tahun' => $latestKoperasiYear ?? (int)date('Y'),
+            'logs_count' => KoperasiImportLog::count(),
+        ];
+
         return Inertia::render('Admin/Dashboard', [
             'cctvs' => $cctvs,
             'complaintStats' => $complaintStats,
+            'koperasiStats' => $koperasiStats,
             'userDomain' => $user?->service_slug,
         ]);
     }
